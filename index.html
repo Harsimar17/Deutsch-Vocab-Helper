@@ -2395,6 +2395,256 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
   );
 }
 
+// ---------- SATZBAU (build the sentence) ----------
+// Duolingo-style word-order practice on the `sentence_bank` in german_vocab.json.
+// The sentence is split into word tiles (trailing . ! ? dropped, commas kept),
+// shuffled together with a few wrong tiles ("distractors"), and the learner taps
+// them into order. Instead of tapping, they can hold the mic and *say* the whole
+// sentence: the browser transcribes it, the spoken words drop into the answer row
+// in the order heard, and the learner just fixes the order. On a correct answer
+// the app reads the finished sentence aloud.
+const SpeechRec = (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) || null;
+
+function normalizeSentence(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[.,!?;:„“”"»«()]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function sentenceTiles(de) {
+  const words = String(de || "").trim().replace(/\s+/g, " ").split(" ").filter(Boolean);
+  return words.map((w, i) => (i === words.length - 1 ? w.replace(/[.!?]+$/, "") : w));
+}
+
+const stileBase = {
+  fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 500,
+  padding: "9px 13px", borderRadius: "10px", cursor: "pointer",
+  border: "1px solid var(--line)", background: "var(--paper-raised)",
+  color: "var(--ink)", boxShadow: "var(--shadow-soft)", lineHeight: 1.1,
+};
+
+function SentenceBuilder({ pool, onComplete }) {
+  const [round, setRound] = useState(0);
+  const [order, setOrder] = useState([]);
+  const [pos, setPos] = useState(0);
+  const [tray, setTray] = useState([]);
+  const [answer, setAnswer] = useState([]);
+  const [result, setResult] = useState(null);   // null | "correct" | "wrong"
+  const [revealed, setRevealed] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [heard, setHeard] = useState("");
+  const recRef = React.useRef(null);
+
+  React.useEffect(() => {
+    setOrder(shuffle(pool.map((_, i) => i)));
+    setPos(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pool.length, round]);
+
+  const sentence = pool[order[pos]];
+
+  React.useEffect(() => {
+    if (!sentence) return;
+    const tiles = sentenceTiles(sentence.de).concat(sentence.distractors || []);
+    setTray(shuffle(tiles).map((w, i) => ({ w, id: i })));
+    setAnswer([]);
+    setResult(null);
+    setRevealed(false);
+    setHeard("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order, pos]);
+
+  React.useEffect(() => () => { if (recRef.current) { try { recRef.current.stop(); } catch (e) {} } }, []);
+
+  if (!pool.length) {
+    return <p style={srsNote}>No sentences for the selected level. The sentence bank is A2 (with a few B1) — turn on <strong>A2</strong> in settings ▸.</p>;
+  }
+  if (pos >= order.length) {
+    return (
+      <div style={{ ...srsCol, padding: "36px 0" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", textAlign: "center" }}>All {order.length} sentences done 🎉</div>
+        <button onClick={() => setRound((r) => r + 1)} style={navBtnStyle}>⟲ shuffle & again</button>
+      </div>
+    );
+  }
+  if (!sentence) return null;
+
+  const target = normalizeSentence(sentence.de);
+  const done = !!result;
+
+  const pushTile = (item) => {
+    if (done) return;
+    setAnswer((a) => a.concat([item]));
+    setTray((t) => t.filter((x) => x.id !== item.id));
+  };
+  const pullTile = (i) => {
+    if (done) return;
+    setAnswer((a) => {
+      const it = a[i];
+      if (it && it.id != null) setTray((t) => t.concat([it]));
+      return a.filter((_, idx) => idx !== i);
+    });
+  };
+  const clearAll = () => {
+    if (done) return;
+    setTray((t) => t.concat(answer.filter((x) => x.id != null)));
+    setAnswer([]);
+    setHeard("");
+  };
+
+  const check = () => {
+    if (!answer.length || done) return;
+    const ok = normalizeSentence(answer.map((x) => x.w).join(" ")) === target;
+    setResult(ok ? "correct" : "wrong");
+    if (ok) { speakGerman(sentence.de); onComplete && onComplete(); }
+  };
+  const showAnswer = () => { setRevealed(true); setResult("wrong"); speakGerman(sentence.de); };
+  const nextSentence = () => setPos((p) => p + 1);
+  const retry = () => { clearAll(); setResult(null); setRevealed(false); };
+
+  // ----- microphone: say the sentence, words drop into the answer row -----
+  const applyHeard = (text, curTray) => {
+    const spoken = normalizeSentence(text).split(" ").filter(Boolean);
+    if (!spoken.length) return;
+    const bag = curTray.map((x) => ({ ...x, used: false }));
+    const built = spoken.map((sw) => {
+      const hit = bag.find((t) => !t.used && normalizeSentence(t.w) === sw);
+      if (hit) { hit.used = true; return { w: hit.w, id: hit.id }; }
+      return { w: sw, id: null };
+    });
+    setAnswer(built);
+    setTray(bag.filter((x) => !x.used).map(({ used, ...r }) => r));
+  };
+  const startMic = () => {
+    if (!SpeechRec || listening || done) return;
+    let rec;
+    try { rec = new SpeechRec(); } catch (e) { return; }
+    const trayNow = tray.concat(answer.filter((x) => x.id != null));
+    rec.lang = "de-DE";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.onresult = (e) => {
+      const t = (e.results && e.results[0] && e.results[0][0] && e.results[0][0].transcript) || "";
+      setHeard(t);
+      applyHeard(t, trayNow);
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => { setListening(false); recRef.current = null; };
+    recRef.current = rec;
+    setListening(true);
+    try { rec.start(); } catch (e) { setListening(false); }
+  };
+  const stopMic = () => { if (recRef.current) { try { recRef.current.stop(); } catch (e) {} } };
+
+  const tone = result === "correct" ? "#3F7A55" : result === "wrong" ? "#A5354A" : "var(--line)";
+
+  return (
+    <div style={{ ...srsCol, width: "min(560px, 94vw)", margin: "0 auto" }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.1em", color: "#8a8372", textTransform: "uppercase" }}>
+        {pos + 1} / {order.length} · build the sentence
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <div style={{ display: "inline-block", fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", border: "1px solid var(--line)", borderRadius: "999px", padding: "3px 10px", marginBottom: "10px" }}>
+          {sentence.level}{sentence.grammar ? " · " + sentence.grammar : ""}
+        </div>
+        <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "20px", color: "var(--ink)", lineHeight: 1.4 }}>
+          {sentence.en}
+        </div>
+      </div>
+
+      {/* answer row */}
+      <div style={{
+        width: "100%", minHeight: "56px", display: "flex", flexWrap: "wrap", gap: "7px",
+        alignItems: "center", justifyContent: "center",
+        padding: "12px", borderRadius: "12px",
+        border: "1px solid " + tone,
+        background: "var(--paper-raised)",
+      }}>
+        {answer.length === 0 && (
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
+            tap the words below — or use the mic
+          </span>
+        )}
+        {answer.map((it, i) => (
+          <button key={i} onClick={() => pullTile(i)} style={{
+            ...stileBase,
+            border: it.id == null ? "1px dashed #8A6A2B" : stileBase.border,
+            color: it.id == null ? "#8A6A2B" : stileBase.color,
+            background: result === "correct" ? "#eef5ee" : result === "wrong" ? "#faeef0" : stileBase.background,
+          }}>
+            {it.w}
+          </button>
+        ))}
+      </div>
+
+      {/* result line */}
+      {result === "correct" && (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <SpeakButton text={sentence.de} size={30} />
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.08em", color: "#3F7A55" }}>✓ RICHTIG</span>
+        </div>
+      )}
+      {result === "wrong" && (
+        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.08em", color: "#A5354A" }}>✗ NOT QUITE</span>
+          {revealed && (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <SpeakButton text={sentence.de} size={30} />
+              <span style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "17px", color: "var(--ink)" }}>{sentence.de}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* tray */}
+      {!done && (
+        <div style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: "7px", justifyContent: "center", padding: "4px 0" }}>
+          {tray.map((item) => (
+            <button key={item.id} onClick={() => pushTile(item)} style={stileBase}>{item.w}</button>
+          ))}
+        </div>
+      )}
+
+      {heard && !done && (
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.06em", color: "var(--ink-faint)", textAlign: "center" }}>
+          heard: “{heard}”
+        </div>
+      )}
+
+      {/* controls */}
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
+        {!done && SpeechRec && (
+          <button
+            onClick={listening ? stopMic : startMic}
+            style={{
+              ...navBtnStyle,
+              background: listening ? "#A5354A" : "transparent",
+              color: listening ? "#FCF8EE" : "var(--ink)",
+              border: "1px solid " + (listening ? "#A5354A" : "var(--ink)"),
+              boxShadow: "none",
+            }}
+          >
+            {listening ? "● listening — tap to stop" : "🎤 speak it"}
+          </button>
+        )}
+        {!done && answer.length > 0 && <button onClick={clearAll} style={{ ...navBtnStyle, background: "transparent", color: "var(--ink-soft)", border: "1px solid var(--line)", boxShadow: "none" }}>clear</button>}
+        {!done && <button onClick={check} style={navBtnStyle}>check ›</button>}
+        {result === "wrong" && !revealed && <button onClick={retry} style={navBtnStyle}>try again</button>}
+        {result === "wrong" && !revealed && <button onClick={showAnswer} style={{ ...navBtnStyle, background: "transparent", color: "var(--ink-soft)", border: "1px solid var(--line)", boxShadow: "none" }}>show answer</button>}
+        {done && <button onClick={nextSentence} style={navBtnStyle}>next ›</button>}
+      </div>
+
+      {!SpeechRec && (
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.06em", color: "var(--ink-faint)", textAlign: "center", maxWidth: "min(420px, 90vw)", lineHeight: 1.6 }}>
+          voice input needs Chrome (desktop or Android) on an https page — not available in this browser
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------- TAB BAR ----------
 // Horizontally scrollable on narrow screens (iOS momentum scroll, snap points),
 // and collapsible: the ‹ toggle retracts the whole strip to the left so only the
@@ -2402,6 +2652,7 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
 const TABS = [
   { id: "study", label: "Study" },
   { id: "write", label: "Write" },
+  { id: "build", label: "Satzbau" },
   { id: "flash", label: "Cards" },
   { id: "quiz", label: "Quiz" },
   { id: "articles", label: "Articles" },
@@ -2565,6 +2816,7 @@ function App() {
 
   // Vocabulary is fetched at startup from VOCAB_DATA_URL rather than bundled here.
   const [allData, setAllData] = useState(null); // null while loading
+  const [sentenceBank, setSentenceBank] = useState([]); // Satzbau tab
   const [dataError, setDataError] = useState(null);
   const [loadAttempt, setLoadAttempt] = useState(0);
 
@@ -2598,6 +2850,7 @@ function App() {
         const items = buildDataFromJson(json);
         if (!items.length) throw new Error("Vocab data loaded but contained no entries");
         setAllData(items);
+        setSentenceBank(Array.isArray(json && json.sentence_bank) ? json.sentence_bank : []);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -2611,6 +2864,10 @@ function App() {
 
   const levelData = useMemo(() => (allData ? allData.filter((d) => levels.includes(d.lvl)) : []), [allData, levels]);
   const pool = useMemo(() => levelData.filter((d) => activeCats.includes(d.cat)), [levelData, activeCats]);
+  const buildPool = useMemo(
+    () => sentenceBank.filter((s) => levels.includes(s.level || "A2")),
+    [sentenceBank, levels]
+  );
   const mistakeCount = Object.keys(mistakes).length;
 
   const idMap = useMemo(() => {
@@ -2662,6 +2919,25 @@ function App() {
       return nd;
     });
   }, [persistSrs]);
+
+  // Count one activity toward today's goal / streak without touching the SRS
+  // schedule — used by the Satzbau tab, which practises word order, not words.
+  const tickDaily = useCallback(() => {
+    setDaily((d) => {
+      const t = ymd();
+      const nd = d.date === t ? Object.assign({}, d) : Object.assign({}, d, { date: t, reviewed: 0, introduced: 0 });
+      if (nd.lastActive !== t) {
+        nd.streak = nd.lastActive === ymdShift(t, -1) ? (nd.streak || 0) + 1 : 1;
+        nd.lastActive = t;
+      }
+      nd.reviewed = (nd.reviewed || 0) + 1;
+      const fb = getFirebase();
+      if (fb && readyRef.current) {
+        fb.db.collection("scores").doc(PROGRESS_DOC_ID).set({ daily: nd }, { merge: true }).catch(() => {});
+      }
+      return nd;
+    });
+  }, []);
 
   // Every mode feeds the review list through here. A miss adds the word (or bumps
   // its miss count); a hit only records that it went right. Nothing is ever
@@ -2936,6 +3212,7 @@ function App() {
         <div style={{ marginTop: "6px", animation: "cardIn .35s ease both" }} key={mode}>
           {mode === "study" && <StudyMode pool={pool} srs={srs} daily={daily} focus={focus} direction={direction} onGrade={bumpSrs} geminiKey={geminiKey} />}
           {mode === "write" && <WriteMode pool={pool} srs={srs} daily={daily} focus={focus} onGrade={bumpSrs} geminiKey={geminiKey} />}
+          {mode === "build" && <SentenceBuilder pool={buildPool} onComplete={tickDaily} />}
           {mode === "flash" && <Flashcards pool={pool} allData={allData} direction={direction} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
           {mode === "quiz" && <Quiz pool={pool} allTime={allTime} onAnswer={handleAnswer} onResult={recordResult} sessions={sessions} onSaveSession={handleSaveSession} onClearHistory={handleClearHistory} direction={direction} noRepeat={noRepeat} geminiKey={geminiKey} />}
           {mode === "articles" && <ArticleQuiz pool={pool} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
