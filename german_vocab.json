@@ -13725,6 +13725,768 @@
       "func": 89,
       "phrase": 50,
       "sep": 24
+    },
+    "sentence_bank": 69
+  },
+  "sentence_bank": [
+    {
+      "de": "Am Samstag haben wir einen langen Spaziergang im Park gemacht.",
+      "en": "On Saturday we went for a long walk in the park.",
+      "level": "A2",
+      "grammar": "Perfekt",
+      "distractors": [
+        "gemachen",
+        "spazieren",
+        "in dem"
+      ]
+    },
+    {
+      "de": "Gestern Abend bin ich erst nach Mitternacht nach Hause gekommen.",
+      "en": "Last night I only got home after midnight.",
+      "level": "A2",
+      "grammar": "Perfekt with sein",
+      "distractors": [
+        "habe",
+        "gegangen",
+        "zu"
+      ]
+    },
+    {
+      "de": "Hast du schon mit deinem Chef über die neue Stelle gesprochen?",
+      "en": "Have you already talked to your boss about the new position?",
+      "level": "A2",
+      "grammar": "Perfekt (question)",
+      "distractors": [
+        "gesprochen hast",
+        "für",
+        "reden"
+      ]
+    },
+    {
+      "de": "Ich habe meinen Regenschirm im Bus vergessen und bin nass geworden.",
+      "en": "I left my umbrella on the bus and got wet.",
+      "level": "A2",
+      "grammar": "Perfekt (two clauses)",
+      "distractors": [
+        "vergessen habe",
+        "geworden bin",
+        "für"
+      ]
+    },
+    {
+      "de": "Meine Eltern haben sich vor dreißig Jahren an der Universität kennengelernt.",
+      "en": "My parents met at university thirty years ago.",
+      "level": "A2",
+      "grammar": "Perfekt (reflexive)",
+      "distractors": [
+        "kennengelernt haben",
+        "seit",
+        "in"
+      ]
+    },
+    {
+      "de": "Am Wochenende möchte ich mit meinen Freunden ins Kino gehen.",
+      "en": "On the weekend I want to go to the cinema with my friends.",
+      "level": "A2",
+      "grammar": "Modal verb",
+      "distractors": [
+        "gehe",
+        "möchten",
+        "Freundin"
+      ]
+    },
+    {
+      "de": "Du musst diese Aufgabe unbedingt bis morgen früh fertig machen.",
+      "en": "You absolutely have to finish this task by tomorrow morning.",
+      "level": "A2",
+      "grammar": "Modal verb",
+      "distractors": [
+        "machst",
+        "können",
+        "für"
+      ]
+    },
+    {
+      "de": "Kannst du mir bitte sagen, wie ich am schnellsten zum Bahnhof komme?",
+      "en": "Can you please tell me the fastest way to the station?",
+      "level": "A2",
+      "grammar": "Modal + indirect question",
+      "distractors": [
+        "komme ich",
+        "nach",
+        "am schnell"
+      ]
+    },
+    {
+      "de": "Kinder dürfen auf diesem Spielplatz nicht ohne ihre Eltern spielen.",
+      "en": "Children are not allowed to play on this playground without their parents.",
+      "level": "A2",
+      "grammar": "Modal verb (dürfen)",
+      "distractors": [
+        "dürft",
+        "mit",
+        "spielen dürfen"
+      ]
+    },
+    {
+      "de": "Ich wollte dich gestern anrufen, aber ich hatte keinen Empfang.",
+      "en": "I wanted to call you yesterday, but I had no signal.",
+      "level": "A2",
+      "grammar": "Modal (Präteritum) + trennbar",
+      "distractors": [
+        "anrufen wollte",
+        "für",
+        "keine"
+      ]
+    },
+    {
+      "de": "Ich bleibe heute lieber zu Hause, weil ich mich nicht gut fühle.",
+      "en": "I'd rather stay home today because I don't feel well.",
+      "level": "A2",
+      "grammar": "Subordinate clause (weil)",
+      "distractors": [
+        "fühle mich",
+        "denn",
+        "bin"
+      ]
+    },
+    {
+      "de": "Wir mussten ein Taxi nehmen, weil der letzte Bus schon weg war.",
+      "en": "We had to take a taxi because the last bus was already gone.",
+      "level": "A2",
+      "grammar": "weil + past",
+      "distractors": [
+        "ist",
+        "nehmen mussten",
+        "für"
+      ]
+    },
+    {
+      "de": "Sie war schlecht gelaunt, weil sie die ganze Nacht nicht geschlafen hatte.",
+      "en": "She was in a bad mood because she hadn't slept all night.",
+      "level": "B1",
+      "grammar": "weil + Plusquamperfekt",
+      "distractors": [
+        "hatte geschlafen",
+        "denn",
+        "war schlecht"
+      ]
+    },
+    {
+      "de": "Meine Lehrerin hat gesagt, dass wir nächste Woche einen Test schreiben.",
+      "en": "My teacher said that we're writing a test next week.",
+      "level": "A2",
+      "grammar": "Subordinate clause (dass)",
+      "distractors": [
+        "schreiben wir",
+        "das",
+        "sagen"
+      ]
+    },
+    {
+      "de": "Ich finde es schade, dass du am Freitag nicht mitkommen kannst.",
+      "en": "I think it's a pity that you can't come along on Friday.",
+      "level": "A2",
+      "grammar": "dass + modal",
+      "distractors": [
+        "kannst mitkommen",
+        "das",
+        "für"
+      ]
+    },
+    {
+      "de": "Es tut mir leid, dass ich den Termin einfach vergessen habe.",
+      "en": "I'm sorry that I simply forgot the appointment.",
+      "level": "A2",
+      "grammar": "dass + Perfekt",
+      "distractors": [
+        "habe vergessen",
+        "das",
+        "mich"
+      ]
+    },
+    {
+      "de": "Wenn ich am Wochenende Zeit habe, besuche ich meine Großeltern.",
+      "en": "If I have time on the weekend, I visit my grandparents.",
+      "level": "A2",
+      "grammar": "wenn-clause in front field",
+      "distractors": [
+        "habe ich",
+        "als",
+        "besuchen"
+      ]
+    },
+    {
+      "de": "Wenn das Wetter morgen schön bleibt, fahren wir ans Meer.",
+      "en": "If the weather stays nice tomorrow, we'll drive to the sea.",
+      "level": "A2",
+      "grammar": "conditional",
+      "distractors": [
+        "bleibt es",
+        "ob",
+        "fahre"
+      ]
+    },
+    {
+      "de": "Als ich ein Kind war, haben wir jeden Sommer am See gewohnt.",
+      "en": "When I was a child, we lived by the lake every summer.",
+      "level": "A2",
+      "grammar": "als (past)",
+      "distractors": [
+        "wenn",
+        "war ich",
+        "gewohnt haben"
+      ]
+    },
+    {
+      "de": "Immer wenn es regnet, funktioniert das Internet bei uns schlechter.",
+      "en": "Whenever it rains, our internet works worse.",
+      "level": "A2",
+      "grammar": "immer wenn",
+      "distractors": [
+        "regnet es",
+        "als",
+        "schlecht"
+      ]
+    },
+    {
+      "de": "Obwohl er sehr müde war, hat er noch zwei Stunden weitergearbeitet.",
+      "en": "Although he was very tired, he kept working for two more hours.",
+      "level": "A2",
+      "grammar": "Subordinate clause (obwohl)",
+      "distractors": [
+        "ist",
+        "trotzdem",
+        "gearbeitet weiter"
+      ]
+    },
+    {
+      "de": "Der Bus hatte Verspätung, deshalb bin ich zu spät ins Büro gekommen.",
+      "en": "The bus was delayed, so I got to the office too late.",
+      "level": "A2",
+      "grammar": "connector (deshalb)",
+      "distractors": [
+        "deshalb ich bin",
+        "weil",
+        "gekommen bin"
+      ]
+    },
+    {
+      "de": "Es hat den ganzen Tag geregnet, trotzdem sind wir wandern gegangen.",
+      "en": "It rained all day; nevertheless we went hiking.",
+      "level": "A2",
+      "grammar": "connector (trotzdem)",
+      "distractors": [
+        "trotzdem wir sind",
+        "obwohl",
+        "gegangen sind"
+      ]
+    },
+    {
+      "de": "An Werktagen stehe ich immer schon um Viertel vor sieben auf.",
+      "en": "On weekdays I always get up at quarter to seven.",
+      "level": "A2",
+      "grammar": "Separable verb + time",
+      "distractors": [
+        "aufstehe",
+        "auf um",
+        "für"
+      ]
+    },
+    {
+      "de": "Mach bitte das Fenster zu, mir ist es hier drin zu kalt.",
+      "en": "Please close the window, it's too cold in here for me.",
+      "level": "A2",
+      "grammar": "Separable verb (imperative)",
+      "distractors": [
+        "zumachen",
+        "zu das",
+        "für"
+      ]
+    },
+    {
+      "de": "Der Zug nach Hamburg fährt in zehn Minuten von Gleis vier ab.",
+      "en": "The train to Hamburg leaves from platform four in ten minutes.",
+      "level": "A2",
+      "grammar": "Separable verb + place",
+      "distractors": [
+        "abfährt",
+        "ab in",
+        "auf"
+      ]
+    },
+    {
+      "de": "Ruf mich heute Abend bitte an, sobald du zu Hause bist.",
+      "en": "Please call me tonight as soon as you're home.",
+      "level": "A2",
+      "grammar": "Separable verb (imperative) + sobald",
+      "distractors": [
+        "anrufen",
+        "an mich",
+        "wenn du bist"
+      ]
+    },
+    {
+      "de": "Wir bereiten das Essen schon vor, während die Gäste noch unterwegs sind.",
+      "en": "We're already preparing the food while the guests are still on their way.",
+      "level": "B1",
+      "grammar": "Separable verb + während",
+      "distractors": [
+        "vorbereiten",
+        "vor das Essen",
+        "als"
+      ]
+    },
+    {
+      "de": "Kannst du mir bitte kurz mit dem schweren Koffer helfen?",
+      "en": "Can you please help me with the heavy suitcase for a moment?",
+      "level": "A2",
+      "grammar": "Dative (helfen, mit)",
+      "distractors": [
+        "mich",
+        "der schwere Koffer",
+        "für"
+      ]
+    },
+    {
+      "de": "Dieser Mantel gefällt mir sehr gut, aber leider ist er zu teuer.",
+      "en": "I really like this coat, but unfortunately it's too expensive.",
+      "level": "A2",
+      "grammar": "Dative (gefallen)",
+      "distractors": [
+        "gefällt mich",
+        "und",
+        "teurer"
+      ]
+    },
+    {
+      "de": "Nach dem Abendessen hilft mir mein Sohn immer beim Abwaschen.",
+      "en": "After dinner my son always helps me with the washing-up.",
+      "level": "A2",
+      "grammar": "Dative (nach, helfen, bei)",
+      "distractors": [
+        "mich",
+        "für",
+        "dem Abwaschen"
+      ]
+    },
+    {
+      "de": "Ich habe meiner Schwester zum Geburtstag ein Buch über Italien geschenkt.",
+      "en": "I gave my sister a book about Italy for her birthday.",
+      "level": "A2",
+      "grammar": "Dative + accusative object",
+      "distractors": [
+        "meine Schwester",
+        "für",
+        "geschenkt habe"
+      ]
+    },
+    {
+      "de": "Stell die Teller bitte auf den Tisch und die Gläser daneben.",
+      "en": "Please put the plates on the table and the glasses next to them.",
+      "level": "A2",
+      "grammar": "Two-way preposition (accusative)",
+      "distractors": [
+        "auf dem Tisch",
+        "für",
+        "die Teller"
+      ]
+    },
+    {
+      "de": "Deine Jacke hängt schon seit gestern über dem Stuhl im Flur.",
+      "en": "Your jacket has been hanging over the chair in the hallway since yesterday.",
+      "level": "A2",
+      "grammar": "Two-way preposition (dative)",
+      "distractors": [
+        "über den Stuhl",
+        "von",
+        "hängen"
+      ]
+    },
+    {
+      "de": "Häng das Bild lieber an die Wand neben das Fenster.",
+      "en": "Better hang the picture on the wall next to the window.",
+      "level": "A2",
+      "grammar": "Two-way preposition (accusative)",
+      "distractors": [
+        "an der Wand",
+        "für",
+        "das Bild häng"
+      ]
+    },
+    {
+      "de": "Ich freue mich schon sehr auf die Sommerferien mit meiner Familie.",
+      "en": "I'm really looking forward to the summer holidays with my family.",
+      "level": "A2",
+      "grammar": "Reflexive (sich freuen auf)",
+      "distractors": [
+        "mich freue",
+        "für",
+        "meine Familie"
+      ]
+    },
+    {
+      "de": "Wir treffen uns um acht Uhr vor dem Kino an der Ecke.",
+      "en": "We're meeting at eight o'clock in front of the cinema on the corner.",
+      "level": "A2",
+      "grammar": "Reflexive (sich treffen)",
+      "distractors": [
+        "uns treffen",
+        "für",
+        "dem Ecke"
+      ]
+    },
+    {
+      "de": "Kannst du dich noch an unseren Urlaub in Österreich erinnern?",
+      "en": "Do you still remember our holiday in Austria?",
+      "level": "A2",
+      "grammar": "Reflexive (sich erinnern an)",
+      "distractors": [
+        "dir",
+        "für",
+        "erinnerst"
+      ]
+    },
+    {
+      "de": "Nach dem langen Arbeitstag möchte ich mich einfach nur ausruhen.",
+      "en": "After the long workday I just want to rest.",
+      "level": "A2",
+      "grammar": "Reflexive (sich ausruhen)",
+      "distractors": [
+        "mir",
+        "für",
+        "ausruhen möchte"
+      ]
+    },
+    {
+      "de": "Mein neues Fahrrad ist viel schneller und leichter als mein altes.",
+      "en": "My new bike is much faster and lighter than my old one.",
+      "level": "A2",
+      "grammar": "Comparative",
+      "distractors": [
+        "schnell",
+        "wie",
+        "als mein alt"
+      ]
+    },
+    {
+      "de": "Im Sommer sind die Tage am längsten und die Nächte am kürzesten.",
+      "en": "In summer the days are longest and the nights shortest.",
+      "level": "A2",
+      "grammar": "Superlative",
+      "distractors": [
+        "lang",
+        "mehr",
+        "am kurz"
+      ]
+    },
+    {
+      "de": "Diese Wohnung ist zwar teurer, aber sie liegt viel zentraler.",
+      "en": "This flat is more expensive, but it's much more central.",
+      "level": "A2",
+      "grammar": "Comparative + zwar…aber",
+      "distractors": [
+        "teuer",
+        "als",
+        "zentral"
+      ]
+    },
+    {
+      "de": "Je mehr ich Deutsch spreche, desto einfacher wird es für mich.",
+      "en": "The more I speak German, the easier it gets for me.",
+      "level": "B1",
+      "grammar": "je … desto",
+      "distractors": [
+        "mehr ich spreche",
+        "als",
+        "einfach"
+      ]
+    },
+    {
+      "de": "Ich lerne jeden Abend Vokabeln, um die Prüfung im Juni zu bestehen.",
+      "en": "I study vocabulary every evening in order to pass the exam in June.",
+      "level": "A2",
+      "grammar": "Purpose clause (um…zu)",
+      "distractors": [
+        "für bestehen",
+        "damit",
+        "zu bestehen die Prüfung"
+      ]
+    },
+    {
+      "de": "Sie ist in die Stadt gefahren, um ein Geschenk für ihren Bruder zu kaufen.",
+      "en": "She drove into town to buy a present for her brother.",
+      "level": "A2",
+      "grammar": "um…zu + Perfekt",
+      "distractors": [
+        "für kaufen",
+        "damit",
+        "ein Geschenk zu kaufen"
+      ]
+    },
+    {
+      "de": "Ich schreibe dir die Adresse auf, damit du den Weg leichter findest.",
+      "en": "I'll write the address down for you so that you find the way more easily.",
+      "level": "B1",
+      "grammar": "damit-clause",
+      "distractors": [
+        "um",
+        "findest du",
+        "auf schreibe"
+      ]
+    },
+    {
+      "de": "Es ist gar nicht so leicht, jeden Morgen früh aufzustehen.",
+      "en": "It's not that easy to get up early every morning.",
+      "level": "A2",
+      "grammar": "Infinitive with zu (separable)",
+      "distractors": [
+        "aufstehen",
+        "für",
+        "zu aufstehen"
+      ]
+    },
+    {
+      "de": "Ich habe leider vergessen, gestern die Rechnung zu bezahlen.",
+      "en": "Unfortunately I forgot to pay the bill yesterday.",
+      "level": "A2",
+      "grammar": "Infinitive with zu",
+      "distractors": [
+        "bezahlt",
+        "für",
+        "bezahle"
+      ]
+    },
+    {
+      "de": "Hast du Lust, heute Abend mit uns essen zu gehen?",
+      "en": "Do you feel like going out to eat with us tonight?",
+      "level": "A2",
+      "grammar": "Lust haben + zu",
+      "distractors": [
+        "essen gehen",
+        "für",
+        "zu essen gehen"
+      ]
+    },
+    {
+      "de": "Weißt du zufällig, wann der nächste Zug nach Köln fährt?",
+      "en": "Do you happen to know when the next train to Cologne leaves?",
+      "level": "A2",
+      "grammar": "Indirect question (wann)",
+      "distractors": [
+        "fährt der Zug",
+        "für",
+        "ob"
+      ]
+    },
+    {
+      "de": "Ich bin mir nicht sicher, ob wir für alles genug Zeit haben.",
+      "en": "I'm not sure if we have enough time for everything.",
+      "level": "A2",
+      "grammar": "Indirect question (ob)",
+      "distractors": [
+        "haben wir",
+        "dass",
+        "für alle"
+      ]
+    },
+    {
+      "de": "Ich weiß nicht mehr genau, wo ich meine Brille hingelegt habe.",
+      "en": "I don't remember exactly where I put my glasses.",
+      "level": "A2",
+      "grammar": "Indirect question + Perfekt (separable)",
+      "distractors": [
+        "habe ich",
+        "für",
+        "hinlegen"
+      ]
+    },
+    {
+      "de": "Das ist der Kollege, der mir letzte Woche bei dem Projekt geholfen hat.",
+      "en": "That's the colleague who helped me with the project last week.",
+      "level": "A2",
+      "grammar": "Relative clause (nominative)",
+      "distractors": [
+        "den",
+        "der hat geholfen",
+        "für"
+      ]
+    },
+    {
+      "de": "Die Stadt, in der ich geboren bin, liegt im Süden von Italien.",
+      "en": "The city where I was born is in the south of Italy.",
+      "level": "B1",
+      "grammar": "Relative clause (preposition + dative)",
+      "distractors": [
+        "wo ich",
+        "das",
+        "geboren bin ich"
+      ]
+    },
+    {
+      "de": "Der Film, den du mir empfohlen hast, war wirklich sehr spannend.",
+      "en": "The film you recommended to me was really very exciting.",
+      "level": "B1",
+      "grammar": "Relative clause (accusative)",
+      "distractors": [
+        "dem",
+        "hast empfohlen",
+        "spannende"
+      ]
+    },
+    {
+      "de": "Das neue Schwimmbad wird nächsten Monat endlich für alle eröffnet.",
+      "en": "The new swimming pool will finally open for everyone next month.",
+      "level": "A2",
+      "grammar": "Passive (present)",
+      "distractors": [
+        "wird eröffnen",
+        "von",
+        "eröffnet wird"
+      ]
+    },
+    {
+      "de": "Entschuldigung, können Sie mir sagen, wie viel diese Schuhe kosten?",
+      "en": "Excuse me, can you tell me how much these shoes cost?",
+      "level": "A2",
+      "grammar": "Polite request + indirect question",
+      "distractors": [
+        "kosten diese Schuhe",
+        "für",
+        "wie viele"
+      ]
+    },
+    {
+      "de": "Wir sollten uns beeilen, sonst verpassen wir den Anfang des Films.",
+      "en": "We should hurry, otherwise we'll miss the beginning of the film.",
+      "level": "A2",
+      "grammar": "sonst + genitive",
+      "distractors": [
+        "sonst wir verpassen",
+        "weil",
+        "der Film"
+      ]
+    },
+    {
+      "de": "Meiner Meinung nach ist das Leben auf dem Land ruhiger als in der Stadt.",
+      "en": "In my opinion, life in the countryside is quieter than in the city.",
+      "level": "A2",
+      "grammar": "expressing opinion + comparative",
+      "distractors": [
+        "ruhig",
+        "wie",
+        "auf dem Landen"
+      ]
+    },
+    {
+      "de": "Bevor ich abends ins Bett gehe, trinke ich meistens noch einen Tee.",
+      "en": "Before I go to bed in the evening, I usually drink another tea.",
+      "level": "A2",
+      "grammar": "Subordinate clause (bevor)",
+      "distractors": [
+        "nachdem",
+        "gehe ich",
+        "noch einen Tee"
+      ]
+    },
+    {
+      "de": "Meine Schwester wohnt schon seit drei Jahren in einer kleinen Wohnung in Köln.",
+      "en": "My sister has been living in a small flat in Cologne for three years.",
+      "level": "A2",
+      "grammar": "seit + dative",
+      "distractors": [
+        "für",
+        "eine kleine Wohnung",
+        "wohnt seit"
+      ]
+    },
+    {
+      "de": "Wo warst du eigentlich gestern? Ich habe dich mehrmals angerufen.",
+      "en": "Where were you yesterday anyway? I called you several times.",
+      "level": "A2",
+      "grammar": "Präteritum (sein) + Perfekt",
+      "distractors": [
+        "bist",
+        "für",
+        "anrufen"
+      ]
+    },
+    {
+      "de": "Der Film hat mir gut gefallen, besonders das Ende war überraschend.",
+      "en": "I liked the film, especially the ending was surprising.",
+      "level": "A2",
+      "grammar": "gefallen (dative) + emphasis",
+      "distractors": [
+        "mich",
+        "und",
+        "überraschende"
+      ]
+    },
+    {
+      "de": "Im Winter fahren viele Familien in die Berge, um dort Ski zu fahren.",
+      "en": "In winter many families go to the mountains to ski there.",
+      "level": "A2",
+      "grammar": "um…zu",
+      "distractors": [
+        "für Ski fahren",
+        "damit",
+        "auf die Berge"
+      ]
+    },
+    {
+      "de": "Ich hätte gern ein Kilo Äpfel und ein frisches Brot, bitte.",
+      "en": "I'd like a kilo of apples and a fresh loaf of bread, please.",
+      "level": "A2",
+      "grammar": "Konjunktiv II (polite)",
+      "distractors": [
+        "hätte gern ich",
+        "für",
+        "ein frisch Brot"
+      ]
+    },
+    {
+      "de": "Könntest du mir vielleicht dein Wörterbuch übers Wochenende leihen?",
+      "en": "Could you maybe lend me your dictionary over the weekend?",
+      "level": "A2",
+      "grammar": "Konjunktiv II (request) + dative",
+      "distractors": [
+        "kannst",
+        "mich",
+        "dein Wörterbuch mir"
+      ]
+    },
+    {
+      "de": "Wenn ich mehr Zeit hätte, würde ich einen längeren Sprachkurs machen.",
+      "en": "If I had more time, I would take a longer language course.",
+      "level": "B1",
+      "grammar": "Konjunktiv II (unreal)",
+      "distractors": [
+        "habe",
+        "wurde",
+        "ein länger Sprachkurs"
+      ]
+    },
+    {
+      "de": "Am Morgen trinke ich einen starken Kaffee und lese kurz die Nachrichten.",
+      "en": "In the morning I drink a strong coffee and briefly read the news.",
+      "level": "A2",
+      "grammar": "present, position 2 in both clauses",
+      "distractors": [
+        "ich trinke",
+        "für",
+        "ein starker Kaffee"
+      ]
+    },
+    {
+      "de": "Nachdem wir gegessen hatten, sind wir noch ein bisschen spazieren gegangen.",
+      "en": "After we had eaten, we went for a little walk.",
+      "level": "B1",
+      "grammar": "nachdem + Plusquamperfekt",
+      "distractors": [
+        "nachdem wir haben",
+        "bevor",
+        "gegangen sind"
+      ]
     }
-  }
+  ]
 }
