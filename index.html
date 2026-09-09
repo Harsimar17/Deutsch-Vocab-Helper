@@ -2395,252 +2395,235 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
   );
 }
 
-// ---------- SATZBAU (build the sentence) ----------
-// Duolingo-style word-order practice on the `sentence_bank` in german_vocab.json.
-// The sentence is split into word tiles (trailing . ! ? dropped, commas kept),
-// shuffled together with a few wrong tiles ("distractors"), and the learner taps
-// them into order. Instead of tapping, they can hold the mic and *say* the whole
-// sentence: the browser transcribes it, the spoken words drop into the answer row
-// in the order heard, and the learner just fixes the order. On a correct answer
-// the app reads the finished sentence aloud.
-const SpeechRec = (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) || null;
-
-function normalizeSentence(s) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/[.,!?;:„“”"»«()]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-function sentenceTiles(de) {
-  const words = String(de || "").trim().replace(/\s+/g, " ").split(" ").filter(Boolean);
-  return words.map((w, i) => (i === words.length - 1 ? w.replace(/[.!?]+$/, "") : w));
-}
-
-const stileBase = {
-  fontFamily: "var(--font-serif)", fontSize: "16px", fontWeight: 500,
-  padding: "9px 13px", borderRadius: "10px", cursor: "pointer",
-  border: "1px solid var(--line)", background: "var(--paper-raised)",
-  color: "var(--ink)", boxShadow: "var(--shadow-soft)", lineHeight: 1.1,
+// ---------- MUSTER (sentence-pattern viewer) ----------
+// Not an exercise — a viewer. Each German sentence pattern is shown as a row of
+// colour-coded slots (Position ①, Verb ②, Satzende, Konjunktion, …). You pick a
+// pattern and scroll through several real A2 sentences that ALL take the same
+// shape, so the word-order rule becomes something you recognise rather than
+// something you compute. Nothing to type, nothing scored. 🔊 reads each aloud.
+const CHUNK_ROLE = {
+  front:  { bd: "#3A5A8C", fg: "#2b2620", bg: "#3A5A8C14", cap: "Position ①" },
+  v2:     { bd: "#8A6A2B", fg: "#FCF8EE", bg: "#8A6A2B",   cap: "Verb ②" },
+  end:    { bd: "#3F7A55", fg: "#FCF8EE", bg: "#3F7A55",   cap: "Satzende" },
+  konj:   { bd: "#6B4A8A", fg: "#6B4A8A", bg: "#6B4A8A12", cap: "Konjunktion" },
+  subj:   { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Subjekt" },
+  time:   { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Zeit" },
+  place:  { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Ort" },
+  obj:    { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Objekt" },
+  manner: { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Art & Weise" },
+  mid:    { bd: "var(--line)", fg: "var(--ink-soft)", bg: "transparent", cap: "" },
 };
 
-function SentenceBuilder({ pool, onComplete }) {
-  const [round, setRound] = useState(0);
-  const [order, setOrder] = useState([]);
-  const [pos, setPos] = useState(0);
-  const [tray, setTray] = useState([]);
-  const [answer, setAnswer] = useState([]);
-  const [result, setResult] = useState(null);   // null | "correct" | "wrong"
-  const [revealed, setRevealed] = useState(false);
-  const [listening, setListening] = useState(false);
-  const [heard, setHeard] = useState("");
-  const recRef = React.useRef(null);
+function ChunkRow({ chunks, big }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center", alignItems: "flex-end" }}>
+      {chunks.map((ch, i) => {
+        const m = CHUNK_ROLE[ch[1]] || CHUNK_ROLE.mid;
+        const cap = ch[2] != null ? ch[2] : m.cap;
+        const strong = ch[1] === "v2" || ch[1] === "end";
+        return (
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
+            <div style={{
+              fontFamily: "var(--font-serif)", fontSize: big ? "16px" : "14px",
+              fontWeight: strong ? 700 : 500, padding: "6px 10px", borderRadius: "8px", lineHeight: 1.15,
+              border: "1px solid " + m.bd, background: m.bg, color: m.fg,
+            }}>
+              {ch[0]}
+            </div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "7.5px", letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--ink-faint)", minHeight: "9px", textAlign: "center" }}>
+              {cap}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
+const SENTENCE_PATTERNS = [
+  {
+    key: "pos2",
+    name: "Verb an Position 2",
+    rule: "In a normal statement the conjugated verb is always the SECOND box. Whatever you put first — subject, time, an object — the verb comes right after it, and the subject slides in behind the verb.",
+    skeleton: [["etwas", "front"], ["Verb", "v2"], ["… der Rest …", "mid"]],
+    examples: [
+      { en: "I drink a strong coffee in the morning.",
+        c: [["Ich", "front", "Subjekt = ①"], ["trinke", "v2"], ["am Morgen", "time"], ["einen starken Kaffee", "obj"]] },
+      { en: "In the morning I drink a strong coffee.",
+        c: [["Am Morgen", "front", "Zeit = ①"], ["trinke", "v2"], ["ich", "subj"], ["einen starken Kaffee", "obj"]] },
+      { en: "My sister has been living in Cologne for three years.",
+        c: [["Meine Schwester", "front", "Subjekt = ①"], ["wohnt", "v2"], ["seit drei Jahren", "time"], ["in Köln", "place"]] },
+      { en: "Next year we're driving to Italy together.",
+        c: [["Nächstes Jahr", "front", "Zeit = ①"], ["fahren", "v2"], ["wir", "subj"], ["zusammen", "manner"], ["nach Italien", "place"]] },
+      { en: "This film I found really exciting.",
+        c: [["Diesen Film", "front", "Objekt = ①"], ["fand", "v2"], ["ich", "subj"], ["wirklich spannend", "manner"]] },
+    ],
+  },
+  {
+    key: "perfekt",
+    name: "Perfekt — die Satzklammer",
+    rule: "Perfekt uses two verbs. 'haben' or 'sein' sits in position 2; the past participle (ge-…-t / ge-…-en) is thrown to the very end. Everything else is trapped inside that bracket.",
+    skeleton: [["Subjekt", "subj"], ["haben / sein", "v2"], ["… Mittelfeld …", "mid"], ["Partizip II", "end", "ge-…-t"]],
+    examples: [
+      { en: "On Saturday we went for a long walk.",
+        c: [["Am Samstag", "front", "Zeit"], ["haben", "v2", "haben ②"], ["wir", "subj"], ["einen langen Spaziergang", "obj"], ["gemacht", "end", "Partizip"]] },
+      { en: "Yesterday I only got home after midnight.",
+        c: [["Gestern", "front", "Zeit"], ["bin", "v2", "sein ②"], ["ich", "subj"], ["erst nach Mitternacht", "time"], ["nach Hause", "place"], ["gekommen", "end", "Partizip"]] },
+      { en: "Have you already talked to your boss?",
+        c: [["Hast", "v2", "haben ①"], ["du", "subj"], ["schon", "time"], ["mit deinem Chef", "obj", "mit + Dativ"], ["gesprochen", "end", "Partizip"]] },
+      { en: "I left my umbrella on the bus.",
+        c: [["Ich", "front"], ["habe", "v2", "haben ②"], ["meinen Regenschirm", "obj"], ["im Bus", "place"], ["vergessen", "end", "Partizip"]] },
+      { en: "My parents met at university.",
+        c: [["Meine Eltern", "front", "Subjekt"], ["haben", "v2", "haben ②"], ["sich", "obj", "reflexiv"], ["an der Universität", "place"], ["kennengelernt", "end", "Partizip"]] },
+    ],
+  },
+  {
+    key: "modal",
+    name: "Modalverb — die Satzklammer",
+    rule: "The modal verb (möchten, müssen, können, dürfen …) takes position 2. The real verb goes to the end as a plain infinitive — a separable verb even stays whole there.",
+    skeleton: [["Subjekt", "subj"], ["Modalverb", "v2"], ["… Mittelfeld …", "mid"], ["Infinitiv", "end"]],
+    examples: [
+      { en: "On the weekend I want to go to the cinema.",
+        c: [["Am Wochenende", "front", "Zeit"], ["möchte", "v2", "Modal ②"], ["ich", "subj"], ["ins Kino", "place"], ["gehen", "end", "Infinitiv"]] },
+      { en: "You have to finish this task by tomorrow.",
+        c: [["Du", "front"], ["musst", "v2", "Modal ②"], ["diese Aufgabe", "obj"], ["bis morgen", "time"], ["fertig machen", "end", "Infinitiv"]] },
+      { en: "Can you please help me with the suitcase?",
+        c: [["Kannst", "v2", "Modal ①"], ["du", "subj"], ["mir", "obj", "Dativ"], ["bitte", "manner"], ["mit dem Koffer", "obj", "mit + Dativ"], ["helfen", "end", "Infinitiv"]] },
+      { en: "Children aren't allowed to play here without their parents.",
+        c: [["Hier", "front", "Ort"], ["dürfen", "v2", "Modal ②"], ["Kinder", "subj"], ["nicht ohne ihre Eltern", "manner"], ["spielen", "end", "Infinitiv"]] },
+      { en: "I wanted to call you yesterday.",
+        c: [["Ich", "front"], ["wollte", "v2", "Modal ②"], ["dich", "obj"], ["gestern", "time"], ["anrufen", "end", "Infinitiv"]] },
+    ],
+  },
+  {
+    key: "trennbar",
+    name: "Trennbare Verben",
+    rule: "In a main clause the separable prefix (auf-, an-, ab-, mit-, vor- …) snaps off the front of the verb and moves to the very end.",
+    skeleton: [["Subjekt", "subj"], ["Verb-Stamm", "v2"], ["… Mittelfeld …", "mid"], ["Präfix", "end"]],
+    examples: [
+      { en: "On weekdays I get up at seven o'clock.",
+        c: [["An Werktagen", "front", "Zeit"], ["stehe", "v2", "steh- ②"], ["ich", "subj"], ["um sieben Uhr", "time"], ["auf", "end", "auf- · aufstehen"]] },
+      { en: "The train to Hamburg leaves in ten minutes.",
+        c: [["Der Zug nach Hamburg", "front", "Subjekt"], ["fährt", "v2", "fähr- ②"], ["in zehn Minuten", "time"], ["ab", "end", "ab- · abfahren"]] },
+      { en: "Please call me this evening.",
+        c: [["Ruf", "v2", "ruf- ①"], ["mich", "obj"], ["heute Abend", "time"], ["bitte", "manner"], ["an", "end", "an- · anrufen"]] },
+      { en: "We're preparing the food for the guests.",
+        c: [["Wir", "front"], ["bereiten", "v2", "bereit- ②"], ["das Essen", "obj"], ["für die Gäste", "obj"], ["vor", "end", "vor- · vorbereiten"]] },
+      { en: "Please close the window.",
+        c: [["Mach", "v2", "mach- ①"], ["bitte", "manner"], ["das Fenster", "obj"], ["zu", "end", "zu- · zumachen"]] },
+    ],
+  },
+  {
+    key: "weil",
+    name: "Nebensatz: weil / dass / obwohl",
+    rule: "A word like weil, dass or obwohl opens a subordinate clause and kicks the conjugated verb all the way to the END. With two verbs, BOTH go to the end — participle first, then the finite one.",
+    skeleton: [["Hauptsatz", "mid", "der 1. Satz"], ["weil / dass", "konj"], ["Subjekt … Mittelfeld", "mid"], ["VERB", "end", "ganz hinten"]],
+    examples: [
+      { en: "I'm staying home today because I don't feel well.",
+        c: [["Ich bleibe heute zu Hause", "mid", "Hauptsatz"], ["weil", "konj"], ["ich", "subj"], ["mich nicht gut", "manner"], ["fühle", "end", "Verb → Ende"]] },
+      { en: "We had to take a taxi because the last bus was already gone.",
+        c: [["Wir mussten ein Taxi nehmen", "mid", "Hauptsatz"], ["weil", "konj"], ["der letzte Bus", "subj"], ["schon weg", "manner"], ["war", "end", "Verb → Ende"]] },
+      { en: "My teacher said that we're writing a test tomorrow.",
+        c: [["Meine Lehrerin hat gesagt", "mid", "Hauptsatz"], ["dass", "konj"], ["wir", "subj"], ["morgen einen Test", "obj"], ["schreiben", "end", "Verb → Ende"]] },
+      { en: "I'm sorry that I forgot the appointment.",
+        c: [["Es tut mir leid", "mid", "Hauptsatz"], ["dass", "konj"], ["ich", "subj"], ["den Termin", "obj"], ["vergessen habe", "end", "beide Verben → Ende"]] },
+      { en: "Although he was very tired, he kept working.",
+        c: [["Obwohl", "konj"], ["er", "subj"], ["sehr müde", "manner"], ["war", "end", "Verb → Ende"], ["hat er weitergearbeitet", "mid", "Hauptsatz"]] },
+    ],
+  },
+  {
+    key: "neb-vorne",
+    name: "Nebensatz zuerst (wenn / als / weil)",
+    rule: "When the subordinate clause comes FIRST, the whole clause counts as position 1. So the main clause starts straight away with its verb: '…, VERB ich …'. Verb bumps into verb across the comma.",
+    skeleton: [["Wenn … VERB", "konj", "Nebensatz = ①"], ["VERB", "v2", "Hauptsatz-Verb ②"], ["Subjekt …", "mid"]],
+    examples: [
+      { en: "If I have time, I visit my grandparents.",
+        c: [["Wenn ich Zeit habe", "konj", "Nebensatz = ①"], ["besuche", "v2", "Verb ②"], ["ich", "subj"], ["meine Großeltern", "obj"]] },
+      { en: "If the weather stays nice, we drive to the sea.",
+        c: [["Wenn das Wetter schön bleibt", "konj", "Nebensatz = ①"], ["fahren", "v2", "Verb ②"], ["wir", "subj"], ["ans Meer", "place"]] },
+      { en: "When I was a child, we lived by the lake.",
+        c: [["Als ich ein Kind war", "konj", "Nebensatz = ①"], ["haben", "v2", "haben ②"], ["wir", "subj"], ["am See", "place"], ["gewohnt", "end", "Partizip"]] },
+      { en: "Before I go to bed, I usually drink a tea.",
+        c: [["Bevor ich ins Bett gehe", "konj", "Nebensatz = ①"], ["trinke", "v2", "Verb ②"], ["ich", "subj"], ["meistens einen Tee", "obj"]] },
+      { en: "Because the bus was delayed, I arrived too late.",
+        c: [["Weil der Bus Verspätung hatte", "konj", "Nebensatz = ①"], ["bin", "v2", "sein ②"], ["ich", "subj"], ["zu spät", "manner"], ["gekommen", "end", "Partizip"]] },
+    ],
+  },
+  {
+    key: "umzu",
+    name: "um … zu (Absicht / Zweck)",
+    rule: "To say WHY someone does something: 'um' + … + 'zu' + infinitive at the end. The um-part has no subject of its own — it's the same person as the main clause.",
+    skeleton: [["Hauptsatz", "mid", "wer + tut was"], ["um", "konj"], ["… Objekt / Angabe …", "mid"], ["zu + Infinitiv", "end", "der Zweck"]],
+    examples: [
+      { en: "I study vocabulary every evening in order to pass the exam.",
+        c: [["Ich lerne jeden Abend Vokabeln", "mid", "Hauptsatz"], ["um", "konj"], ["die Prüfung", "obj"], ["zu bestehen", "end", "zu + Infinitiv"]] },
+      { en: "She drove into town to buy a present.",
+        c: [["Sie ist in die Stadt gefahren", "mid", "Hauptsatz"], ["um", "konj"], ["ein Geschenk", "obj"], ["zu kaufen", "end", "zu + Infinitiv"]] },
+      { en: "In winter many families go to the mountains to ski.",
+        c: [["Im Winter fahren viele Familien in die Berge", "mid", "Hauptsatz"], ["um", "konj"], ["Ski", "obj"], ["zu fahren", "end", "zu + Infinitiv"]] },
+      { en: "You need a lot of patience to learn a language.",
+        c: [["Man braucht viel Geduld", "mid", "Hauptsatz"], ["um", "konj"], ["eine Sprache", "obj"], ["zu lernen", "end", "zu + Infinitiv"]] },
+      { en: "I get up early to be at the office on time.",
+        c: [["Ich stehe früh auf", "mid", "Hauptsatz"], ["um", "konj"], ["pünktlich im Büro", "place"], ["zu sein", "end", "zu + Infinitiv"]] },
+    ],
+  },
+];
+
+function PatternStudy({ onSeen }) {
+  const [pi, setPi] = useState(0);
+  const pat = SENTENCE_PATTERNS[pi];
+  const seenRef = React.useRef({});
   React.useEffect(() => {
-    setOrder(shuffle(pool.map((_, i) => i)));
-    setPos(0);
+    if (!seenRef.current[pat.key]) { seenRef.current[pat.key] = true; onSeen && onSeen(); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pool.length, round]);
-
-  const sentence = pool[order[pos]];
-
-  React.useEffect(() => {
-    if (!sentence) return;
-    const tiles = sentenceTiles(sentence.de).concat(sentence.distractors || []);
-    setTray(shuffle(tiles).map((w, i) => ({ w, id: i })));
-    setAnswer([]);
-    setResult(null);
-    setRevealed(false);
-    setHeard("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order, pos]);
-
-  React.useEffect(() => () => { if (recRef.current) { try { recRef.current.stop(); } catch (e) {} } }, []);
-
-  if (!pool.length) {
-    return <p style={srsNote}>No sentences for the selected level. The sentence bank is A2 (with a few B1) — turn on <strong>A2</strong> in settings ▸.</p>;
-  }
-  if (pos >= order.length) {
-    return (
-      <div style={{ ...srsCol, padding: "36px 0" }}>
-        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", textAlign: "center" }}>All {order.length} sentences done 🎉</div>
-        <button onClick={() => setRound((r) => r + 1)} style={navBtnStyle}>⟲ shuffle & again</button>
-      </div>
-    );
-  }
-  if (!sentence) return null;
-
-  const target = normalizeSentence(sentence.de);
-  const done = !!result;
-
-  const pushTile = (item) => {
-    if (done) return;
-    setAnswer((a) => a.concat([item]));
-    setTray((t) => t.filter((x) => x.id !== item.id));
-  };
-  const pullTile = (i) => {
-    if (done) return;
-    setAnswer((a) => {
-      const it = a[i];
-      if (it && it.id != null) setTray((t) => t.concat([it]));
-      return a.filter((_, idx) => idx !== i);
-    });
-  };
-  const clearAll = () => {
-    if (done) return;
-    setTray((t) => t.concat(answer.filter((x) => x.id != null)));
-    setAnswer([]);
-    setHeard("");
-  };
-
-  const check = () => {
-    if (!answer.length || done) return;
-    const ok = normalizeSentence(answer.map((x) => x.w).join(" ")) === target;
-    setResult(ok ? "correct" : "wrong");
-    if (ok) { speakGerman(sentence.de); onComplete && onComplete(); }
-  };
-  const showAnswer = () => { setRevealed(true); setResult("wrong"); speakGerman(sentence.de); };
-  const nextSentence = () => setPos((p) => p + 1);
-  const retry = () => { clearAll(); setResult(null); setRevealed(false); };
-
-  // ----- microphone: say the sentence, words drop into the answer row -----
-  const applyHeard = (text, curTray) => {
-    const spoken = normalizeSentence(text).split(" ").filter(Boolean);
-    if (!spoken.length) return;
-    const bag = curTray.map((x) => ({ ...x, used: false }));
-    const built = spoken.map((sw) => {
-      const hit = bag.find((t) => !t.used && normalizeSentence(t.w) === sw);
-      if (hit) { hit.used = true; return { w: hit.w, id: hit.id }; }
-      return { w: sw, id: null };
-    });
-    setAnswer(built);
-    setTray(bag.filter((x) => !x.used).map(({ used, ...r }) => r));
-  };
-  const startMic = () => {
-    if (!SpeechRec || listening || done) return;
-    let rec;
-    try { rec = new SpeechRec(); } catch (e) { return; }
-    const trayNow = tray.concat(answer.filter((x) => x.id != null));
-    rec.lang = "de-DE";
-    rec.interimResults = false;
-    rec.maxAlternatives = 1;
-    rec.onresult = (e) => {
-      const t = (e.results && e.results[0] && e.results[0][0] && e.results[0][0].transcript) || "";
-      setHeard(t);
-      applyHeard(t, trayNow);
-    };
-    rec.onerror = () => setListening(false);
-    rec.onend = () => { setListening(false); recRef.current = null; };
-    recRef.current = rec;
-    setListening(true);
-    try { rec.start(); } catch (e) { setListening(false); }
-  };
-  const stopMic = () => { if (recRef.current) { try { recRef.current.stop(); } catch (e) {} } };
-
-  const tone = result === "correct" ? "#3F7A55" : result === "wrong" ? "#A5354A" : "var(--line)";
+  }, [pi]);
+  const say = (chunks) => speakGerman(chunks.map((c) => c[0]).join(" ").replace(/\s+([,.!?])/g, "$1"));
 
   return (
-    <div style={{ ...srsCol, width: "min(560px, 94vw)", margin: "0 auto" }}>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.1em", color: "#8a8372", textTransform: "uppercase" }}>
-        {pos + 1} / {order.length} · build the sentence
-      </div>
-
-      <div style={{ textAlign: "center" }}>
-        <div style={{ display: "inline-block", fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--accent)", border: "1px solid var(--line)", borderRadius: "999px", padding: "3px 10px", marginBottom: "10px" }}>
-          {sentence.level}{sentence.grammar ? " · " + sentence.grammar : ""}
-        </div>
-        <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "20px", color: "var(--ink)", lineHeight: 1.4 }}>
-          {sentence.en}
-        </div>
-      </div>
-
-      {/* answer row */}
-      <div style={{
-        width: "100%", minHeight: "56px", display: "flex", flexWrap: "wrap", gap: "7px",
-        alignItems: "center", justifyContent: "center",
-        padding: "12px", borderRadius: "12px",
-        border: "1px solid " + tone,
-        background: "var(--paper-raised)",
-      }}>
-        {answer.length === 0 && (
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
-            tap the words below — or use the mic
-          </span>
-        )}
-        {answer.map((it, i) => (
-          <button key={i} onClick={() => pullTile(i)} style={{
-            ...stileBase,
-            border: it.id == null ? "1px dashed #8A6A2B" : stileBase.border,
-            color: it.id == null ? "#8A6A2B" : stileBase.color,
-            background: result === "correct" ? "#eef5ee" : result === "wrong" ? "#faeef0" : stileBase.background,
-          }}>
-            {it.w}
-          </button>
+    <div style={{ ...srsCol, width: "min(620px, 95vw)", margin: "0 auto", gap: "18px" }}>
+      <div className="tabstrip" style={{ display: "flex", gap: "6px", overflowX: "auto", maxWidth: "100%", padding: "2px", scrollSnapType: "x proximity" }}>
+        {SENTENCE_PATTERNS.map((p, i) => (
+          <button key={p.key} onClick={() => setPi(i)} style={{
+            flex: "0 0 auto", whiteSpace: "nowrap", scrollSnapAlign: "center",
+            fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.03em", textTransform: "uppercase",
+            padding: "8px 13px", borderRadius: "999px", cursor: "pointer",
+            border: "1px solid " + (i === pi ? "#2b2620" : "var(--line)"),
+            background: i === pi ? "linear-gradient(180deg,#35302a,#2b2620)" : "transparent",
+            color: i === pi ? "#FCF8EE" : "var(--ink-soft)",
+          }}>{p.name}</button>
         ))}
       </div>
 
-      {/* result line */}
-      {result === "correct" && (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <SpeakButton text={sentence.de} size={30} />
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.08em", color: "#3F7A55" }}>✓ RICHTIG</span>
-        </div>
-      )}
-      {result === "wrong" && (
-        <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-          <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.08em", color: "#A5354A" }}>✗ NOT QUITE</span>
-          {revealed && (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <SpeakButton text={sentence.de} size={30} />
-              <span style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "17px", color: "var(--ink)" }}>{sentence.de}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* tray */}
-      {!done && (
-        <div style={{ width: "100%", display: "flex", flexWrap: "wrap", gap: "7px", justifyContent: "center", padding: "4px 0" }}>
-          {tray.map((item) => (
-            <button key={item.id} onClick={() => pushTile(item)} style={stileBase}>{item.w}</button>
-          ))}
-        </div>
-      )}
-
-      {heard && !done && (
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.06em", color: "var(--ink-faint)", textAlign: "center" }}>
-          heard: “{heard}”
-        </div>
-      )}
-
-      {/* controls */}
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
-        {!done && SpeechRec && (
-          <button
-            onClick={listening ? stopMic : startMic}
-            style={{
-              ...navBtnStyle,
-              background: listening ? "#A5354A" : "transparent",
-              color: listening ? "#FCF8EE" : "var(--ink)",
-              border: "1px solid " + (listening ? "#A5354A" : "var(--ink)"),
-              boxShadow: "none",
-            }}
-          >
-            {listening ? "● listening — tap to stop" : "🎤 speak it"}
-          </button>
-        )}
-        {!done && answer.length > 0 && <button onClick={clearAll} style={{ ...navBtnStyle, background: "transparent", color: "var(--ink-soft)", border: "1px solid var(--line)", boxShadow: "none" }}>clear</button>}
-        {!done && <button onClick={check} style={navBtnStyle}>check ›</button>}
-        {result === "wrong" && !revealed && <button onClick={retry} style={navBtnStyle}>try again</button>}
-        {result === "wrong" && !revealed && <button onClick={showAnswer} style={{ ...navBtnStyle, background: "transparent", color: "var(--ink-soft)", border: "1px solid var(--line)", boxShadow: "none" }}>show answer</button>}
-        {done && <button onClick={nextSentence} style={navBtnStyle}>next ›</button>}
+      <div style={{ textAlign: "center", maxWidth: "min(480px, 92vw)" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "20px", fontWeight: 600, color: "var(--ink)", marginBottom: "6px" }}>{pat.name}</div>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "14px", color: "var(--ink-soft)", lineHeight: 1.6 }}>{pat.rule}</div>
       </div>
 
-      {!SpeechRec && (
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.06em", color: "var(--ink-faint)", textAlign: "center", maxWidth: "min(420px, 90vw)", lineHeight: 1.6 }}>
-          voice input needs Chrome (desktop or Android) on an https page — not available in this browser
+      <div style={{ width: "100%", padding: "14px 12px", borderRadius: "12px", background: "var(--paper-raised)", border: "1px dashed var(--line)" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "8px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--ink-faint)", textAlign: "center", marginBottom: "10px" }}>the shape</div>
+        <ChunkRow chunks={pat.skeleton} />
+      </div>
+
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "8px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
+        {pat.examples.length} real sentences — same shape every time
+      </div>
+
+      {pat.examples.map((ex, i) => (
+        <div key={pat.key + i} style={{
+          width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "9px", paddingBottom: "16px",
+          borderBottom: i < pat.examples.length - 1 ? "1px solid var(--line)" : "none",
+        }}>
+          <ChunkRow chunks={ex.c} big />
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <button onClick={() => say(ex.c)} aria-label="hear it" style={{
+              flexShrink: 0, width: 28, height: 28, display: "inline-flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "999px", border: "1px solid var(--line)", background: "var(--paper-raised)", color: "var(--accent)",
+              fontSize: "13px", cursor: "pointer", boxShadow: "var(--shadow-soft)",
+            }}>🔊</button>
+            <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "13px", color: "var(--ink-soft)", textAlign: "center" }}>{ex.en}</span>
+          </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }
@@ -2652,7 +2635,7 @@ function SentenceBuilder({ pool, onComplete }) {
 const TABS = [
   { id: "study", label: "Study" },
   { id: "write", label: "Write" },
-  { id: "build", label: "Satzbau" },
+  { id: "build", label: "Muster" },
   { id: "flash", label: "Cards" },
   { id: "quiz", label: "Quiz" },
   { id: "articles", label: "Articles" },
@@ -2816,7 +2799,6 @@ function App() {
 
   // Vocabulary is fetched at startup from VOCAB_DATA_URL rather than bundled here.
   const [allData, setAllData] = useState(null); // null while loading
-  const [sentenceBank, setSentenceBank] = useState([]); // Satzbau tab
   const [dataError, setDataError] = useState(null);
   const [loadAttempt, setLoadAttempt] = useState(0);
 
@@ -2850,7 +2832,6 @@ function App() {
         const items = buildDataFromJson(json);
         if (!items.length) throw new Error("Vocab data loaded but contained no entries");
         setAllData(items);
-        setSentenceBank(Array.isArray(json && json.sentence_bank) ? json.sentence_bank : []);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -2864,10 +2845,6 @@ function App() {
 
   const levelData = useMemo(() => (allData ? allData.filter((d) => levels.includes(d.lvl)) : []), [allData, levels]);
   const pool = useMemo(() => levelData.filter((d) => activeCats.includes(d.cat)), [levelData, activeCats]);
-  const buildPool = useMemo(
-    () => sentenceBank.filter((s) => levels.includes(s.level || "A2")),
-    [sentenceBank, levels]
-  );
   const mistakeCount = Object.keys(mistakes).length;
 
   const idMap = useMemo(() => {
@@ -3212,7 +3189,7 @@ function App() {
         <div style={{ marginTop: "6px", animation: "cardIn .35s ease both" }} key={mode}>
           {mode === "study" && <StudyMode pool={pool} srs={srs} daily={daily} focus={focus} direction={direction} onGrade={bumpSrs} geminiKey={geminiKey} />}
           {mode === "write" && <WriteMode pool={pool} srs={srs} daily={daily} focus={focus} onGrade={bumpSrs} geminiKey={geminiKey} />}
-          {mode === "build" && <SentenceBuilder pool={buildPool} onComplete={tickDaily} />}
+          {mode === "build" && <PatternStudy onSeen={tickDaily} />}
           {mode === "flash" && <Flashcards pool={pool} allData={allData} direction={direction} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
           {mode === "quiz" && <Quiz pool={pool} allTime={allTime} onAnswer={handleAnswer} onResult={recordResult} sessions={sessions} onSaveSession={handleSaveSession} onClearHistory={handleClearHistory} direction={direction} noRepeat={noRepeat} geminiKey={geminiKey} />}
           {mode === "articles" && <ArticleQuiz pool={pool} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
