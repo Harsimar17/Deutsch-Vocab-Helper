@@ -771,6 +771,36 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
     setFlipped(false);
   }, [direction]);
 
+  // Keyboard shortcut for the flashcard flow:
+  //   1st Enter → flip the card open (reveal the answer)
+  //   2nd Enter → advance to the next card (mirrors the "next ›" button)
+  // Ignored while typing in an input/textarea/select so it never fights the
+  // Gemini key field or any future text input. The advance branch mirrors
+  // next() exactly so noRepeat / done / wrap-around all behave the same as
+  // pressing the button.
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      const el = e.target;
+      if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+      if (done || pool.length === 0) return;
+      e.preventDefault();
+      if (!flipped) {
+        setFlipped(true);
+      } else {
+        setFlipped(false);
+        if (idx + 1 >= order.length) {
+          if (noRepeat) setDone(true);
+          else setIdx(0);
+        } else {
+          setIdx((i) => i + 1);
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [flipped, done, idx, order.length, noRepeat, pool.length]);
+
   if (pool.length === 0) {
     return <p style={{ textAlign: "center", color: "#8a8372" }}>No cards match this filter — pick at least one category above.</p>;
   }
@@ -887,7 +917,7 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
               </div>
             </div>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#b0a888" }}>
-              tap to reveal
+              tap or ⏎ to reveal
             </div>
           </div>
           {/* back */}
@@ -930,7 +960,7 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
       <div style={{ display: "flex", gap: "10px" }}>
         <button onClick={prev} style={navBtnStyle}>‹ prev</button>
         <button onClick={reshuffle} style={navBtnStyle}>⟲ shuffle</button>
-        <button onClick={next} style={navBtnStyle}>next ›</button>
+        <button onClick={next} style={navBtnStyle}>next › <span style={{ opacity: 0.6 }}>⏎</span></button>
       </div>
 
       {flipped && onResult && (
@@ -1945,7 +1975,7 @@ function ClozeQuiz({ pool, noRepeat, onResult, geminiKey }) {
               fontWeight: 700,
             }}
           >
-            {picked ? q.hit.answer : " "}
+            {picked ? q.hit.answer : " "}
           </span>
           {q.hit.after}
         </div>
