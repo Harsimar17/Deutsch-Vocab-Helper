@@ -5846,6 +5846,12 @@
             "word": "Zweifel",
             "en": "doubt",
             "example": "Der Zweifel bleibt."
+          },
+          {
+            "de": "der Testwort",
+            "article": "der",
+            "word": "Testwort",
+            "en": "Test word"
           }
         ],
         "die": [
@@ -13707,7 +13713,7 @@
       "sep": 27
     },
     "A2": {
-      "der": 110,
+      "der": 111,
       "die": 202,
       "das": 62,
       "adj": 111,
