@@ -5852,6 +5852,12 @@
             "article": "der",
             "word": "Testwort",
             "en": "Test word"
+          },
+          {
+            "de": "der Ausdauer",
+            "article": "der",
+            "word": "Ausdauer",
+            "en": "perseverance / endurance"
           }
         ],
         "die": [
@@ -13713,7 +13719,7 @@
       "sep": 27
     },
     "A2": {
-      "der": 111,
+      "der": 112,
       "die": 202,
       "das": 62,
       "adj": 111,
