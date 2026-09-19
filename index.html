@@ -671,7 +671,13 @@ const miniBtn = {
   background: "var(--paper-raised)", color: "var(--ink-soft)", cursor: "pointer", flexShrink: 0,
 };
 
-function GeminiKeyField({ value, onChange }) {
+function GeminiKeyField({
+  value,
+  onChange,
+  label = "✨ Gemini API key",
+  placeholder = "paste Google AI Studio key (AIza…)",
+  help = "Kept only in this browser (localStorage) — never committed. Get a key at aistudio.google.com/apikey. Needed to generate the example sentence shown on each card & quiz answer (cached after the first time).",
+}) {
   const [draft, setDraft] = useState(value || "");
   const [show, setShow] = useState(false);
   React.useEffect(() => { setDraft(value || ""); }, [value]);
@@ -679,14 +685,14 @@ function GeminiKeyField({ value, onChange }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "7px" }}>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: value ? "#3F7A55" : "var(--ink-soft)" }}>
-        ✨ Gemini API key · {value ? "set" : "off"}
+        {label} · {value ? "set" : "off"}
       </div>
       <div style={{ display: "flex", gap: "6px", width: "min(430px, 92vw)" }}>
         <input
           type={show ? "text" : "password"}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="paste Google AI Studio key (AIza…)"
+          placeholder={placeholder}
           spellCheck={false}
           autoComplete="off"
           style={{
@@ -702,7 +708,7 @@ function GeminiKeyField({ value, onChange }) {
         )}
       </div>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-faint)", maxWidth: "min(430px, 92vw)", textAlign: "center", lineHeight: 1.6 }}>
-        Kept only in this browser (localStorage) — never committed. Get a key at aistudio.google.com/apikey. Needed to generate the example sentence shown on each card &amp; quiz answer (cached after the first time).
+        {help}
       </div>
     </div>
   );
@@ -2658,6 +2664,229 @@ function PatternStudy({ onSeen }) {
   );
 }
 
+// ---------- ADD A WORD (commits straight to german_vocab.json on GitHub) ----------
+// Uses the GitHub Contents API: read the file (+ its blob sha), insert the new
+// entry, PUT it back. That PUT *is* a commit on GH_BRANCH, so GitHub Pages
+// redeploys the JSON on its own. Needs a fine-grained personal access token
+// with "Contents: Read and write" on this one repo, kept in localStorage like
+// the Gemini key. The file is re-read on every add, so the commit always builds
+// on the latest version (a concurrent edit makes the PUT fail rather than
+// silently overwrite it).
+const GH_OWNER = "Harsimar17";
+const GH_REPO = "Deutsch-Vocab-Helper";
+const GH_BRANCH = "main";
+const GH_PATH = "german_vocab.json";
+const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+const GH_TOKEN_KEY = "a2vocab.ghToken.v1";
+
+// category → array name inside a level (nouns live under nouns.{der,die,das})
+const CAT_TO_KEY = { adj: "adjectives", verb: "verbs", sep: "separable_verbs", func: "function_words", phrase: "phrases" };
+
+function b64ToUtf8(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ""));
+  return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0)));
+}
+function utf8ToB64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
+}
+
+// Same field order the existing entries use, so the commit diff is just the new block.
+function buildVocabEntry({ cat, de, en, example, prefix }) {
+  if (NOUN_CATS.includes(cat)) {
+    const word = de.replace(/^(der|die|das)\s+/i, "").trim();
+    const e = { de: cat + " " + word, article: cat, word, en };
+    if (example) e.example = example;
+    return e;
+  }
+  const e = { de, en };
+  if (prefix) e.prefix = prefix;
+  if (example) e.example = example;
+  return e;
+}
+
+function vocabList(json, lvl, cat) {
+  const level = json.levels[lvl] || (json.levels[lvl] = {});
+  if (NOUN_CATS.includes(cat)) {
+    level.nouns = level.nouns || {};
+    return level.nouns[cat] || (level.nouns[cat] = []);
+  }
+  const key = CAT_TO_KEY[cat];
+  return level[key] || (level[key] = []);
+}
+
+async function ghFail(res) {
+  let msg = "";
+  try { msg = ((await res.json()).message) || ""; } catch (e) { /* non-JSON body */ }
+  if (res.status === 401) return new Error("GitHub rejected the token (401) — check it in settings ▸");
+  if (res.status === 403 || res.status === 404) {
+    return new Error(`GitHub ${res.status}: token can't read/write ${GH_OWNER}/${GH_REPO} — it needs “Contents: Read and write”` + (msg ? ` (${msg})` : ""));
+  }
+  if (res.status === 409 || res.status === 422) return new Error("german_vocab.json changed on GitHub while saving — press add again");
+  return new Error(`GitHub HTTP ${res.status}` + (msg ? `: ${msg}` : ""));
+}
+
+// Returns { url } of the new commit. Throws Error with a user-readable message.
+async function commitVocabWord(token, lvl, cat, entry) {
+  const headers = {
+    Accept: "application/vnd.github+json",
+    Authorization: "Bearer " + token,
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+  const getRes = await fetch(GH_API + "?ref=" + encodeURIComponent(GH_BRANCH), { headers, cache: "no-store" });
+  if (!getRes.ok) throw await ghFail(getRes);
+  const file = await getRes.json();
+  if (!file.content) throw new Error("GitHub returned no file content (file too large for the Contents API?)");
+
+  const json = JSON.parse(b64ToUtf8(file.content));
+  const list = vocabList(json, lvl, cat);
+  if (list.some((x) => normDe(x.de) === normDe(entry.de))) {
+    throw new Error(`“${entry.de}” is already in ${lvl} on GitHub`);
+  }
+  list.push(entry);
+  json.counts = json.counts || {};
+  json.counts[lvl] = json.counts[lvl] || {};
+  json.counts[lvl][cat] = (json.counts[lvl][cat] || 0) + 1;
+
+  const label = (CATEGORY_META[cat] || {}).label || cat;
+  const putRes = await fetch(GH_API, {
+    method: "PUT",
+    headers: Object.assign({ "Content-Type": "application/json" }, headers),
+    body: JSON.stringify({
+      message: `Add word: ${entry.de} (${lvl} ${label})`,
+      content: utf8ToB64(JSON.stringify(json, null, 2) + "\n"),
+      sha: file.sha,
+      branch: GH_BRANCH,
+    }),
+  });
+  if (!putRes.ok) throw await ghFail(putRes);
+  const out = await putRes.json();
+  return { url: out && out.commit && out.commit.html_url };
+}
+
+const fieldLabel = {
+  display: "block", marginBottom: "6px", fontFamily: "var(--font-mono)", fontSize: "10px",
+  letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-soft)",
+};
+const fieldInput = {
+  width: "100%", boxSizing: "border-box", padding: "12px 14px", fontFamily: "var(--font-serif)", fontSize: "17px",
+  border: "1px solid var(--line)", borderRadius: "10px", background: "var(--paper-raised)", color: "var(--ink)", outline: "none",
+};
+
+function AddWord({ allData, levels, ghToken, onToken, onAdded }) {
+  const [lvl, setLvl] = useState(levels[0] || "A2");
+  const [cat, setCat] = useState("der");
+  const [de, setDe] = useState("");
+  const [en, setEn] = useState("");
+  const [example, setExample] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [state, setState] = useState({ status: "idle" });
+  const saving = state.status === "saving";
+  const isNoun = NOUN_CATS.includes(cat);
+
+  // Not a <form>: LevelToggle / FilterBar render untyped buttons that would submit it.
+  const submit = () => {
+    if (saving) return;
+    if (!ghToken) { setState({ status: "error", message: "Save your GitHub token below first — it's needed to commit." }); return; }
+    const entry = buildVocabEntry({
+      cat, de: de.trim(), en: en.trim(), example: example.trim(),
+      prefix: cat === "sep" ? prefix.trim().toLowerCase() : "",
+    });
+    if (!entry.de || entry.de === cat + " " || !entry.en) {
+      setState({ status: "error", message: "German and English are both required." });
+      return;
+    }
+    if (allData.some((d) => d.lvl === lvl && d.cat === cat && normDe(d.de) === normDe(entry.de))) {
+      setState({ status: "error", message: `“${entry.de}” is already in ${lvl}.` });
+      return;
+    }
+    setState({ status: "saving" });
+    commitVocabWord(ghToken, lvl, cat, entry)
+      .then((r) => {
+        onAdded({
+          de: entry.de, en: entry.en, cat, lvl,
+          example: entry.example || null, prefix: entry.prefix || null,
+        });
+        setDe(""); setEn(""); setExample(""); setPrefix("");
+        setState({ status: "done", word: entry.de, lvl, url: r.url });
+      })
+      .catch((err) => setState({ status: "error", message: (err && err.message) || String(err) }));
+  };
+
+  return (
+    <div
+      onKeyDown={(e) => { if (e.key === "Enter" && e.target.tagName === "INPUT" && !e.nativeEvent.isComposing) submit(); }}
+      style={{ ...srsCol, width: "min(440px, 92vw)", margin: "0 auto", gap: "16px", alignItems: "stretch" }}
+    >
+      <div style={{ textAlign: "center", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)", lineHeight: 1.7 }}>
+        adds the word to {GH_PATH} · one commit on {GH_BRANCH}
+      </div>
+
+      <LevelToggle levels={[lvl]} onToggle={setLvl} />
+      <FilterBar active={[cat]} onToggle={setCat} />
+
+      <label>
+        <span style={fieldLabel}>{isNoun ? "German noun (article added for you)" : "German"}</span>
+        <input value={de} onChange={(e) => setDe(e.target.value)} style={fieldInput} disabled={saving}
+          placeholder={isNoun ? "Abfall" : cat === "sep" ? "vorbereiten" : cat === "phrase" ? "Ich bin der Meinung, dass ..." : ""}
+          autoCapitalize="off" autoCorrect="off" spellCheck={false} />
+      </label>
+      <label>
+        <span style={fieldLabel}>English</span>
+        <input value={en} onChange={(e) => setEn(e.target.value)} style={fieldInput} disabled={saving}
+          autoCapitalize="off" spellCheck={false} />
+      </label>
+      {cat === "sep" && (
+        <label>
+          <span style={fieldLabel}>Prefix (optional — guessed if blank)</span>
+          <input value={prefix} onChange={(e) => setPrefix(e.target.value)} style={fieldInput} disabled={saving}
+            placeholder="vor" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
+        </label>
+      )}
+      <label>
+        <span style={fieldLabel}>Example sentence (optional{cat === "sep" || isNoun ? " — powers the fill-in quizzes" : ""})</span>
+        <input value={example} onChange={(e) => setExample(e.target.value)} style={fieldInput} disabled={saving}
+          placeholder={cat === "sep" ? "Ich bereite das Essen vor." : isNoun ? "Der Abfall kommt in den Müll." : ""} spellCheck={false} />
+      </label>
+
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+        <button type="button" onClick={submit} disabled={saving} style={{ ...navBtnStyle, opacity: saving ? 0.6 : 1, cursor: saving ? "default" : "pointer" }}>
+          {saving ? "committing …" : "add & commit ›"}
+        </button>
+
+        {!ghToken && (
+          <GeminiKeyField
+            value={ghToken}
+            onChange={onToken}
+            label="🔑 GitHub token (one-time)"
+            placeholder="fine-grained token (github_pat_…)"
+            help={`Needed once to commit to ${GH_PATH} in ${GH_OWNER}/${GH_REPO}. Create a fine-grained token at github.com/settings/personal-access-tokens limited to that repo with Contents: Read and write. Stored only in this browser.`}
+          />
+        )}
+        {state.status === "error" && (
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#A5354A", textAlign: "center", lineHeight: 1.5 }}>
+            {state.message}
+          </div>
+        )}
+        {state.status === "done" && (
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#3F7A55", textAlign: "center", lineHeight: 1.6 }}>
+            ✓ “{state.word}” committed to {GH_BRANCH}
+            {state.url && <React.Fragment> · <a href={state.url} target="_blank" rel="noreferrer" style={{ color: "#3F7A55" }}>view commit</a></React.Fragment>}
+            <div style={{ color: "var(--ink-faint)" }}>
+              live site picks it up after GitHub Pages redeploys (~1 min)
+              {!levels.includes(state.lvl) ? ` · ${state.lvl} isn't selected in settings, so it won't show in Study yet` : ""}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ---------- TAB BAR ----------
 // Horizontally scrollable on narrow screens (iOS momentum scroll, snap points),
 // and collapsible: the ‹ toggle retracts the whole strip to the left so only the
@@ -2672,6 +2901,7 @@ const TABS = [
   { id: "sep", label: "Trennbare Verben" },
   { id: "cloze", label: "Fill-in" },
   { id: "mistakes", label: "Review" },
+  { id: "add", label: "+ Add word" },
 ];
 
 function TabBar({ mode, setMode, mistakeCount }) {
@@ -2809,6 +3039,23 @@ function App() {
     }
   }, [geminiKey]);
 
+  // GitHub token for the "+ Add word" tab (commits to german_vocab.json). Browser-only.
+  const [ghToken, setGhToken] = useState(() => {
+    try {
+      return localStorage.getItem(GH_TOKEN_KEY) || "";
+    } catch (e) {
+      return "";
+    }
+  });
+  React.useEffect(() => {
+    try {
+      if (ghToken) localStorage.setItem(GH_TOKEN_KEY, ghToken);
+      else localStorage.removeItem(GH_TOKEN_KEY);
+    } catch (e) {
+      /* storage disabled — token just won't persist between reloads */
+    }
+  }, [ghToken]);
+
   // Spaced-repetition schedule: { [stableKey]: { box, due, reps, lapses, last } }.
   // Drives the Study and Write tabs; every mode's result feeds it via bumpSrs.
   const [srs, setSrs] = useState(() => srsLoad("a2vocab.srs.v1", {}));
@@ -2872,6 +3119,16 @@ function App() {
       cancelled = true;
     };
   }, [loadAttempt]);
+
+  // A word just committed from the Add tab: make it usable right away instead of
+  // waiting for GitHub Pages to redeploy the JSON. (After a reload the ids are
+  // rebuilt from the file in level/category order.)
+  const addWordLocally = useCallback((item) => {
+    setAllData((prev) => {
+      const id = (prev || []).reduce((m, d) => Math.max(m, d.id), -1) + 1;
+      return (prev || []).concat(Object.assign({}, item, { id }));
+    });
+  }, []);
 
   const levelData = useMemo(() => (allData ? allData.filter((d) => levels.includes(d.lvl)) : []), [allData, levels]);
   const pool = useMemo(() => levelData.filter((d) => activeCats.includes(d.cat)), [levelData, activeCats]);
@@ -3204,6 +3461,13 @@ function App() {
               </div>
             </div>
             <GeminiKeyField value={geminiKey} onChange={setGeminiKey} />
+            <GeminiKeyField
+              value={ghToken}
+              onChange={setGhToken}
+              label="🔑 GitHub token"
+              placeholder="fine-grained token (github_pat_…)"
+              help={`Kept only in this browser (localStorage). Used by “+ Add word” to commit to ${GH_PATH} in ${GH_OWNER}/${GH_REPO}. Create a fine-grained token at github.com/settings/personal-access-tokens limited to that one repo, with Contents: Read and write — nothing else.`}
+            />
           </div>
         )}
 
@@ -3225,6 +3489,7 @@ function App() {
           {mode === "articles" && <ArticleQuiz pool={pool} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
           {mode === "sep" && <SeparableVerbs pool={pool} onResult={recordResult} geminiKey={geminiKey} />}
           {mode === "cloze" && <ClozeQuiz pool={pool} noRepeat={noRepeat} onResult={recordResult} geminiKey={geminiKey} />}
+          {mode === "add" && <AddWord allData={allData} levels={levels} ghToken={ghToken} onToken={setGhToken} onAdded={addWordLocally} />}
           {mode === "mistakes" && <MistakesReview mistakes={mistakes} allData={allData} direction={direction} onResult={recordResult} onRemove={removeMistake} onClearAll={clearAllMistakes} geminiKey={geminiKey} />}
         </div>
       </div>
