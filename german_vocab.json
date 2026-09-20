@@ -7710,6 +7710,13 @@
             "word": "Ziel",
             "en": "goal, aim",
             "example": "Das Ziel ist klar."
+          },
+          {
+            "de": "das Verkehrsmittel",
+            "article": "das",
+            "word": "Verkehrsmittel",
+            "en": "means of transport",
+            "example": "Ich benutze ein Verkehrsmittel für den Weg zur Schule"
           }
         ]
       },
@@ -13721,7 +13728,7 @@
     "A2": {
       "der": 112,
       "die": 202,
-      "das": 62,
+      "das": 63,
       "adj": 111,
       "verb": 153,
       "func": 90,
