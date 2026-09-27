@@ -5858,6 +5858,12 @@
             "article": "der",
             "word": "Ausdauer",
             "en": "perseverance / endurance"
+          },
+          {
+            "de": "der Eisenbahnstrecke",
+            "article": "der",
+            "word": "Eisenbahnstrecke",
+            "en": "railway line"
           }
         ],
         "die": [
@@ -13726,7 +13732,7 @@
       "sep": 27
     },
     "A2": {
-      "der": 112,
+      "der": 113,
       "die": 202,
       "das": 63,
       "adj": 111,
