@@ -3067,7 +3067,7 @@ function WordTip({ tip }) {
   );
 }
 
-function StoryReader({ story, globalDict, showEn, onShowEn, isRead, onToggleRead, prev, next, onOpen, onBack }) {
+function StoryReader({ story, globalDict, showEn, onShowEn, isRead, onToggleRead, prev, next, onOpen, onBack, onTest }) {
   const [tip, setTip] = useState(null);
   const [glossOpen, setGlossOpen] = useState(false);
   const topRef = React.useRef(null);
@@ -3188,6 +3188,7 @@ function StoryReader({ story, globalDict, showEn, onShowEn, isRead, onToggleRead
           {isRead ? "✓ gelesen" : "als gelesen markieren"}
         </button>
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+          {onTest && <button onClick={onTest} style={{ ...navBtnStyle, background: "var(--good)", borderColor: "var(--good)" }}>🎯 Phasentest</button>}
           {prev && <button onClick={() => onOpen(prev.id)} style={navBtnStyle}>‹ Kapitel {prev.chapter}</button>}
           {next && <button onClick={() => onOpen(next.id)} style={navBtnStyle}>Kapitel {next.chapter} ›</button>}
         </div>
@@ -3198,7 +3199,548 @@ function StoryReader({ story, globalDict, showEn, onShowEn, isRead, onToggleRead
   );
 }
 
-function StoriesTab({ stories, allData }) {
+// ---------- PHASENTEST (end-of-phase vocab test) ----------
+// Built on the most robust findings in memory research:
+//  1. Retrieval, both ways: recognise it (DE→EN, 4 choices), then produce it
+//     (EN→DE, typed, article included) — production is what conversation needs.
+//  2. Successive relearning: a word only counts once it's right on the FIRST
+//     try in TWO SEPARATE rounds, per direction. A miss comes back a few items
+//     later in the same round until it's right (that retry earns no credit).
+//  3. Expanding refreshers after passing (1 → 7 → 30 → 90 → 180 days), weakest
+//     words first; a miss there sends the word back into practice.
+//  4. Every first attempt also feeds the spaced-repetition schedule (Study tab).
+// Progress lives in localStorage and the shared Firestore record.
+const PHASE_TEST_KEY = "a2vocab.phaseTests.v1";
+const PT_MASTER = 2;
+const PT_ROUND_WORDS = 12;
+const PT_REFRESH_WORDS = 20;
+const PT_REFRESH_DAYS = [1, 7, 30, 90, 180];
+const PT_TYPE_LABEL = {
+  noun: "Nomen · mit Artikel", verbs: "Verb", adjectives: "Adjektiv", separable_verbs: "trennbares Verb",
+  function_words: "Konnektor", phrases: "Redemittel",
+};
+
+function phaseWords(phase, byId) {
+  const seen = new Set();
+  const out = [];
+  (phase.chapter_ids || []).forEach((id) => {
+    const s = byId[id];
+    if (!s) return;
+    (s.glossary || []).forEach((g) => {
+      if (!g.de || seen.has(g.de)) return;
+      seen.add(g.de);
+      out.push({ de: g.de, en: g.en, cat: glossCat(g), type: g.type, example: g.example || null, lvl: "B1", chapter: s.chapter });
+    });
+  });
+  return out;
+}
+function ptMastered(ws) {
+  return !!ws && (ws.r || 0) >= PT_MASTER && (ws.p || 0) >= PT_MASTER;
+}
+function ptStatus(words, st) {
+  const ws = (st && st.words) || {};
+  const mastered = words.filter((w) => ptMastered(ws[w.de])).length;
+  const started = words.some((w) => ws[w.de]);
+  const now = Date.now();
+  const passed = !!(st && st.passed);
+  const dueNow = passed && st.due && st.due <= now;
+  let label;
+  let tone = "var(--ink-faint)";
+  if (passed && dueNow) { label = "⏰ Auffrischung fällig"; tone = "var(--accent)"; }
+  else if (passed && mastered < words.length) { label = "↻ " + (words.length - mastered) + " Wörter wieder üben"; tone = "var(--bad)"; }
+  else if (passed) { label = "✓ bestanden · nächste Auffrischung " + new Date(st.due).toLocaleDateString(undefined, { day: "numeric", month: "short" }); tone = "var(--good)"; }
+  else if (started) label = mastered + " / " + words.length + " gemeistert";
+  else label = words.length + " Wörter · noch nicht begonnen";
+  return { mastered, total: words.length, passed, dueNow, label, tone };
+}
+
+function ptBuildRound(words, st, refresh) {
+  const ws = (st && st.words) || {};
+  let pick;
+  if (refresh) {
+    // weakest first (most past misses), otherwise random
+    pick = shuffle(words)
+      .sort((a, b) => ((ws[b.de] || {}).miss || 0) - ((ws[a.de] || {}).miss || 0))
+      .slice(0, PT_REFRESH_WORDS);
+  } else {
+    // Words already in progress come back first (that's the spacing), topped up with new ones.
+    const open = words.filter((w) => !ptMastered(ws[w.de]));
+    const started = shuffle(open.filter((w) => ws[w.de]));
+    const fresh = open.filter((w) => !ws[w.de]);
+    pick = started.slice(0, 8);
+    pick = pick.concat(fresh.slice(0, PT_ROUND_WORDS - pick.length));
+    if (pick.length < PT_ROUND_WORDS) pick = pick.concat(started.slice(8, 8 + PT_ROUND_WORDS - pick.length));
+  }
+  // All recognition items first, then production — each word is seen DE→EN
+  // before it has to be produced EN→DE, with the rest of the round in between.
+  const rec = [];
+  const prod = [];
+  pick.forEach((w) => {
+    const s = ws[w.de] || {};
+    if (refresh || (s.r || 0) < PT_MASTER) rec.push({ w, dir: "de-en" });
+    if (refresh || (s.p || 0) < PT_MASTER) prod.push({ w, dir: "en-de" });
+  });
+  return shuffle(rec).concat(shuffle(prod)).map((it, i) => Object.assign(it, { id: i + 1 }));
+}
+
+function ptOptions(word, words) {
+  const isNoun = NOUN_CATS.includes(word.cat);
+  const others = words.filter((w) => w.de !== word.de && w.en !== word.en);
+  const same = others.filter((w) => NOUN_CATS.includes(w.cat) === isNoun && (isNoun || w.type === word.type));
+  const src = same.length >= 3 ? same : others;
+  return shuffle([word].concat(shuffle(src).slice(0, 3)));
+}
+
+// Lenient production check: case, punctuation, ae/oe/ue/ss and a leading
+// "sich" / optional "(…)" are forgiven; a wrong or missing article is not.
+function ptNorm(s) {
+  return foldUmlaut(String(s || "").toLowerCase()).replace(/[.,!?;:…"„“”'()]/g, " ").replace(/\s+/g, " ").trim();
+}
+// Accepted spellings: each " / " alternative, with "(…)" dropped, and with it
+// spelled out — "beschränken(sich)" → "beschränken", "sich beschränken".
+function ptForms(word) {
+  const out = [];
+  String(word.de || "").replace(/\s*\((?:Pl\.|WG)\)/g, "").split(/\s+\/\s+/).forEach((f) => {
+    const plain = f.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+    out.push(plain);
+    const m = f.match(/\(([^)]*)\)/);
+    if (m) {
+      out.push(f.replace(/\s*\(([^)]*)\)/g, " $1").trim());
+      if (/^sich\b/.test(m[1])) out.push(m[1] + " " + plain);
+    }
+  });
+  return out.filter(Boolean);
+}
+function ptCheck(word, input) {
+  const given = ptNorm(input);
+  if (!given) return { verdict: "empty" };
+  const typedUmlaut = /[äöüß]/i.test(input || "");
+  for (const f of ptForms(word)) {
+    const nf = ptNorm(f);
+    if (given === nf || given === nf.replace(/^sich /, "")) {
+      return /[äöüß]/.test(f) && !typedUmlaut ? { verdict: "correct", spelled: f } : { verdict: "correct" };
+    }
+  }
+  const r = checkDe(word, input);
+  return r.verdict === "close" ? r : { verdict: "wrong" };
+}
+function ptBare(word) {
+  const f = acceptedDe(word)[0] || word.de;
+  return f.replace(/^(der|die|das)\s+/i, "").replace(/^sich\s+/i, "");
+}
+// Example sentence with the target word blanked out — a retrieval cue, not the answer.
+function ptCloze(word) {
+  if (!word.example || word.type === "phrases") return null;
+  const bare = ptBare(word).split(/\s+/)[0].toLowerCase();
+  if (bare.length < 3) return null;
+  const stem = bare.slice(0, Math.max(3, Math.min(5, bare.length - 2)));
+  let hit = false;
+  const out = word.example.replace(/[A-Za-zÄÖÜäöüß]+/g, (tok) => {
+    if (tok.toLowerCase().startsWith(stem)) { hit = true; return "_".repeat(Math.min(tok.length, 10)); }
+    return tok;
+  });
+  return hit ? out : null;
+}
+
+const ptLabel = { fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)" };
+
+function PtExample({ word }) {
+  if (!word.example) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "min(440px, 100%)", padding: "10px 14px", background: "var(--paper-raised)", border: "1px solid var(--line)", borderRadius: "12px", boxShadow: "var(--shadow-soft)" }}>
+      <SpeakButton text={word.example} size={30} />
+      <div style={{ fontFamily: "var(--font-serif)", fontSize: "15px", color: "var(--ink)", lineHeight: 1.45 }}>{word.example}</div>
+    </div>
+  );
+}
+
+function PhaseTest({ phase, words, st, update, onGrade, onBack }) {
+  const [round, setRound] = useState(null); // { refresh, queue }
+  const [pos, setPos] = useState(0);
+  const [answer, setAnswer] = useState(null); // { correct, pick?, res?, hinted }
+  const [val, setVal] = useState("");
+  const [hint, setHint] = useState(false);
+  const [undo, setUndo] = useState(null);
+  const [stats, setStats] = useState({ first: 0, right: 0 });
+  const [finished, setFinished] = useState(null);
+  const [howOpen, setHowOpen] = useState(false);
+  const inputRef = React.useRef(null);
+  const nextRef = React.useRef(null);
+  const seq = React.useRef(1000);
+
+  const status = ptStatus(words, st);
+  const ws = (st && st.words) || {};
+  const item = round && round.queue[pos];
+  const options = useMemo(() => (item && item.dir === "de-en" ? ptOptions(item.w, words) : []), [item, words]);
+  // Other words in this phase with the same English (Brauch / Sitte = "custom").
+  const synonyms = useMemo(
+    () => (item ? words.filter((o) => o.de !== item.w.de && o.en.toLowerCase() === item.w.en.toLowerCase()) : []),
+    [item, words]
+  );
+
+  const start = (refresh) => {
+    setRound({ refresh, queue: ptBuildRound(words, st, refresh) });
+    setPos(0); setAnswer(null); setVal(""); setHint(false); setUndo(null);
+    setStats({ first: 0, right: 0 }); setFinished(null);
+  };
+
+  const record = (correct, hinted) => {
+    const it = item;
+    if (it.relearn) {
+      if (!correct) requeue(it);
+      return;
+    }
+    const key = it.w.de;
+    const f = it.dir === "de-en" ? "r" : "p";
+    const prev = ws[key];
+    const cur = Object.assign({ r: 0, p: 0, miss: 0 }, prev);
+    if (correct && !hinted) cur[f] = Math.min(PT_MASTER, (cur[f] || 0) + 1);
+    else if (!correct) { cur[f] = 0; cur.miss = (cur.miss || 0) + 1; }
+    update((s) => Object.assign({}, s, { words: Object.assign({}, s.words, { [key]: cur }) }));
+    setStats((x) => ({ first: x.first + 1, right: x.right + (correct && !hinted ? 1 : 0) }));
+    const card = { lvl: "B1", cat: it.w.cat, de: it.w.de };
+    if (!correct) onGrade(card, "again");
+    else if (it.dir === "en-de" && !hinted) onGrade(card, "good");
+    setUndo(!correct ? { key, prev, f, relearnId: requeue(it) } : null);
+  };
+  // Put a missed item back a few places later (relearning within the round).
+  const requeue = (it) => {
+    const id = ++seq.current;
+    setRound((r) => {
+      const q = r.queue.slice();
+      q.splice(Math.min(pos + 4, q.length), 0, Object.assign({}, it, { relearn: true, id }));
+      return Object.assign({}, r, { queue: q });
+    });
+    return id;
+  };
+  // "I was right" — for a typo or a genuine synonym the checker didn't know.
+  const overrule = () => {
+    if (!undo) return;
+    const cur = Object.assign({ r: 0, p: 0, miss: 0 }, undo.prev);
+    cur[undo.f] = Math.min(PT_MASTER, (cur[undo.f] || 0) + 1);
+    update((s) => Object.assign({}, s, { words: Object.assign({}, s.words, { [undo.key]: cur }) }));
+    setRound((r) => Object.assign({}, r, { queue: r.queue.filter((q) => q.id !== undo.relearnId) }));
+    setStats((x) => ({ first: x.first, right: x.right + 1 }));
+    onGrade({ lvl: "B1", cat: item.w.cat, de: item.w.de }, "good");
+    setAnswer((a) => Object.assign({}, a, { correct: true, overruled: true }));
+    setUndo(null);
+  };
+
+  const choose = (opt) => {
+    if (answer) return;
+    const correct = opt.de === item.w.de;
+    setAnswer({ correct, pick: opt.de });
+    record(correct, false);
+  };
+  const check = () => {
+    if (answer || !item || item.dir !== "en-de") return;
+    let res = ptCheck(item.w, val);
+    if (res.verdict === "empty") return;
+    // A same-meaning word from this phase is a right translation: no penalty,
+    // but no credit for the word being asked for either.
+    const syn = res.verdict !== "correct" && synonyms.find((o) => ptCheck(o, val).verdict === "correct");
+    if (syn) res = { verdict: "synonym", other: syn.de };
+    const correct = res.verdict === "correct" || res.verdict === "synonym";
+    const hinted = hint || res.verdict === "synonym";
+    setAnswer({ correct, res, hinted });
+    record(correct, hinted);
+  };
+  const finishRound = () => {
+    const now = Date.now();
+    let passedNow = false;
+    if (round.refresh) {
+      update((s) => {
+        const stage = Math.min((s.stage || 0) + 1, PT_REFRESH_DAYS.length - 1);
+        return Object.assign({}, s, { stage, due: now + PT_REFRESH_DAYS[stage] * SRS_DAY_MS });
+      });
+    } else if (!(st && st.passed) && words.every((w) => ptMastered(ws[w.de]))) {
+      passedNow = true;
+      update((s) => Object.assign({}, s, { passed: now, stage: 0, due: now + PT_REFRESH_DAYS[0] * SRS_DAY_MS }));
+    }
+    setFinished({ passedNow, refresh: round.refresh });
+  };
+  const advance = () => {
+    if (!answer) return;
+    setAnswer(null); setVal(""); setHint(false); setUndo(null);
+    if (pos + 1 >= round.queue.length) finishRound();
+    else setPos((p) => p + 1);
+  };
+
+  // Focus: the text box while answering, the "weiter" button after — so Enter
+  // (and Space) always do the obvious next thing.
+  React.useEffect(() => {
+    if (!item || finished) return;
+    if (answer && nextRef.current) nextRef.current.focus();
+    else if (!answer && item.dir === "en-de" && inputRef.current) inputRef.current.focus();
+  }, [answer, item, finished]);
+
+  React.useEffect(() => {
+    if (!item || finished) return;
+    const onKey = (e) => {
+      if (e.isComposing) return;
+      const el = e.target;
+      if (el && el !== inputRef.current && /^(BUTTON|INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (answer) advance(); else if (item.dir === "en-de") check();
+      } else if (!answer && item.dir === "de-en" && /^[1-4]$/.test(e.key) && options[+e.key - 1]) {
+        choose(options[+e.key - 1]);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item, answer, val, hint, options, finished]);
+
+  const head = (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+      <button onClick={round && !finished ? () => { if (window.confirm("Runde abbrechen? Bisherige Antworten bleiben gespeichert.")) setRound(null); } : onBack} style={miniBtn}>
+        {round && !finished ? "× Runde abbrechen" : "‹ alle Geschichten"}
+      </button>
+      <span style={{ ...ptLabel, fontSize: "9px", textAlign: "right" }}>🎯 Phasentest · {phase.name}</span>
+    </div>
+  );
+  const bar = (
+    <div style={{ width: "100%", height: "4px", background: "var(--line)", borderRadius: "999px", overflow: "hidden" }}>
+      <div style={{ width: (status.total ? Math.round((status.mastered / status.total) * 100) : 0) + "%", height: "100%", background: "var(--good)", transition: "width .3s ease" }} />
+    </div>
+  );
+  const wrap = (children) => (
+    <div style={{ ...srsCol, width: "100%", maxWidth: "560px", margin: "0 auto", alignItems: "stretch", gap: "18px" }}>{children}</div>
+  );
+
+  // ---- intro / overview ----
+  if (!round) {
+    const recDone = words.filter((w) => (ws[w.de] || {}).r >= PT_MASTER).length;
+    const prodDone = words.filter((w) => (ws[w.de] || {}).p >= PT_MASTER).length;
+    const open = status.total - status.mastered;
+    const missed = words.filter((w) => (ws[w.de] || {}).miss).sort((a, b) => ws[b.de].miss - ws[a.de].miss).slice(0, 8);
+    return wrap(
+      <React.Fragment>
+        {head}
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "26px", color: "var(--ink)" }}>Phasentest</div>
+          <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "14px", color: "var(--ink-soft)", marginTop: "4px" }}>
+            {phase.name} · {status.total} Wörter aus {(phase.chapter_ids || []).length} Kapiteln
+          </div>
+        </div>
+        {bar}
+        <div style={{ display: "flex", justifyContent: "space-around", gap: "10px", flexWrap: "wrap", textAlign: "center" }}>
+          {[["gemeistert", status.mastered], ["DE → EN sicher", recDone], ["EN → DE sicher", prodDone]].map(([l, n]) => (
+            <div key={l}>
+              <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "22px", color: "var(--ink)" }}>{n}<span style={{ fontSize: "13px", color: "var(--ink-faint)" }}> / {status.total}</span></div>
+              <div style={ptLabel}>{l}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: "center", fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.06em", color: status.tone }}>{status.label}</div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          {status.dueNow && (
+            <button onClick={() => start(true)} style={navBtnStyle}>⏰ Auffrischung starten · {Math.min(PT_REFRESH_WORDS, status.total)} Wörter</button>
+          )}
+          {open > 0 && (
+            <button onClick={() => start(false)} style={status.dueNow ? { ...navBtnStyle, background: "transparent", color: "var(--ink)", boxShadow: "none" } : navBtnStyle}>
+              {status.mastered || words.some((w) => ws[w.de]) ? "▶ nächste Runde" : "▶ Test starten"} · {Math.min(PT_ROUND_WORDS, open)} Wörter
+            </button>
+          )}
+          {open === 0 && !status.dueNow && (
+            <div style={{ ...srsNote, fontSize: "14px" }}>Alle Wörter sitzen. Die nächste Auffrischung erscheint hier, wenn sie fällig ist — genau dann, wenn du sonst anfangen würdest zu vergessen.</div>
+          )}
+        </div>
+        {missed.length > 0 && (
+          <div>
+            <div style={{ ...ptLabel, marginBottom: "8px" }}>am häufigsten verfehlt</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              {missed.map((w) => (
+                <span key={w.de} style={{ fontFamily: "var(--font-serif)", fontSize: "14px", padding: "4px 10px", borderRadius: "999px", border: "1px solid var(--line)", background: "var(--paper-raised)", color: "var(--ink)" }}>
+                  {w.de} <span style={{ color: "var(--bad)", fontFamily: "var(--font-mono)", fontSize: "10px" }}>×{ws[w.de].miss}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "12px" }}>
+          <button onClick={() => setHowOpen((o) => !o)} style={{ ...ptLabel, fontSize: "11px", background: "transparent", border: "none", padding: 0, cursor: "pointer", color: "var(--ink-soft)" }}>
+            {howOpen ? "▾" : "▸"} so funktioniert's
+          </button>
+          {howOpen && (
+            <ol style={{ fontFamily: "var(--font-serif)", fontSize: "14px", color: "var(--ink-soft)", lineHeight: 1.6, paddingLeft: "20px", margin: "10px 0 0" }}>
+              <li><strong>Erkennen</strong> (DE → EN): wähle die Bedeutung aus vier. Tasten 1–4.</li>
+              <li><strong>Produzieren</strong> (EN → DE): tippe das deutsche Wort selbst — bei Nomen mit Artikel. Das ist der Teil, der im Gespräch zählt.</li>
+              <li>Ein Wort sitzt erst, wenn du es in <strong>zwei verschiedenen Runden</strong> beim ersten Versuch richtig hast — in beide Richtungen.</li>
+              <li>Fehler kommen in derselben Runde ein paar Fragen später wieder, bis sie sitzen.</li>
+              <li>Nach dem Bestehen: <strong>Auffrischungen nach 1, 7, 30, 90 und 180 Tagen</strong> — schwächste Wörter zuerst. Wer dort patzt, übt das Wort erneut.</li>
+              <li>Jede Antwort fließt auch in deinen Lernplan (Study-Tab, Stufe B1).</li>
+            </ol>
+          )}
+          {words.some((w) => ws[w.de]) && (
+            <button
+              onClick={() => { if (window.confirm("Fortschritt dieses Phasentests zurücksetzen? Das kann nicht rückgängig gemacht werden.")) update(() => ({ words: {} })); }}
+              style={{ ...ptLabel, fontSize: "9px", display: "block", marginTop: "14px", background: "transparent", border: "1px solid var(--bad)", color: "var(--bad)", borderRadius: "10px", padding: "3px 9px", cursor: "pointer" }}
+            >
+              Fortschritt zurücksetzen
+            </button>
+          )}
+        </div>
+      </React.Fragment>
+    );
+  }
+
+  // ---- round summary ----
+  if (finished) {
+    const pct = stats.first ? Math.round((stats.right / stats.first) * 100) : 0;
+    return wrap(
+      <React.Fragment>
+        {head}
+        <div style={{ textAlign: "center", padding: "20px 0 6px" }}>
+          <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "24px", color: "var(--ink)" }}>
+            {finished.passedNow ? "Phase bestanden 🎉" : finished.refresh ? "Auffrischung fertig" : "Runde fertig"}
+          </div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.08em", color: "var(--ink-soft)", marginTop: "10px" }}>
+            {stats.right} / {stats.first} beim ersten Versuch richtig ({pct}%)
+          </div>
+        </div>
+        {bar}
+        <div style={{ textAlign: "center", fontFamily: "var(--font-mono)", fontSize: "11px", color: status.tone }}>{status.label}</div>
+        {finished.passedNow && (
+          <p style={{ ...srsNote, fontSize: "14px" }}>Jedes Wort sitzt in beide Richtungen. Die erste Auffrischung ist morgen fällig — danach nach 7, 30, 90 und 180 Tagen.</p>
+        )}
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+          {status.total - status.mastered > 0 && <button onClick={() => start(false)} style={navBtnStyle}>▶ nächste Runde</button>}
+          <button onClick={() => setRound(null)} style={{ ...navBtnStyle, background: "transparent", color: "var(--ink)", boxShadow: "none" }}>Übersicht</button>
+        </div>
+      </React.Fragment>
+    );
+  }
+
+  // ---- a question ----
+  const w = item.w;
+  const deEn = item.dir === "de-en";
+  const cloze = !deEn && hint ? ptCloze(w) : null;
+  const tone = answer ? (answer.correct ? "var(--good)" : answer.res && answer.res.verdict === "close" ? "var(--accent)" : "var(--bad)") : "var(--line)";
+  const deColor = (CATEGORY_META[w.cat] || {}).color || "var(--ink)";
+  return wrap(
+    <React.Fragment>
+      {head}
+      {bar}
+      <div style={{ display: "flex", justifyContent: "space-between", ...ptLabel }}>
+        <span>{deEn ? "DE → EN · erkennen" : "EN → DE · selbst schreiben"}{item.relearn ? " · nochmal" : ""}</span>
+        <span>{pos + 1} / {round.queue.length}{round.refresh ? " · Auffrischung" : ""}</span>
+      </div>
+
+      <div style={{ textAlign: "center", padding: "10px 0 4px" }}>
+        <div style={{ marginBottom: "12px" }}>
+          {deEn ? <CatChip cat={w.cat} /> : (
+            <span style={{ ...ptLabel, fontSize: "9px", fontWeight: 600, color: "var(--ink-soft)", border: "1px solid var(--line)", borderRadius: "999px", padding: "3px 10px" }}>
+              {PT_TYPE_LABEL[w.type] || w.type}
+            </span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          {deEn && <SpeakButton text={w.de} />}
+          <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: (deEn ? w.de : w.en).length > 26 ? "22px" : "30px", color: "var(--ink)", lineHeight: 1.25 }}>
+            {deEn ? w.de : w.en}
+          </div>
+        </div>
+        {!deEn && synonyms.length > 0 && (
+          <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "13px", color: "var(--ink-soft)", marginTop: "8px" }}>
+            {synonyms.length + 1} Wörter dieser Phase bedeuten das — gesucht: „{ptBare(w).slice(0, 2)}…“
+          </div>
+        )}
+      </div>
+
+      {deEn ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {options.map((o, i) => {
+            let bg = "var(--paper-raised)", border = "var(--line-card)", color = "var(--ink)", shadow = "var(--shadow-soft)";
+            if (answer) {
+              if (o.de === w.de) { bg = "linear-gradient(180deg,var(--good-hi),var(--good))"; border = "var(--good)"; color = "#FCF8EE"; }
+              else if (o.de === answer.pick) { bg = "linear-gradient(180deg,var(--bad-hi),var(--bad))"; border = "var(--bad)"; color = "#FCF8EE"; }
+              else { bg = "transparent"; color = "var(--ink-faint)"; shadow = "none"; }
+            }
+            return (
+              <button key={o.de} onClick={() => choose(o)} style={{ display: "flex", gap: "12px", alignItems: "baseline", textAlign: "left", fontFamily: "var(--font-serif)", fontSize: o.en.length > 30 ? "14px" : "17px", padding: "13px 16px", borderRadius: "12px", border: "1px solid " + border, background: bg, color, boxShadow: shadow, cursor: answer ? "default" : "pointer" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", opacity: 0.6 }}>{i + 1}</span>
+                {o.en}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <input
+            ref={inputRef}
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            readOnly={!!answer}
+            placeholder={NOUN_CATS.includes(w.cat) ? "der / die / das …" : "auf Deutsch …"}
+            autoCapitalize="off" autoCorrect="off" autoComplete="off" spellCheck={false}
+            style={{ width: "100%", maxWidth: "440px", boxSizing: "border-box", padding: "14px 16px", textAlign: "center", fontFamily: "var(--font-serif)", fontSize: "20px", border: "1px solid " + tone, borderRadius: "12px", background: "var(--paper-raised)", color: "var(--ink)", outline: "none" }}
+          />
+          {!answer && (
+            <React.Fragment>
+              <div style={{ display: "flex", gap: "6px" }}>
+                {["ä", "ö", "ü", "ß"].map((ch) => (
+                  <button key={ch} type="button" onMouseDown={(e) => { e.preventDefault(); setVal((v) => v + ch); if (inputRef.current) inputRef.current.focus(); }}
+                    style={{ fontFamily: "var(--font-serif)", fontSize: "17px", fontWeight: 600, width: "40px", height: "40px", borderRadius: "9px", border: "1px solid var(--line)", background: "var(--paper-raised)", color: "var(--ink)", cursor: "pointer" }}>
+                    {ch}
+                  </button>
+                ))}
+              </div>
+              {hint ? (
+                <div style={{ textAlign: "center", fontFamily: "var(--font-serif)", fontSize: "15px", color: "var(--ink-soft)", lineHeight: 1.5, maxWidth: "440px" }}>
+                  beginnt mit „<strong style={{ color: "var(--ink)" }}>{ptBare(w).slice(0, 2)}…</strong>“
+                  {cloze && <div style={{ fontStyle: "italic", marginTop: "4px" }}>{cloze}</div>}
+                  <div style={{ ...ptLabel, fontSize: "8px", marginTop: "4px" }}>mit Hinweis zählt es nicht für „gemeistert“</div>
+                </div>
+              ) : (
+                <button onClick={() => { setHint(true); if (inputRef.current) inputRef.current.focus(); }} style={{ ...ptLabel, background: "transparent", border: "1px solid var(--line)", borderRadius: "999px", padding: "5px 12px", cursor: "pointer", color: "var(--ink-soft)" }}>
+                  💡 Hinweis
+                </button>
+              )}
+              <button onClick={check} style={navBtnStyle}>prüfen › <span style={{ opacity: 0.6 }}>⏎</span></button>
+            </React.Fragment>
+          )}
+        </div>
+      )}
+
+      {answer && (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.08em", color: tone }}>
+            {answer.correct ? (answer.overruled ? "✓ ALS RICHTIG GEWERTET" : answer.res && answer.res.verdict === "synonym" ? "✓ AUCH RICHTIG (" + answer.res.other + ") — gesucht war:" : answer.hinted ? "✓ RICHTIG (mit Hinweis)" : "✓ RICHTIG") : answer.res && answer.res.verdict === "close" ? "≈ FAST" : "✗ NOCH NICHT — kommt gleich nochmal"}
+          </div>
+          {!deEn && (
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <SpeakButton text={w.de} />
+              <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "22px", color: deColor, textAlign: "center" }}>{w.de}</div>
+            </div>
+          )}
+          {answer.res && answer.res.spelled && answer.correct && (
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: "14px", color: "var(--ink-soft)" }}>mit Umlaut: <strong style={{ color: "var(--ink)" }}>{answer.res.spelled}</strong></div>
+          )}
+          {answer.res && answer.res.hint && (
+            <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "14px", color: "var(--ink-soft)" }}>{answer.res.hint}</div>
+          )}
+          {deEn && !answer.correct && (
+            <div style={{ fontFamily: "var(--font-serif)", fontSize: "15px", color: "var(--ink-soft)" }}>{w.de} = <strong style={{ color: "var(--ink)" }}>{w.en}</strong></div>
+          )}
+          <PtExample word={w} />
+          <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+            {undo && !deEn && !item.relearn && (
+              <button onClick={overrule} style={{ ...ptLabel, background: "transparent", border: "1px solid var(--line)", borderRadius: "999px", padding: "6px 12px", cursor: "pointer", color: "var(--ink-soft)" }}>
+                ich hatte recht (Tippfehler)
+              </button>
+            )}
+            <button ref={nextRef} onClick={advance} style={navBtnStyle}>weiter › <span style={{ opacity: 0.6 }}>⏎</span></button>
+          </div>
+          <div style={{ ...ptLabel, fontSize: "8px" }}>aus Kapitel {w.chapter}</div>
+        </div>
+      )}
+    </React.Fragment>
+  );
+}
+
+function StoriesTab({ stories, allData, phaseTests, onPhaseTest, onGrade }) {
   const [prefs, setPrefs] = useState(() => srsLoad(STORY_PREFS_KEY, { open: null, showEn: false }));
   const [read, setRead] = useState(() => srsLoad(STORY_READ_KEY, {}));
   React.useEffect(() => { srsSave(STORY_PREFS_KEY, prefs); }, [prefs]);
@@ -3229,6 +3771,13 @@ function StoriesTab({ stories, allData }) {
     return d;
   }, [items, allData]);
 
+  // Test vocabulary per phase: every story glossary in that phase, de-duplicated.
+  const phaseWordMap = useMemo(() => {
+    const m = {};
+    groups.forEach((g) => { if (g.phase.index != null) m[g.phase.index] = phaseWords(g.phase, byId); });
+    return m;
+  }, [groups, byId]);
+
   if (!items.length) {
     return (
       <p style={srsNote}>
@@ -3239,6 +3788,23 @@ function StoriesTab({ stories, allData }) {
 
   const open = prefs.open != null ? byId[prefs.open] : null;
   const setOpen = (id) => setPrefs((p) => Object.assign({}, p, { open: id }));
+  const setTest = (idx) => setPrefs((p) => Object.assign({}, p, { test: idx }));
+  const phases = (stories && stories.phases) || [];
+
+  const testPhase = prefs.test != null ? phases.find((p) => p.index === prefs.test) : null;
+  if (testPhase && (phaseWordMap[testPhase.index] || []).length) {
+    return (
+      <PhaseTest
+        key={testPhase.index}
+        phase={testPhase}
+        words={phaseWordMap[testPhase.index]}
+        st={(phaseTests || {})[testPhase.index] || { words: {} }}
+        update={(fn) => onPhaseTest(testPhase.index, fn)}
+        onGrade={onGrade}
+        onBack={() => setTest(null)}
+      />
+    );
+  }
 
   if (open) {
     const i = flat.findIndex((s) => s.id === open.id);
@@ -3258,6 +3824,12 @@ function StoriesTab({ stories, allData }) {
         next={i >= 0 && i < flat.length - 1 ? flat[i + 1] : null}
         onOpen={setOpen}
         onBack={() => setOpen(null)}
+        onTest={(() => {
+          // After the last chapter of a phase, offer that phase's test.
+          const ph = phases.find((p) => p.index === open.phase);
+          const ids = (ph && ph.chapter_ids) || [];
+          return ph && ids[ids.length - 1] === open.id ? () => setTest(ph.index) : null;
+        })()}
       />
     );
   }
@@ -3301,6 +3873,31 @@ function StoriesTab({ stories, allData }) {
               </span>
             </button>
           ))}
+          {g.phase.index != null && (phaseWordMap[g.phase.index] || []).length > 0 && (() => {
+            const pw = phaseWordMap[g.phase.index];
+            const stt = ptStatus(pw, (phaseTests || {})[g.phase.index]);
+            const allRead = g.list.every((s) => read[s.id]);
+            return (
+              <button
+                onClick={() => setTest(g.phase.index)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "12px", textAlign: "left", width: "100%",
+                  padding: "12px 14px", borderRadius: "12px", cursor: "pointer", color: "var(--ink)",
+                  border: "1px dashed " + (stt.dueNow ? "var(--accent)" : "var(--line)"),
+                  background: stt.dueNow ? "var(--word-hover)" : "var(--tint)",
+                }}
+              >
+                <span style={{ flexShrink: 0, width: "34px", fontSize: "18px", textAlign: "center" }}>🎯</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "16px" }}>Phasentest</span>
+                  <span style={{ display: "block", fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.04em", color: stt.tone, marginTop: "3px" }}>
+                    {stt.label}{!stt.passed && !allRead ? " · empfohlen nach allen Kapiteln" : ""}
+                  </span>
+                </span>
+                <span style={{ flexShrink: 0, fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-faint)" }}>DE⇄EN</span>
+              </button>
+            );
+          })()}
         </div>
       ))}
     </div>
@@ -3772,6 +4369,10 @@ function App() {
   );
   React.useEffect(() => { srsSave("a2vocab.daily.v1", daily); }, [daily]);
 
+  // Phasentest progress per phase index: { words: { [de]: { r, p, miss } }, passed, stage, due, updated }.
+  const [phaseTests, setPhaseTests] = useState(() => srsLoad(PHASE_TEST_KEY, {}));
+  React.useEffect(() => { srsSave(PHASE_TEST_KEY, phaseTests); }, [phaseTests]);
+
   // Study/Write focus: "due" (scheduler), "all" (ignore schedule), "trouble".
   const [focus, setFocus] = useState("due");
   const readyRef = React.useRef(false);
@@ -3891,6 +4492,21 @@ function App() {
     });
   }, [persistSrs]);
 
+  // Apply fn to one phase's test state; mirrored to Firestore, replacing just
+  // that phase's field (so a reset really clears it there too).
+  const updatePhaseTest = useCallback((idx, fn) => {
+    setPhaseTests((all) => {
+      const next = Object.assign({}, fn(all[idx] || { words: {} }), { updated: Date.now() });
+      const fb = getFirebase();
+      if (fb && readyRef.current) {
+        fb.db.collection("scores").doc(PROGRESS_DOC_ID)
+          .set({ phaseTests: { [idx]: next } }, { mergeFields: ["phaseTests." + idx] })
+          .catch((err) => console.error("save phase test failed:", err.code || err.message || err));
+      }
+      return Object.assign({}, all, { [idx]: next });
+    });
+  }, []);
+
   // Count one activity toward today's goal / streak without touching the SRS
   // schedule — used by the Satzbau tab, which practises word order, not words.
   const tickDaily = useCallback(() => {
@@ -3976,6 +4592,17 @@ function App() {
                 const merged = srsMerge(local, d.srs);
                 srsSave("a2vocab.srs.v1", merged);
                 fb.db.collection("scores").doc(PROGRESS_DOC_ID).set({ srs: merged }, { merge: true }).catch(() => {});
+                return merged;
+              });
+            }
+            if (d.phaseTests) {
+              setPhaseTests((local) => {
+                const merged = Object.assign({}, local);
+                Object.keys(d.phaseTests).forEach((k) => {
+                  const r = d.phaseTests[k];
+                  if (r && (!merged[k] || (r.updated || 0) > (merged[k].updated || 0))) merged[k] = r;
+                });
+                srsSave(PHASE_TEST_KEY, merged);
                 return merged;
               });
             }
@@ -4085,7 +4712,7 @@ function App() {
         <div style={{ maxWidth: "620px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "22px" }}>
           {topBar}
           <div style={{ animation: "cardIn .35s ease both" }}>
-            <StoriesTab stories={stories} allData={allData} />
+            <StoriesTab stories={stories} allData={allData} phaseTests={phaseTests} onPhaseTest={updatePhaseTest} onGrade={bumpSrs} />
           </div>
         </div>
       </div>
