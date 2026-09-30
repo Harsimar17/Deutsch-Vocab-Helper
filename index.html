@@ -8,6 +8,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="A2 Vocab Trainer">
 <title>Deutsch Vocab Trainer</title>
+<script>
+  // Apply the saved (or system) theme before first paint — no light flash.
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("a2vocab.theme.v1"); } catch (e) {}
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,6 +49,55 @@
   --font-mono: 'IBM Plex Mono', 'Courier New', ui-monospace, monospace;
   --shadow-soft: 0 1px 2px rgba(60,50,20,.05), 0 8px 22px -8px rgba(60,50,20,.14);
   --shadow-card: 0 1px 2px rgba(60,50,20,.06), 0 18px 44px -14px rgba(60,50,20,.24);
+  --ink-muted: #8a8372;
+  --line-card: #e2d8c0;
+  --tint: #00000008;
+  --card-grad: linear-gradient(170deg, #FEFBF3 0%, #F7F1E1 100%);
+  --btn-grad: linear-gradient(180deg, #35302a 0%, #2b2620 100%);
+  --btn-border: #2b2620;
+  --good: #3F7A55;
+  --good-hi: #458860;
+  --good-soft: #3F7A5566;
+  --bad: #A5354A;
+  --bad-hi: #b23c52;
+  --glow-1: #FEFCF6;
+  --glow-1-fade: rgba(254,252,246,0);
+  --glow-2: #EFE7D3;
+  --glow-2-fade: rgba(239,231,211,0);
+  --word-hover: rgba(138,106,43,.16);
+  --target-line: rgba(138,106,43,.5);
+  color-scheme: light;
+}
+/* Dark mode: warm, low-glare — dark brown-grey paper (not pure black) and
+   soft cream ink, so long reading sessions are easy on the eyes. */
+:root[data-theme="dark"] {
+  --paper: #1b1915;
+  --paper-raised: #25221d;
+  --ink: #e6ddcb;
+  --ink-soft: #b3a892;
+  --ink-faint: #7f7562;
+  --ink-muted: #968b76;
+  --line: #3b352c;
+  --line-card: #3b352c;
+  --accent: #CDA864;
+  --tint: #ffffff0a;
+  --card-grad: linear-gradient(170deg, #2b2721 0%, #23201b 100%);
+  --btn-grad: linear-gradient(180deg, #4b4338 0%, #3d372e 100%);
+  --btn-border: #5c5346;
+  --good: #4E9468;
+  --good-hi: #57a174;
+  --good-soft: rgba(78,148,104,.45);
+  --bad: #C0566A;
+  --bad-hi: #ca6376;
+  --glow-1: #221f1a;
+  --glow-1-fade: rgba(34,31,26,0);
+  --glow-2: #1f1c17;
+  --glow-2-fade: rgba(31,28,23,0);
+  --shadow-soft: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px -8px rgba(0,0,0,.55);
+  --shadow-card: 0 1px 2px rgba(0,0,0,.35), 0 18px 44px -14px rgba(0,0,0,.7);
+  --word-hover: rgba(205,168,100,.18);
+  --target-line: rgba(205,168,100,.55);
+  color-scheme: dark;
 }
 html,body,#root {
   margin:0;
@@ -45,8 +105,8 @@ html,body,#root {
 }
 body {
   background:
-    radial-gradient(1200px 620px at 8% -10%, #FEFCF6 0%, rgba(254,252,246,0) 60%),
-    radial-gradient(1000px 560px at 104% -4%, #EFE7D3 0%, rgba(239,231,211,0) 55%),
+    radial-gradient(1200px 620px at 8% -10%, var(--glow-1) 0%, var(--glow-1-fade) 60%),
+    radial-gradient(1000px 560px at 104% -4%, var(--glow-2) 0%, var(--glow-2-fade) 55%),
     var(--paper);
   background-attachment: fixed;
   color: var(--ink);
@@ -63,13 +123,14 @@ button {
 }
 button:active { transform: translateY(1px) scale(.995); }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-::selection { background: rgba(138,106,43,.20); }
+::selection { background: var(--word-hover); }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb {
   background: var(--line);
   border-radius: 999px;
   border: 3px solid var(--paper);
 }
+@keyframes tipIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -82,6 +143,10 @@ button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   overscroll-behavior-x: contain;
 }
 .tabstrip::-webkit-scrollbar { display: none; width: 0; height: 0; }
+/* Geschichten reader: tappable words (.sw) and B1 target words (.st) */
+.sw { cursor: pointer; border-radius: 4px; transition: background-color .12s ease; }
+.sw:hover, .sw.on { background: var(--word-hover); }
+.st { font-weight: 600; box-shadow: inset 0 -2px 0 var(--target-line); }
 </style>
 </head>
 <body>
@@ -130,6 +195,18 @@ const CATEGORY_META = {
   func: { label: "func.", color: "#4A7A8C" },
   phrase: { label: "phrase", color: "#B0722E" },
 };
+
+// Category colours are concatenated with hex alpha (`${color}14`), so they
+// can't be CSS variables — dark mode swaps in lighter hexes instead. App calls
+// this on every render, before any child reads CATEGORY_META.
+const CATEGORY_COLORS = {
+  light: { der: "#3A5A8C", die: "#A5354A", das: "#3F7A55", adj: "#8A6A2B", verb: "#6B4A8A", sep: "#2E7D74", func: "#4A7A8C", phrase: "#B0722E" },
+  dark: { der: "#6F8FC4", die: "#C96477", das: "#5E9E75", adj: "#BE9A55", verb: "#9C7CC0", sep: "#4FA398", func: "#6FA0B4", phrase: "#CC8E4E" },
+};
+function applyCategoryPalette(theme) {
+  const pal = CATEGORY_COLORS[theme] || CATEGORY_COLORS.light;
+  Object.keys(pal).forEach((k) => { if (CATEGORY_META[k]) CATEGORY_META[k].color = pal[k]; });
+}
 
 // ---------- DATA: fetched at runtime from a hosted JSON file ----------
 // The vocabulary itself (nouns/verbs/adjectives/connectors/phrases for A1/A2/B1)
@@ -581,7 +658,7 @@ function AiSentence({ card, apiKey }) {
   if (state.status === "error") {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#A5354A", maxWidth: "min(420px, 90vw)", textAlign: "center", lineHeight: 1.5 }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--bad)", maxWidth: "min(420px, 90vw)", textAlign: "center", lineHeight: 1.5 }}>
           Gemini: {state.message}
         </div>
         <button
@@ -652,8 +729,8 @@ function NoRepeatToggle({ noRepeat, onChange }) {
           textTransform: "uppercase",
           padding: "8px 16px",
           borderRadius: "999px",
-          border: `1px solid ${noRepeat ? "#3F7A55" : "var(--ink-faint)"}`,
-          background: noRepeat ? "#3F7A55" : "transparent",
+          border: `1px solid ${noRepeat ? "var(--good)" : "var(--ink-faint)"}`,
+          background: noRepeat ? "var(--good)" : "transparent",
           color: noRepeat ? "#F6F1E5" : "var(--ink-soft)",
           boxShadow: noRepeat ? "0 6px 14px -7px rgba(63,122,85,.6)" : "none",
           cursor: "pointer",
@@ -684,7 +761,7 @@ function GeminiKeyField({
   const dirty = draft.trim() !== (value || "");
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "7px" }}>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: value ? "#3F7A55" : "var(--ink-soft)" }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: value ? "var(--good)" : "var(--ink-soft)" }}>
         {label} · {value ? "set" : "off"}
       </div>
       <div style={{ display: "flex", gap: "6px", width: "min(430px, 92vw)" }}>
@@ -704,7 +781,7 @@ function GeminiKeyField({
         <button onClick={() => setShow((s) => !s)} style={miniBtn}>{show ? "hide" : "show"}</button>
         <button onClick={() => onChange(draft.trim())} disabled={!dirty} style={{ ...miniBtn, opacity: dirty ? 1 : 0.4, cursor: dirty ? "pointer" : "default" }}>save</button>
         {value && (
-          <button onClick={() => { onChange(""); setDraft(""); }} style={{ ...miniBtn, color: "#A5354A", borderColor: "#A5354A" }}>clear</button>
+          <button onClick={() => { onChange(""); setDraft(""); }} style={{ ...miniBtn, color: "var(--bad)", borderColor: "var(--bad)" }}>clear</button>
         )}
       </div>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-faint)", maxWidth: "min(430px, 92vw)", textAlign: "center", lineHeight: 1.6 }}>
@@ -723,7 +800,7 @@ function LevelToggle({ levels, onToggle }) {
         justifyContent: "center",
         gap: "4px",
         padding: "4px",
-        background: "#00000008",
+        background: "var(--tint)",
         border: "1px solid var(--line)",
         borderRadius: "999px",
         alignSelf: "center",
@@ -745,7 +822,7 @@ function LevelToggle({ levels, onToggle }) {
               padding: "8px 20px",
               border: "none",
               borderRadius: "999px",
-              background: on ? "linear-gradient(180deg, #35302a 0%, #2b2620 100%)" : "transparent",
+              background: on ? "var(--btn-grad)" : "transparent",
               color: on ? "#FCF8EE" : "var(--ink-soft)",
               boxShadow: on ? "0 6px 16px -8px rgba(60,50,20,.55)" : "none",
               cursor: "pointer",
@@ -808,7 +885,7 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
   }, [flipped, done, idx, order.length, noRepeat, pool.length]);
 
   if (pool.length === 0) {
-    return <p style={{ textAlign: "center", color: "#8a8372" }}>No cards match this filter — pick at least one category above.</p>;
+    return <p style={{ textAlign: "center", color: "var(--ink-muted)" }}>No cards match this filter — pick at least one category above.</p>;
   }
 
   const restart = () => {
@@ -821,7 +898,7 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
   if (done) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "40px 0" }}>
-        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "#2b2620", textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "var(--ink)", textAlign: "center" }}>
           All {order.length} / {order.length} cards done 🎉
         </div>
         <button onClick={restart} style={navBtnStyle}>⟲ start over</button>
@@ -862,7 +939,7 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
           fontFamily: "var(--font-mono)",
           fontSize: "12px",
           letterSpacing: "0.1em",
-          color: "#8a8372",
+          color: "var(--ink-muted)",
         }}
       >
         {noRepeat ? `${idx + 1} / ${order.length} attempted` : `CARD ${idx + 1} / ${order.length}`}
@@ -893,8 +970,8 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
               position: "absolute",
               inset: 0,
               backfaceVisibility: "hidden",
-              background: "linear-gradient(170deg, #FEFBF3 0%, #F7F1E1 100%)",
-              border: "1px solid #e6dcc4",
+              background: "var(--card-grad)",
+              border: "1px solid var(--line-card)",
               borderRadius: "16px",
               boxShadow: "var(--shadow-card)",
               display: "flex",
@@ -915,14 +992,14 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
                   fontSize: front.length > 28 ? "20px" : front.length > 16 ? "26px" : "34px",
                   lineHeight: 1.25,
                   letterSpacing: "-0.01em",
-                  color: "#2b2620",
+                  color: "var(--ink)",
                   textAlign: "center",
                 }}
               >
                 {front}
               </div>
             </div>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#b0a888" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
               tap or ⏎ to reveal
             </div>
           </div>
@@ -973,13 +1050,13 @@ function Flashcards({ pool, allData, direction, noRepeat, onResult, geminiKey })
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={() => { onResult(card.id, false); next(); }}
-            style={{ ...navBtnStyle, background: "transparent", color: "#A5354A", border: "1px solid #A5354A", boxShadow: "none" }}
+            style={{ ...navBtnStyle, background: "transparent", color: "var(--bad)", border: "1px solid var(--bad)", boxShadow: "none" }}
           >
             ✗ review this
           </button>
           <button
             onClick={() => { onResult(card.id, true); next(); }}
-            style={{ ...navBtnStyle, background: "transparent", color: "#3F7A55", border: "1px solid #3F7A55", boxShadow: "none" }}
+            style={{ ...navBtnStyle, background: "transparent", color: "var(--good)", border: "1px solid var(--good)", boxShadow: "none" }}
           >
             ✓ knew it
           </button>
@@ -999,8 +1076,8 @@ const navBtnStyle = {
   textTransform: "uppercase",
   padding: "10px 18px",
   borderRadius: "8px",
-  border: "1px solid #2b2620",
-  background: "linear-gradient(180deg, #35302a 0%, #2b2620 100%)",
+  border: "1px solid var(--btn-border)",
+  background: "var(--btn-grad)",
   color: "#F6F1E5",
   cursor: "pointer",
   boxShadow: "0 1px 2px rgba(60,50,20,.12), 0 8px 18px -10px rgba(60,50,20,.5)",
@@ -1012,8 +1089,8 @@ const srsNote = { textAlign: "center", color: "var(--ink-soft)", maxWidth: "min(
 
 function GradeBar({ onGrade }) {
   const btns = [
-    ["again", "Again", "#A5354A", "forgot"],
-    ["good", "Good", "#3F7A55", "got it"],
+    ["again", "Again", "var(--bad)", "forgot"],
+    ["good", "Good", "var(--good)", "got it"],
     ["easy", "Easy", "#3A5A8C", "too easy"],
   ];
   return (
@@ -1073,8 +1150,8 @@ function StudyCard({ card, direction, onGrade, isNew, geminiKey }) {
           cursor: flipped ? "default" : "pointer",
           background: flipped
             ? "linear-gradient(165deg, " + accent + " 0%, " + accent + "e0 100%)"
-            : "linear-gradient(170deg, #FEFBF3 0%, #F7F1E1 100%)",
-          border: "1px solid " + (flipped ? accent : "#e6dcc4"),
+            : "var(--card-grad)",
+          border: "1px solid " + (flipped ? accent : "var(--line-card)"),
           borderRadius: "16px", boxShadow: "var(--shadow-card)",
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           gap: "16px", padding: "30px 24px", textAlign: "center",
@@ -1083,7 +1160,7 @@ function StudyCard({ card, direction, onGrade, isNew, geminiKey }) {
         <CatChip cat={card.cat} />
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
           {direction === "de-en" && <SpeakButton text={card.de} />}
-          <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: front.length > 24 ? "22px" : "30px", color: flipped ? "#FCF8EE" : "#2b2620" }}>
+          <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: front.length > 24 ? "22px" : "30px", color: flipped ? "#FCF8EE" : "var(--ink)" }}>
             {front}
           </div>
         </div>
@@ -1095,7 +1172,7 @@ function StudyCard({ card, direction, onGrade, isNew, geminiKey }) {
             </div>
           </div>
         ) : (
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#b0a888" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--ink-faint)" }}>
             {isNew ? "new word · tap to reveal" : "tap to reveal"}
           </div>
         )}
@@ -1188,7 +1265,7 @@ function StudyMode({ pool, srs, daily, focus, direction, onGrade, geminiKey }) {
 
   return (
     <div style={srsCol}>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "#8a8372" }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-muted)" }}>
         {i + 1} / {queue.length}{focus === "all" ? " · all" : focus === "trouble" ? " · trouble" : ""}
       </div>
       <StudyCard card={card} direction={direction} onGrade={grade} isNew={isNew} geminiKey={geminiKey} />
@@ -1264,11 +1341,11 @@ function WriteMode({ pool, srs, daily, focus, onGrade, geminiKey }) {
   const forms = acceptedDe(card);
   const ok = res && res.verdict === "correct";
   const close = res && res.verdict === "close";
-  const tone = ok ? "#3F7A55" : close ? "#8A6A2B" : "#A5354A";
+  const tone = ok ? "var(--good)" : close ? "#8A6A2B" : "var(--bad)";
 
   return (
     <div style={srsCol}>
-      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "#8a8372" }}>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-muted)" }}>
         {i + 1} / {queue.length} · TYPE IT IN GERMAN
       </div>
 
@@ -1390,7 +1467,7 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
   }, [pool.length, noRepeat, direction]);
 
   if (pool.length < 4) {
-    return <p style={{ textAlign: "center", color: "#8a8372" }}>Pick at least a couple categories above — need a few options to quiz from.</p>;
+    return <p style={{ textAlign: "center", color: "var(--ink-muted)" }}>Pick at least a couple categories above — need a few options to quiz from.</p>;
   }
 
   const choose = (opt) => {
@@ -1431,10 +1508,10 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
   if (done) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "40px 0" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "#8a8372" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-muted)" }}>
           SCORE {score.right} / {score.total}
         </div>
-        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "#2b2620", textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "var(--ink)", textAlign: "center" }}>
           All {pool.length} / {pool.length} words done 🎉
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
@@ -1443,9 +1520,9 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
               onClick={finishSession}
               style={{
                 ...navBtnStyle,
-                background: saved ? "#3F7A55" : "transparent",
-                border: `1px solid ${saved ? "#3F7A55" : "#8a8372"}`,
-                color: saved ? "#F6F1E5" : "#8a8372",
+                background: saved ? "var(--good)" : "transparent",
+                border: `1px solid ${saved ? "var(--good)" : "var(--ink-muted)"}`,
+                color: saved ? "#F6F1E5" : "var(--ink-muted)",
               }}
             >
               {saved ? "✓ saved" : "finish & save this round"}
@@ -1464,12 +1541,12 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
           fontFamily: "var(--font-mono)",
           fontSize: "12px",
           letterSpacing: "0.1em",
-          color: "#8a8372",
+          color: "var(--ink-muted)",
         }}
       >
         SCORE {score.right} / {score.total}
         {allTime && allTime.total > 0 && (
-          <span style={{ marginLeft: "14px", color: "#b0a888" }}>
+          <span style={{ marginLeft: "14px", color: "var(--ink-faint)" }}>
             · ALL-TIME {allTime.right} / {allTime.total}
           </span>
         )}
@@ -1481,7 +1558,7 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
             letterSpacing: "0.08em",
-            color: "#8a8372",
+            color: "var(--ink-muted)",
             marginTop: "-10px",
           }}
         >
@@ -1504,18 +1581,18 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "min(420px, 90vw)" }}>
         {q.options.map((opt) => {
           let bg = "var(--paper-raised)";
-          let border = "#e2d8c0";
+          let border = "var(--line-card)";
           let color = "var(--ink)";
           let shadow = "var(--shadow-soft)";
           if (picked) {
             if (opt.id === q.correct.id) {
-              bg = "linear-gradient(180deg,#458860,#3F7A55)"; border = "#3F7A55"; color = "#F6F1E5";
+              bg = "linear-gradient(180deg,var(--good-hi),var(--good))"; border = "var(--good)"; color = "#F6F1E5";
               shadow = "0 10px 22px -10px rgba(63,122,85,.7)";
             } else if (opt.id === picked.id) {
-              bg = "linear-gradient(180deg,#b23c52,#A5354A)"; border = "#A5354A"; color = "#F6F1E5";
+              bg = "linear-gradient(180deg,var(--bad-hi),var(--bad))"; border = "var(--bad)"; color = "#F6F1E5";
               shadow = "0 10px 22px -10px rgba(165,53,74,.7)";
             } else {
-              bg = "transparent"; border = "#e2d8c0"; color = "var(--ink-faint)"; shadow = "none";
+              bg = "transparent"; border = "var(--line-card)"; color = "var(--ink-faint)"; shadow = "none";
             }
           }
           const optText = answerText(opt, direction);
@@ -1550,9 +1627,9 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
           onClick={finishSession}
           style={{
             ...navBtnStyle,
-            background: saved ? "#3F7A55" : "transparent",
-            border: `1px solid ${saved ? "#3F7A55" : "#8a8372"}`,
-            color: saved ? "#F6F1E5" : "#8a8372",
+            background: saved ? "var(--good)" : "transparent",
+            border: `1px solid ${saved ? "var(--good)" : "var(--ink-muted)"}`,
+            color: saved ? "#F6F1E5" : "var(--ink-muted)",
           }}
         >
           {saved ? "✓ saved" : "finish & save this round"}
@@ -1575,7 +1652,7 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
                 fontFamily: "var(--font-mono)",
                 fontSize: "11px",
                 letterSpacing: "0.1em",
-                color: "#8a8372",
+                color: "var(--ink-muted)",
                 background: "transparent",
                 border: "none",
                 padding: 0,
@@ -1594,9 +1671,9 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
                   fontSize: "10px",
                   letterSpacing: "0.08em",
                   textTransform: "uppercase",
-                  color: "#A5354A",
+                  color: "var(--bad)",
                   background: "transparent",
-                  border: "1px solid #A5354A",
+                  border: "1px solid var(--bad)",
                   borderRadius: "10px",
                   padding: "2px 8px",
                   cursor: "pointer",
@@ -1624,9 +1701,9 @@ function Quiz({ pool, allTime, onAnswer, onResult, sessions, onSaveSession, onCl
                       justifyContent: "space-between",
                       fontFamily: "var(--font-mono)",
                       fontSize: "12px",
-                      color: "#5a5344",
-                      background: "#FBF7EC",
-                      border: "1px solid #e4dcc4",
+                      color: "var(--ink-soft)",
+                      background: "var(--paper-raised)",
+                      border: "1px solid var(--line-card)",
                       borderRadius: "3px",
                       padding: "7px 12px",
                     }}
@@ -1682,7 +1759,7 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
   }, [nounPool.length, noRepeat]);
 
   if (nounPool.length === 0) {
-    return <p style={{ textAlign: "center", color: "#8a8372" }}>Select at least one of der / die / das above to practice articles.</p>;
+    return <p style={{ textAlign: "center", color: "var(--ink-muted)" }}>Select at least one of der / die / das above to practice articles.</p>;
   }
   if (!word) return null;
 
@@ -1716,10 +1793,10 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
   if (done) {
     return (
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", padding: "40px 0" }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "#8a8372" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-muted)" }}>
           SCORE {score.right} / {score.total}
         </div>
-        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "#2b2620", textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "22px", color: "var(--ink)", textAlign: "center" }}>
           All {nounPool.length} / {nounPool.length} nouns done 🎉
         </div>
         <button onClick={resetRound} style={navBtnStyle}>⟲ start over</button>
@@ -1736,7 +1813,7 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
           fontFamily: "var(--font-mono)",
           fontSize: "12px",
           letterSpacing: "0.1em",
-          color: "#8a8372",
+          color: "var(--ink-muted)",
         }}
       >
         SCORE {score.right} / {score.total}
@@ -1748,7 +1825,7 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
             fontFamily: "var(--font-mono)",
             fontSize: "11px",
             letterSpacing: "0.08em",
-            color: "#8a8372",
+            color: "var(--ink-muted)",
             marginTop: "-10px",
           }}
         >
@@ -1775,7 +1852,7 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
           let shadow = "none";
           if (picked) {
             if (art === word.cat) { bg = meta.color; color = "#FCF8EE"; shadow = `0 10px 24px -10px ${meta.color}`; }
-            else if (art === picked && picked !== word.cat) { bg = "#A5354A"; color = "#FCF8EE"; shadow = "0 10px 24px -10px #A5354A"; }
+            else if (art === picked && picked !== word.cat) { bg = "var(--bad)"; color = "#FCF8EE"; shadow = "0 10px 24px -10px var(--bad)"; }
             else { bg = "transparent"; color = "var(--ink-faint)"; }
           }
           return (
@@ -1788,7 +1865,7 @@ function ArticleQuiz({ pool, noRepeat, onResult, geminiKey }) {
                 fontSize: "21px",
                 padding: "14px 30px",
                 borderRadius: "12px",
-                border: `1.5px solid ${picked && art === word.cat ? meta.color : picked && art === picked ? "#A5354A" : meta.color + "66"}`,
+                border: `1.5px solid ${picked && art === word.cat ? meta.color : picked && art === picked ? "var(--bad)" : meta.color + "66"}`,
                 background: bg,
                 color,
                 boxShadow: shadow,
@@ -1940,8 +2017,8 @@ function ClozeQuiz({ pool, noRepeat, onResult, geminiKey }) {
         style={{
           position: "relative",
           width: "min(440px, 92vw)",
-          background: "linear-gradient(170deg, #FEFBF3 0%, #F7F1E1 100%)",
-          border: "1px solid #e6dcc4",
+          background: "var(--card-grad)",
+          border: "1px solid var(--line-card)",
           borderRadius: "16px",
           boxShadow: "var(--shadow-card)",
           padding: "26px 22px",
@@ -1998,18 +2075,18 @@ function ClozeQuiz({ pool, noRepeat, onResult, geminiKey }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "min(440px, 92vw)" }}>
         {q.options.map((opt) => {
           let bg = "var(--paper-raised)";
-          let border = "#e2d8c0";
+          let border = "var(--line-card)";
           let color = "var(--ink)";
           let shadow = "var(--shadow-soft)";
           if (picked) {
             if (opt.id === q.correct.id) {
-              bg = "linear-gradient(180deg,#458860,#3F7A55)"; border = "#3F7A55"; color = "#FCF8EE";
+              bg = "linear-gradient(180deg,var(--good-hi),var(--good))"; border = "var(--good)"; color = "#FCF8EE";
               shadow = "0 10px 22px -10px rgba(63,122,85,.7)";
             } else if (opt.id === picked) {
-              bg = "linear-gradient(180deg,#b23c52,#A5354A)"; border = "#A5354A"; color = "#FCF8EE";
+              bg = "linear-gradient(180deg,var(--bad-hi),var(--bad))"; border = "var(--bad)"; color = "#FCF8EE";
               shadow = "0 10px 22px -10px rgba(165,53,74,.7)";
             } else {
-              bg = "transparent"; border = "#e2d8c0"; color = "var(--ink-faint)"; shadow = "none";
+              bg = "transparent"; border = "var(--line-card)"; color = "var(--ink-faint)"; shadow = "none";
             }
           }
           return (
@@ -2143,7 +2220,7 @@ function MistakesReview({ mistakes, allData, direction, onResult, onRemove, onCl
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-faint)" }}>
         REVIEW {pos + 1} / {queue.length}
-        <span style={{ marginLeft: "14px", color: "#b0a888" }}>· {total} on list</span>
+        <span style={{ marginLeft: "14px", color: "var(--ink-faint)" }}>· {total} on list</span>
       </div>
 
       <div style={{ textAlign: "center" }}>
@@ -2164,18 +2241,18 @@ function MistakesReview({ mistakes, allData, direction, onResult, onRemove, onCl
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "min(420px, 90vw)" }}>
         {options.map((opt) => {
           let bg = "var(--paper-raised)";
-          let border = "#e2d8c0";
+          let border = "var(--line-card)";
           let color = "var(--ink)";
           let shadow = "var(--shadow-soft)";
           if (picked) {
             if (opt.id === card.id) {
-              bg = "linear-gradient(180deg,#458860,#3F7A55)"; border = "#3F7A55"; color = "#F6F1E5";
+              bg = "linear-gradient(180deg,var(--good-hi),var(--good))"; border = "var(--good)"; color = "#F6F1E5";
               shadow = "0 10px 22px -10px rgba(63,122,85,.7)";
             } else if (opt.id === picked.id) {
-              bg = "linear-gradient(180deg,#b23c52,#A5354A)"; border = "#A5354A"; color = "#F6F1E5";
+              bg = "linear-gradient(180deg,var(--bad-hi),var(--bad))"; border = "var(--bad)"; color = "#F6F1E5";
               shadow = "0 10px 22px -10px rgba(165,53,74,.7)";
             } else {
-              bg = "transparent"; border = "#e2d8c0"; color = "var(--ink-faint)"; shadow = "none";
+              bg = "transparent"; border = "var(--line-card)"; color = "var(--ink-faint)"; shadow = "none";
             }
           }
           const optText = answerText(opt, direction);
@@ -2210,7 +2287,7 @@ function MistakesReview({ mistakes, allData, direction, onResult, onRemove, onCl
           onClick={() => { onRemove && onRemove(card.id); next(); }}
           style={{
             ...navBtnStyle,
-            background: "transparent", color: "#3F7A55", border: "1px solid #3F7A55", boxShadow: "none",
+            background: "transparent", color: "var(--good)", border: "1px solid var(--good)", boxShadow: "none",
           }}
         >
           ✓ I know this — take it off the list
@@ -2234,7 +2311,7 @@ function MistakesReview({ mistakes, allData, direction, onResult, onRemove, onCl
           }}
           style={{
             fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase",
-            color: "#A5354A", background: "transparent", border: "1px solid #A5354A", borderRadius: "10px",
+            color: "var(--bad)", background: "transparent", border: "1px solid var(--bad)", borderRadius: "10px",
             padding: "4px 10px", cursor: "pointer",
           }}
         >
@@ -2337,15 +2414,15 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "18px" }}>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", letterSpacing: "0.1em", color: "var(--ink-faint)" }}>
         SCORE {score.right} / {score.total}
-        <span style={{ marginLeft: "12px", color: "#b0a888" }}>· {playable.length} verbs</span>
+        <span style={{ marginLeft: "12px", color: "var(--ink-faint)" }}>· {playable.length} verbs</span>
       </div>
 
       <div
         style={{
           position: "relative",
           width: "min(440px, 92vw)",
-          background: "linear-gradient(170deg, #FEFBF3 0%, #F7F1E1 100%)",
-          border: "1px solid #e6dcc4",
+          background: "var(--card-grad)",
+          border: "1px solid var(--line-card)",
           borderRadius: "16px",
           boxShadow: "var(--shadow-card)",
           padding: "26px 22px",
@@ -2386,7 +2463,7 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
         {picked && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "14px" }}>
             <SpeakButton text={(q.cloze.before + q.cloze.answer + q.cloze.after).trim() || q.card.example} size={30} />
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: picked === q.answer ? "#3F7A55" : "#A5354A" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: picked === q.answer ? "var(--good)" : "var(--bad)" }}>
               {picked === q.answer ? "richtig" : `→ ${q.answer}`}
             </div>
           </div>
@@ -2406,8 +2483,8 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
           let shadow = "none";
           if (picked) {
             if (opt === q.answer) { bg = meta.color; color = "#FCF8EE"; border = meta.color; shadow = `0 10px 24px -10px ${meta.color}`; }
-            else if (opt === picked) { bg = "#A5354A"; color = "#FCF8EE"; border = "#A5354A"; shadow = "0 10px 24px -10px #A5354A"; }
-            else { bg = "transparent"; color = "var(--ink-faint)"; border = "#e2d8c0"; }
+            else if (opt === picked) { bg = "var(--bad)"; color = "#FCF8EE"; border = "var(--bad)"; shadow = "0 10px 24px -10px var(--bad)"; }
+            else { bg = "transparent"; color = "var(--ink-faint)"; border = "var(--line-card)"; }
           }
           return (
             <button
@@ -2438,9 +2515,9 @@ function SeparableVerbs({ pool, onResult, geminiKey }) {
 // shape, so the word-order rule becomes something you recognise rather than
 // something you compute. Nothing to type, nothing scored. 🔊 reads each aloud.
 const CHUNK_ROLE = {
-  front:  { bd: "#3A5A8C", fg: "#2b2620", bg: "#3A5A8C14", cap: "Position ①" },
+  front:  { bd: "#3A5A8C", fg: "var(--ink)", bg: "#3A5A8C14", cap: "Position ①" },
   v2:     { bd: "#8A6A2B", fg: "#FCF8EE", bg: "#8A6A2B",   cap: "Verb ②" },
-  end:    { bd: "#3F7A55", fg: "#FCF8EE", bg: "#3F7A55",   cap: "Satzende" },
+  end:    { bd: "var(--good)", fg: "#FCF8EE", bg: "var(--good)",   cap: "Satzende" },
   konj:   { bd: "#6B4A8A", fg: "#6B4A8A", bg: "#6B4A8A12", cap: "Konjunktion" },
   subj:   { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Subjekt" },
   time:   { bd: "var(--line)", fg: "var(--ink)", bg: "var(--paper-raised)", cap: "Zeit" },
@@ -2623,8 +2700,8 @@ function PatternStudy({ onSeen }) {
             flex: "0 0 auto", whiteSpace: "nowrap", scrollSnapAlign: "center",
             fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.03em", textTransform: "uppercase",
             padding: "8px 13px", borderRadius: "999px", cursor: "pointer",
-            border: "1px solid " + (i === pi ? "#2b2620" : "var(--line)"),
-            background: i === pi ? "linear-gradient(180deg,#35302a,#2b2620)" : "transparent",
+            border: "1px solid " + (i === pi ? "var(--btn-border)" : "var(--line)"),
+            background: i === pi ? "var(--btn-grad)" : "transparent",
             color: i === pi ? "#FCF8EE" : "var(--ink-soft)",
           }}>{p.name}</button>
         ))}
@@ -2658,6 +2735,572 @@ function PatternStudy({ onSeen }) {
             }}>🔊</button>
             <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "13px", color: "var(--ink-soft)", textAlign: "center" }}>{ex.en}</span>
           </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------- GESCHICHTEN (B1 reading) ----------
+// Short B1 stories from the "stories" block of german_vocab.json. **word** in the
+// text marks a B1 target word. Tap (or hover, with a mouse) any word the app
+// knows — a story target, or any A1/A2/B1 card — to see its English meaning.
+// A switch shows the English translation under each German paragraph.
+const STORY_PREFS_KEY = "a2vocab.storyPrefs.v1";
+const STORY_READ_KEY = "a2vocab.storiesRead.v1";
+const GLOSS_TYPE_CAT = { verbs: "verb", adjectives: "adj", separable_verbs: "sep", function_words: "func", phrases: "phrase" };
+
+// Common irregular forms → infinitive, so "ist" / "hatte" / "ging" still resolve.
+const IRREGULAR_DE = {
+  bin: "sein", bist: "sein", ist: "sein", sind: "sein", seid: "sein", war: "sein", warst: "sein", waren: "sein", gewesen: "sein", wäre: "sein", wären: "sein",
+  hat: "haben", hast: "haben", habe: "haben", hatte: "haben", hatten: "haben", gehabt: "haben", hätte: "haben", hätten: "haben",
+  wird: "werden", wirst: "werden", wurde: "werden", wurden: "werden", geworden: "werden", würde: "werden", würden: "werden",
+  kann: "können", kannst: "können", konnte: "können", konnten: "können", könnte: "können", könnten: "können",
+  muss: "müssen", musst: "müssen", musste: "müssen", mussten: "müssen", müsste: "müssen",
+  will: "wollen", willst: "wollen", wollte: "wollen", wollten: "wollen",
+  darf: "dürfen", darfst: "dürfen", durfte: "dürfen", durften: "dürfen", dürfte: "dürfen",
+  soll: "sollen", sollst: "sollen", sollte: "sollen", sollten: "sollen",
+  mag: "mögen", magst: "mögen", mochte: "mögen",
+  weiß: "wissen", weißt: "wissen", wusste: "wissen", gewusst: "wissen",
+  gibt: "geben", gab: "geben", gaben: "geben", gegeben: "geben",
+  sieht: "sehen", sah: "sehen", sahen: "sehen", gesehen: "sehen",
+  liest: "lesen", las: "lesen", gelesen: "lesen",
+  fährt: "fahren", fuhr: "fahren", fuhren: "fahren", gefahren: "fahren",
+  nimmt: "nehmen", nahm: "nehmen", nahmen: "nehmen", genommen: "nehmen",
+  spricht: "sprechen", sprach: "sprechen", sprachen: "sprechen", gesprochen: "sprechen",
+  hilft: "helfen", half: "helfen", geholfen: "helfen",
+  ging: "gehen", gingen: "gehen", gegangen: "gehen",
+  kam: "kommen", kamen: "kommen", gekommen: "kommen",
+  isst: "essen", aß: "essen", gegessen: "essen",
+  trifft: "treffen", traf: "treffen", trafen: "treffen", getroffen: "treffen",
+  schläft: "schlafen", schlief: "schlafen", läuft: "laufen", lief: "laufen",
+  trägt: "tragen", trug: "tragen", hält: "halten", hielt: "halten",
+  fand: "finden", fanden: "finden", gefunden: "finden",
+  blieb: "bleiben", blieben: "bleiben", geblieben: "bleiben",
+  schrieb: "schreiben", geschrieben: "schreiben",
+  stand: "stehen", standen: "stehen", gestanden: "stehen",
+  saß: "sitzen", gesessen: "sitzen", lag: "liegen", gelegen: "liegen",
+  dachte: "denken", gedacht: "denken", brachte: "bringen", gebracht: "bringen",
+  kannte: "kennen", gekannt: "kennen", tat: "tun", tut: "tun", getan: "tun",
+  rief: "rufen", gerufen: "rufen", verstand: "verstehen", verstanden: "verstehen",
+  gilt: "gelten", galt: "gelten", gegolten: "gelten", wächst: "wachsen", wuchs: "wachsen", gewachsen: "wachsen",
+  bekam: "bekommen", bekamen: "bekommen", bekommt: "bekommen",
+};
+
+// Small closed-class words whose inflected forms the stemmer would get wrong
+// ("meine" is not "meinen"). Checked before anything else.
+const FIXED_DE = (() => {
+  const out = {};
+  const def = (forms, head, en) => forms.split(" ").forEach((f) => { out[f] = { head, en, cat: "func", lvl: null, example: null }; });
+  def("mein meine meinen meinem meiner meines", "mein", "my");
+  def("dein deine deinen deinem deiner deines", "dein", "your (informal)");
+  def("seine seinen seinem seiner seines", "sein", "his / its");
+  def("ihre ihren ihrem ihrer ihres", "ihr", "her / their / your (formal)");
+  def("unser unsere unseren unserem unserer unseres", "unser", "our");
+  def("euer eure euren eurem eurer eures", "euer", "your (plural)");
+  def("dem den des", "der / die / das", "the");
+  def("im", "im = in dem", "in the");
+  def("am", "am = an dem", "at / on the");
+  def("ans", "ans = an das", "to the");
+  def("ins", "ins = in das", "into the");
+  def("zum", "zum = zu dem", "to the");
+  def("zur", "zur = zu der", "to the");
+  def("vom", "vom = von dem", "from / of the");
+  def("beim", "beim = bei dem", "at / at the");
+  def("sich", "sich", "oneself / himself / herself / themselves");
+  def("mich mir", "ich → mich / mir", "me");
+  def("dich dir", "du → dich / dir", "you");
+  def("ihn ihm", "er → ihn / ihm", "him");
+  def("uns", "wir → uns", "us / ourselves");
+  def("euch", "ihr → euch", "you (plural)");
+  def("ihnen", "sie → ihnen", "them");
+  def("manche manchen mancher manches", "manche", "some");
+  def("andere anderen anderer anderes anderem", "andere", "other(s)");
+  def("mehr", "mehr", "more");
+  return out;
+})();
+const STRIP_SUFFIXES = ["test", "tet", "ten", "est", "ern", "en", "em", "er", "es", "et", "st", "te", "e", "n", "s", "t"];
+
+// A dictionary keyed by the bare German form (article / "sich" / "(Pl.)" removed),
+// with a case-sensitive map (so "Essen" ≠ "essen") and a lowercase fallback map.
+// First entry for a form wins, so callers add higher-priority sources first.
+function makeGlossDict() {
+  const exact = new Map();
+  const lower = new Map();
+  const put = (form, entry) => {
+    if (!form) return;
+    if (!exact.has(form)) exact.set(form, entry);
+    const l = form.toLowerCase();
+    if (!lower.has(l)) lower.set(l, entry);
+  };
+  const add = (de, en, cat, lvl, example, verbish) => {
+    const cleaned = String(de || "").replace(/\s*\((?:Pl\.|WG)\)/g, "").replace(/\((sich)\)/g, "$1").trim();
+    const heads = cleaned.split(/\s+\/\s+/).map((s) => s.trim()).filter(Boolean);
+    const ens = String(en || "").split(/\s+\/\s+/);
+    // "ich / du / er" ↔ "I / you / he": pair them up when the counts line up.
+    const paired = heads.length > 1 && ens.length === heads.length;
+    heads.forEach((h, i) => {
+      const art = h.match(/^(der|die|das)\s/i);
+      const entry = {
+        head: paired ? h : cleaned,
+        en: paired ? ens[i].trim() : en,
+        cat: art && NOUN_CATS.includes(cat) ? art[1].toLowerCase() : cat,
+        lvl,
+        example: example || null,
+      };
+      const form = h.replace(/^(der|die|das)\s+/i, "").replace(/^sich\s+/i, "").replace(/\s*(\.\.\.|…)$/, "").trim();
+      put(form, entry);
+      // "aufhören mit" → also findable as "aufhören"
+      if (verbish && form.includes(" ")) put(form.split(" ")[0], entry);
+      // "je ... desto" → "je" and "desto" each lead back to the pair
+      if (/\.\.\.|…/.test(form)) form.split(/\s*(?:\.\.\.|…)\s*/).forEach((piece) => put(piece.trim(), entry));
+    });
+  };
+  return { exact, lower, add };
+}
+
+function glossCat(g) {
+  if (g.type === "noun") {
+    const m = String(g.de || "").match(/^(der|die|das)\b/i);
+    return String(g.article || (m && m[1]) || "der").toLowerCase();
+  }
+  return GLOSS_TYPE_CAT[g.type] || null;
+}
+function addGlossary(dict, glossary) {
+  (glossary || []).forEach((g) =>
+    dict.add(g.de, g.en, glossCat(g), "B1", g.example, g.type === "verbs" || g.type === "separable_verbs")
+  );
+}
+
+// Plausible base forms of an inflected word: irregulars, participles
+// (gekündigt, umgesetzt), zu-infinitives, and stripped endings (+ -en / -n / -e).
+function wordCandidates(word) {
+  const lw = word.toLowerCase();
+  const out = [lw];
+  const push = (s) => { if (s && s.length >= 2) out.push(s); };
+  if (IRREGULAR_DE[lw]) push(IRREGULAR_DE[lw]);
+  // prefixed irregulars: annimmt → an + nehmen, verhält → ver + halten
+  Object.keys(IRREGULAR_DE).forEach((k) => {
+    if (k.length >= 4 && lw.length - k.length >= 2 && lw.endsWith(k)) push(lw.slice(0, -k.length) + IRREGULAR_DE[k]);
+  });
+  const bases = [lw];
+  for (const p of SEP_PREFIXES) {
+    if ((lw.startsWith(p + "ge") || lw.startsWith(p + "zu")) && lw.length > p.length + 4) {
+      bases.push(p + lw.slice(p.length + 2));
+      break;
+    }
+  }
+  if (lw.startsWith("ge") && lw.length > 5) bases.push(lw.slice(2));
+  bases.forEach((b) => {
+    if (b !== lw) push(b);
+    push(b + "en");
+    push(b + "n");
+    STRIP_SUFFIXES.forEach((suf) => {
+      if (b.endsWith(suf) && b.length - suf.length >= 3) {
+        const stem = b.slice(0, -suf.length);
+        push(stem);
+        push(stem + "en");
+        push(stem + "n");
+        push(stem + "e");
+      }
+    });
+  });
+  return out;
+}
+
+function makeLookup(dicts) {
+  const cache = new Map();
+  const lookup = (word) => {
+    if (cache.has(word)) return cache.get(word);
+    let hit = FIXED_DE[word.toLowerCase()] || null;
+    if (!hit) for (const d of dicts) { hit = d.exact.get(word); if (hit) break; }
+    if (!hit) {
+      const cands = wordCandidates(word);
+      outer: for (const c of cands) {
+        for (const d of dicts) {
+          const h = d.lower.get(c);
+          if (h) { hit = h; break outer; }
+        }
+      }
+    }
+    // "Kinder-Betreuung" → try the last part on its own
+    if (!hit && word.includes("-")) hit = lookup(word.split("-").pop());
+    cache.set(word, hit || null);
+    return hit || null;
+  };
+  return lookup;
+}
+
+// A **marked** span: whole span, then each " / " part, then each word, then the
+// story glossary entry sharing the longest prefix (wahrnimmt → wahrnehmen).
+function lookupTarget(span, lookup, glossary) {
+  const clean = span.replace(/\s*\((?:Pl\.|WG)\)/g, "").replace(/^(der|die|das|den|dem|des)\s+/i, "").trim();
+  let hit = lookup(clean);
+  if (hit) return hit;
+  const parts = clean.split(/\s+\/\s+/);
+  if (parts.length > 1) {
+    for (const p of parts) { hit = lookup(p.replace(/^(der|die|das)\s+/i, "")); if (hit) return hit; }
+  }
+  // split separable verb: "lehnt ab" → "ablehnt"
+  const pair = clean.replace(/^sich\s+/i, "").split(/\s+/);
+  if (pair.length === 2 && SEP_PREFIXES.includes(pair[1].toLowerCase())) {
+    hit = lookup(pair[1].toLowerCase() + pair[0].toLowerCase());
+    if (hit) return hit;
+  }
+  const words = clean.split(/\s+/).filter((w) => w.length > 2).sort((a, b) => b.length - a.length);
+  if (clean.includes(" ")) {
+    for (const w of words) { hit = lookup(w); if (hit) return hit; }
+  }
+  const lw = clean.toLowerCase();
+  let best = null;
+  let bestLen = 4;
+  (glossary || []).forEach((g) => {
+    const f = String(g.de || "").replace(/^(der|die|das)\s+/i, "").replace(/^sich\s+/i, "").toLowerCase();
+    let n = 0;
+    while (n < f.length && n < lw.length && f[n] === lw[n]) n++;
+    if (n > bestLen) { bestLen = n; best = g; }
+  });
+  if (best) return { head: best.de, en: best.en, cat: glossCat(best), lvl: "B1", example: best.example || null };
+  return null;
+}
+
+// Paragraph → segments: { t } plain text, or { w, entry, target } for a word.
+function storySegments(para, lookup, glossary) {
+  const segs = [];
+  para.split(/\*\*(.+?)\*\*/).forEach((part, i) => {
+    if (!part) return;
+    if (i % 2 === 1) {
+      segs.push({ w: part, entry: lookupTarget(part, lookup, glossary), target: true });
+      return;
+    }
+    const re = /[A-Za-zÄÖÜäöüß]+(?:-[A-Za-zÄÖÜäöüß]+)*/g;
+    let last = 0;
+    let m;
+    while ((m = re.exec(part))) {
+      if (m.index > last) segs.push({ t: part.slice(last, m.index) });
+      const entry = m[0].length > 1 ? lookup(m[0]) : null;
+      segs.push(entry ? { w: m[0], entry } : { t: m[0] });
+      last = m.index + m[0].length;
+    }
+    if (last < part.length) segs.push({ t: part.slice(last) });
+  });
+  return segs;
+}
+
+function storyParagraphs(text) {
+  return String(text || "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+}
+
+function Switch({ on, onChange, label }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={on}
+      onClick={() => onChange(!on)}
+      style={{
+        display: "inline-flex", alignItems: "center", gap: "10px", background: "transparent", border: "none",
+        padding: "4px", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px",
+        letterSpacing: "0.12em", textTransform: "uppercase", color: on ? "var(--ink)" : "var(--ink-soft)",
+      }}
+    >
+      <span style={{ position: "relative", flexShrink: 0, width: "38px", height: "22px", borderRadius: "999px", background: on ? "var(--good)" : "var(--line)", transition: "background-color .18s ease" }}>
+        <span style={{ position: "absolute", top: "3px", left: on ? "19px" : "3px", width: "16px", height: "16px", borderRadius: "50%", background: "#FCF8EE", boxShadow: "0 1px 3px rgba(0,0,0,.25)", transition: "left .18s ease" }} />
+      </span>
+      {label}
+    </button>
+  );
+}
+
+// Portalled to <body>: the tab wrapper keeps a transform from its entrance
+// animation, which would otherwise break position: fixed. Re-measures the word
+// on scroll / resize so the tip follows it instead of vanishing.
+function WordTip({ tip }) {
+  const { el, entry, word } = tip;
+  const [, reflow] = useState(0);
+  React.useEffect(() => {
+    const onMove = () => reflow((n) => n + 1);
+    window.addEventListener("scroll", onMove, true);
+    window.addEventListener("resize", onMove);
+    return () => {
+      window.removeEventListener("scroll", onMove, true);
+      window.removeEventListener("resize", onMove);
+    };
+  }, []);
+  const rect = el.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const w = Math.min(270, vw - 32);
+  const cx = Math.min(Math.max(rect.left + rect.width / 2, w / 2 + 16), vw - w / 2 - 16);
+  const above = rect.top > 170;
+  const bare = String(entry.head || "").replace(/^(der|die|das)\s+/i, "").toLowerCase();
+  return ReactDOM.createPortal(
+    <div
+      data-tip="1"
+      role="tooltip"
+      style={{
+        position: "fixed", zIndex: 50, left: cx, width: w, boxSizing: "border-box",
+        top: above ? rect.top - 8 : rect.bottom + 8,
+        transform: above ? "translate(-50%, -100%)" : "translate(-50%, 0)",
+        background: "var(--paper-raised)", border: "1px solid var(--line)", borderRadius: "12px",
+        boxShadow: "var(--shadow-card)", padding: "12px 14px", textAlign: "left",
+        animation: "tipIn .14s ease both",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
+        {entry.cat && CATEGORY_META[entry.cat] && <CatChip cat={entry.cat} />}
+        {entry.lvl && <span style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.12em", color: "var(--ink-faint)" }}>{entry.lvl}</span>}
+        {tip.pinned && <span style={{ marginLeft: "auto" }}><SpeakButton text={entry.head} size={28} /></span>}
+      </div>
+      <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "17px", color: "var(--ink)", lineHeight: 1.3 }}>{entry.head}</div>
+      <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "15px", color: "var(--ink-soft)", marginTop: "3px", lineHeight: 1.4 }}>{entry.en}</div>
+      {word.toLowerCase() !== bare && (
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.08em", color: "var(--ink-faint)", marginTop: "6px" }}>
+          im Text: {word}
+        </div>
+      )}
+      {entry.example && (
+        <div style={{ fontFamily: "var(--font-serif)", fontSize: "13px", color: "var(--ink-soft)", marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--line)", lineHeight: 1.45 }}>
+          {entry.example}
+        </div>
+      )}
+    </div>,
+    document.body
+  );
+}
+
+function StoryReader({ story, globalDict, showEn, onShowEn, isRead, onToggleRead, prev, next, onOpen, onBack }) {
+  const [tip, setTip] = useState(null);
+  const [glossOpen, setGlossOpen] = useState(false);
+  const topRef = React.useRef(null);
+
+  const paras = useMemo(() => {
+    const storyDict = makeGlossDict();
+    addGlossary(storyDict, story.glossary);
+    const lookup = makeLookup([storyDict, globalDict]);
+    return storyParagraphs(story.story_de).map((p) => storySegments(p, lookup, story.glossary));
+  }, [story, globalDict]);
+  const enParas = useMemo(() => storyParagraphs(story.story_en), [story]);
+
+  React.useEffect(() => {
+    setTip(null);
+    setGlossOpen(false);
+    if (topRef.current && topRef.current.getBoundingClientRect().top < 0) topRef.current.scrollIntoView({ block: "start" });
+  }, [story.id]);
+
+  // Close the tooltip on tap outside or Escape.
+  React.useEffect(() => {
+    if (!tip) return;
+    const onDown = (e) => {
+      if (e.target && e.target.closest && e.target.closest("[data-sw],[data-tip]")) return;
+      setTip(null);
+    };
+    const onKey = (e) => { if (e.key === "Escape") setTip(null); };
+    document.addEventListener("pointerdown", onDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [tip]);
+
+  const show = (e, key, seg, pinned) =>
+    setTip({ key, el: e.currentTarget, entry: seg.entry, word: seg.w, pinned });
+
+  return (
+    <div ref={topRef} style={{ ...srsCol, width: "100%", maxWidth: "620px", margin: "0 auto", gap: "18px", alignItems: "stretch", scrollMarginTop: "12px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+        <button onClick={onBack} style={miniBtn}>‹ alle Geschichten</button>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-faint)", textAlign: "right" }}>
+          Kapitel {story.chapter}{story.phase_name ? " · " + story.phase_name : ""}
+        </span>
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "24px", lineHeight: 1.25, color: "var(--ink)" }}>{story.title_de}</div>
+        <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "14px", color: "var(--ink-soft)", marginTop: "4px" }}>{story.title_en}</div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+        <Switch on={showEn} onChange={onShowEn} label="English translation" />
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", letterSpacing: "0.08em", color: "var(--ink-faint)", textAlign: "center", lineHeight: 1.6 }}>
+          <span className="st" style={{ fontFamily: "var(--font-serif)", fontSize: "12px", letterSpacing: 0 }}>underlined</span> = B1 target word · tap{window.matchMedia && window.matchMedia("(hover: hover)").matches ? " or hover" : ""} any word for its meaning
+        </div>
+      </div>
+
+      {paras.map((segs, pi) => (
+        <div key={story.id + "-" + pi} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: "18px", lineHeight: 1.75, color: "var(--ink)" }}>
+              {segs.map((seg, si) => {
+                if (seg.t != null) return <React.Fragment key={si}>{seg.t}</React.Fragment>;
+                const key = pi + "-" + si;
+                if (!seg.entry) return <span key={si} className="st">{seg.w}</span>;
+                const on = tip && tip.key === key;
+                return (
+                  <span
+                    key={si}
+                    data-sw="1"
+                    className={(seg.target ? "st sw" : "sw") + (on ? " on" : "")}
+                    onPointerEnter={(e) => { if (e.pointerType === "mouse" && !(tip && tip.pinned)) show(e, key, seg, false); }}
+                    onPointerLeave={(e) => { if (e.pointerType === "mouse") setTip((t) => (t && !t.pinned ? null : t)); }}
+                    onClick={(e) => { if (tip && tip.key === key && tip.pinned) setTip(null); else show(e, key, seg, true); }}
+                  >
+                    {seg.w}
+                  </span>
+                );
+              })}
+            </p>
+            {showEn && enParas[pi] && (
+              <p style={{ margin: "8px 0 0", padding: "2px 0 2px 12px", borderLeft: "2px solid var(--line)", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "15px", lineHeight: 1.6, color: "var(--ink-soft)" }}>
+                {enParas[pi]}
+              </p>
+            )}
+          </div>
+          <SpeakButton text={segs.map((s) => (s.t != null ? s.t : s.w)).join("")} size={30} />
+        </div>
+      ))}
+
+      {story.glossary && story.glossary.length > 0 && (
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: "14px" }}>
+          <button
+            onClick={() => setGlossOpen((o) => !o)}
+            style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.1em", color: "var(--ink-soft)", background: "transparent", border: "none", padding: 0, cursor: "pointer" }}
+          >
+            {glossOpen ? "▾" : "▸"} WORTLISTE ({story.glossary.length})
+          </button>
+          {glossOpen && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "10px" }}>
+              {story.glossary.map((g, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "7px 12px", background: "var(--paper-raised)", border: "1px solid var(--line)", borderRadius: "8px" }}>
+                  <span style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "15px", color: (CATEGORY_META[glossCat(g)] || {}).color || "var(--ink)" }}>{g.de}</span>
+                  <span style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "14px", color: "var(--ink-soft)", textAlign: "right" }}>{g.en}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", paddingTop: "4px" }}>
+        <button
+          onClick={onToggleRead}
+          style={{ ...navBtnStyle, background: isRead ? "var(--good)" : "transparent", border: "1px solid " + (isRead ? "var(--good)" : "var(--ink-muted)"), color: isRead ? "#F6F1E5" : "var(--ink-muted)", boxShadow: "none" }}
+        >
+          {isRead ? "✓ gelesen" : "als gelesen markieren"}
+        </button>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+          {prev && <button onClick={() => onOpen(prev.id)} style={navBtnStyle}>‹ Kapitel {prev.chapter}</button>}
+          {next && <button onClick={() => onOpen(next.id)} style={navBtnStyle}>Kapitel {next.chapter} ›</button>}
+        </div>
+      </div>
+
+      {tip && <WordTip tip={tip} />}
+    </div>
+  );
+}
+
+function StoriesTab({ stories, allData }) {
+  const [prefs, setPrefs] = useState(() => srsLoad(STORY_PREFS_KEY, { open: null, showEn: false }));
+  const [read, setRead] = useState(() => srsLoad(STORY_READ_KEY, {}));
+  React.useEffect(() => { srsSave(STORY_PREFS_KEY, prefs); }, [prefs]);
+  React.useEffect(() => { srsSave(STORY_READ_KEY, read); }, [read]);
+
+  const items = (stories && stories.items) || [];
+  const byId = useMemo(() => Object.fromEntries(items.map((s) => [s.id, s])), [items]);
+
+  // Phase groups in the order the file defines; anything unlisted goes last.
+  const groups = useMemo(() => {
+    const seen = new Set();
+    const out = ((stories && stories.phases) || []).map((p) => {
+      const list = (p.chapter_ids || []).map((id) => byId[id]).filter(Boolean);
+      list.forEach((s) => seen.add(s.id));
+      return { phase: p, list };
+    });
+    const rest = items.filter((s) => !seen.has(s.id)).sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+    if (rest.length) out.push({ phase: { name: "Weitere Geschichten" }, list: rest });
+    return out.filter((g) => g.list.length);
+  }, [stories, items, byId]);
+  const flat = useMemo(() => groups.reduce((a, g) => a.concat(g.list), []), [groups]);
+
+  // Every glossary from every story first, then all vocab cards (A1 → B1).
+  const globalDict = useMemo(() => {
+    const d = makeGlossDict();
+    items.forEach((s) => addGlossary(d, s.glossary));
+    (allData || []).forEach((c) => d.add(c.de, c.en, c.cat, c.lvl, c.example, c.cat === "verb" || c.cat === "sep"));
+    return d;
+  }, [items, allData]);
+
+  if (!items.length) {
+    return (
+      <p style={srsNote}>
+        No stories found — german_vocab.json needs a <code>stories</code> block with an <code>items</code> list.
+      </p>
+    );
+  }
+
+  const open = prefs.open != null ? byId[prefs.open] : null;
+  const setOpen = (id) => setPrefs((p) => Object.assign({}, p, { open: id }));
+
+  if (open) {
+    const i = flat.findIndex((s) => s.id === open.id);
+    return (
+      <StoryReader
+        story={open}
+        globalDict={globalDict}
+        showEn={!!prefs.showEn}
+        onShowEn={(v) => setPrefs((p) => Object.assign({}, p, { showEn: v }))}
+        isRead={!!read[open.id]}
+        onToggleRead={() => setRead((r) => {
+          const nr = Object.assign({}, r);
+          if (nr[open.id]) delete nr[open.id]; else nr[open.id] = Date.now();
+          return nr;
+        })}
+        prev={i > 0 ? flat[i - 1] : null}
+        next={i >= 0 && i < flat.length - 1 ? flat[i + 1] : null}
+        onOpen={setOpen}
+        onBack={() => setOpen(null)}
+      />
+    );
+  }
+
+  const readCount = items.filter((s) => read[s.id]).length;
+  return (
+    <div style={{ ...srsCol, width: "100%", maxWidth: "560px", margin: "0 auto", alignItems: "stretch", gap: "22px" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.28em", color: "var(--accent)", marginBottom: "8px" }}>
+          {stories.level || "B1"} · LESEN
+        </div>
+        <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "30px", color: "var(--ink)", letterSpacing: "-0.01em" }}>Geschichten</div>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-soft)", marginTop: "8px" }}>
+          {readCount} / {items.length} gelesen
+        </div>
+      </div>
+      {groups.map((g, gi) => (
+        <div key={gi} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div>
+            <div style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "18px", color: "var(--ink)" }}>{g.phase.name}</div>
+            {g.phase.description && <div style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "13px", color: "var(--ink-soft)" }}>{g.phase.description}</div>}
+            {g.phase.note && <div style={{ fontFamily: "var(--font-serif)", fontSize: "13px", color: "var(--ink-faint)", marginTop: "4px", lineHeight: 1.5 }}>{g.phase.note}</div>}
+          </div>
+          {g.list.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setOpen(s.id)}
+              style={{
+                display: "flex", alignItems: "center", gap: "12px", textAlign: "left", width: "100%",
+                padding: "12px 14px", borderRadius: "12px", border: "1px solid " + (read[s.id] ? "var(--good-soft)" : "var(--line-card)"),
+                background: "var(--paper-raised)", boxShadow: "var(--shadow-soft)", cursor: "pointer", color: "var(--ink)",
+              }}
+            >
+              <span style={{ flexShrink: 0, width: "34px", fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-faint)" }}>{String(s.chapter).padStart(2, "0")}</span>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-serif)", fontWeight: 600, fontSize: "16px", lineHeight: 1.3 }}>{s.title_de}</span>
+                <span style={{ display: "block", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "13px", color: "var(--ink-soft)", marginTop: "2px" }}>{s.title_en}</span>
+              </span>
+              <span style={{ flexShrink: 0, fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.06em", color: read[s.id] ? "var(--good)" : "var(--ink-faint)", textAlign: "right" }}>
+                {read[s.id] ? "✓" : (s.target_count || (s.glossary || []).length) + " w."}
+              </span>
+            </button>
+          ))}
         </div>
       ))}
     </div>
@@ -2740,9 +3383,21 @@ async function commitVocabWord(token, lvl, cat, entry) {
   const getRes = await fetch(GH_API + "?ref=" + encodeURIComponent(GH_BRANCH), { headers, cache: "no-store" });
   if (!getRes.ok) throw await ghFail(getRes);
   const file = await getRes.json();
-  if (!file.content) throw new Error("GitHub returned no file content (file too large for the Contents API?)");
+  let text;
+  if (file.content) {
+    text = b64ToUtf8(file.content);
+  } else {
+    // Files over 1 MB come back without inline content — fetch the raw bytes
+    // instead (the JSON response above still carries the sha the PUT needs).
+    const rawRes = await fetch(GH_API + "?ref=" + encodeURIComponent(GH_BRANCH), {
+      headers: Object.assign({}, headers, { Accept: "application/vnd.github.raw" }),
+      cache: "no-store",
+    });
+    if (!rawRes.ok) throw await ghFail(rawRes);
+    text = await rawRes.text();
+  }
 
-  const json = JSON.parse(b64ToUtf8(file.content));
+  const json = JSON.parse(text);
   const list = vocabList(json, lvl, cat);
   if (list.some((x) => normDe(x.de) === normDe(entry.de))) {
     throw new Error(`“${entry.de}” is already in ${lvl} on GitHub`);
@@ -2868,14 +3523,14 @@ function AddWord({ allData, levels, ghToken, onToken, onAdded }) {
           />
         )}
         {state.status === "error" && (
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#A5354A", textAlign: "center", lineHeight: 1.5 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--bad)", textAlign: "center", lineHeight: 1.5 }}>
             {state.message}
           </div>
         )}
         {state.status === "done" && (
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "#3F7A55", textAlign: "center", lineHeight: 1.6 }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--good)", textAlign: "center", lineHeight: 1.6 }}>
             ✓ “{state.word}” committed to {GH_BRANCH}
-            {state.url && <React.Fragment> · <a href={state.url} target="_blank" rel="noreferrer" style={{ color: "#3F7A55" }}>view commit</a></React.Fragment>}
+            {state.url && <React.Fragment> · <a href={state.url} target="_blank" rel="noreferrer" style={{ color: "var(--good)" }}>view commit</a></React.Fragment>}
             <div style={{ color: "var(--ink-faint)" }}>
               live site picks it up after GitHub Pages redeploys (~1 min)
               {!levels.includes(state.lvl) ? ` · ${state.lvl} isn't selected in settings, so it won't show in Study yet` : ""}
@@ -2928,8 +3583,8 @@ function TabBar({ mode, setMode, mistakeCount }) {
     padding: "9px 15px",
     border: "none",
     borderRadius: "999px",
-    background: on ? "linear-gradient(180deg, #35302a 0%, #2b2620 100%)" : "transparent",
-    color: on ? "#FCF8EE" : isMistakes && mistakeCount ? "#A5354A" : "var(--ink-soft)",
+    background: on ? "var(--btn-grad)" : "transparent",
+    color: on ? "#FCF8EE" : isMistakes && mistakeCount ? "var(--bad)" : "var(--ink-soft)",
     boxShadow: on ? "0 6px 16px -8px rgba(60,50,20,.55)" : "none",
     cursor: "pointer",
   });
@@ -2966,7 +3621,7 @@ function TabBar({ mode, setMode, mistakeCount }) {
           flex: 1,
           minWidth: 0,
           padding: open ? "3px" : "0",
-          background: open ? "#00000008" : "transparent",
+          background: open ? "var(--tint)" : "transparent",
           border: `1px solid ${open ? "var(--line)" : "transparent"}`,
           borderRadius: "999px",
           overflowX: "auto",
@@ -2990,11 +3645,61 @@ function TabBar({ mode, setMode, mistakeCount }) {
   );
 }
 
+// ---------- TOP BAR: Üben ⇄ Geschichten + light/dark ----------
+function TopBar({ storyMode, onStoryMode, theme, onTheme }) {
+  const seg = (on) => ({
+    fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: 500, letterSpacing: "0.1em",
+    textTransform: "uppercase", padding: "8px 16px", border: "none", borderRadius: "999px",
+    background: on ? "var(--btn-grad)" : "transparent", color: on ? "#FCF8EE" : "var(--ink-soft)",
+    boxShadow: on ? "0 6px 16px -8px rgba(0,0,0,.55)" : "none", cursor: "pointer", whiteSpace: "nowrap",
+  });
+  const dark = theme === "dark";
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", position: "relative", minHeight: "40px" }}>
+      <div role="group" aria-label="mode" style={{ display: "flex", gap: "3px", padding: "3px", background: "var(--tint)", border: "1px solid var(--line)", borderRadius: "999px" }}>
+        <button onClick={() => onStoryMode(false)} aria-pressed={!storyMode} style={seg(!storyMode)}>✎ Üben</button>
+        <button onClick={() => onStoryMode(true)} aria-pressed={storyMode} style={seg(storyMode)}>📖 Geschichten</button>
+      </div>
+      <button
+        onClick={() => onTheme(dark ? "light" : "dark")}
+        aria-label={dark ? "switch to light mode" : "switch to dark mode"}
+        title={dark ? "Light mode" : "Dark mode"}
+        style={{
+          position: "absolute", right: 0, width: "36px", height: "36px", borderRadius: "999px",
+          border: "1px solid var(--line)", background: "var(--paper-raised)", color: "var(--ink-soft)",
+          fontSize: "15px", lineHeight: 1, cursor: "pointer", boxShadow: "var(--shadow-soft)",
+        }}
+      >
+        {dark ? "☀" : "☾"}
+      </button>
+    </div>
+  );
+}
+
 // A single fixed record shared by every browser/device — since this trainer
 // is for one person only, there's no need for a separate identity per browser.
 const PROGRESS_DOC_ID = "harsimar-progress";
 function App() {
   const [mode, setMode] = useState("study");
+
+  // Colour theme (light / dark), remembered per browser. The <head> script has
+  // already put the initial value on <html data-theme> before first paint.
+  const [theme, setTheme] = useState(() => document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light");
+  applyCategoryPalette(theme);
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#1b1915" : "#F6F1E5");
+    try { localStorage.setItem("a2vocab.theme.v1", theme); } catch (e) { /* storage off */ }
+  }, [theme]);
+
+  // Story mode: a separate reading page — only the top bar and the stories.
+  const [storyMode, setStoryMode] = useState(() => {
+    try { return localStorage.getItem("a2vocab.storyMode.v1") === "1"; } catch (e) { return false; }
+  });
+  React.useEffect(() => {
+    try { localStorage.setItem("a2vocab.storyMode.v1", storyMode ? "1" : "0"); } catch (e) { /* storage off */ }
+  }, [storyMode]);
   const [activeCats, setActiveCats] = useState(CATS);
   const [levels, setLevels] = useState(["A2"]);
   const [direction, setDirection] = useState("de-en");
@@ -3076,6 +3781,7 @@ function App() {
 
   // Vocabulary is fetched at startup from VOCAB_DATA_URL rather than bundled here.
   const [allData, setAllData] = useState(null); // null while loading
+  const [stories, setStories] = useState(null);  // "stories" block of the same file, if present
   const [dataError, setDataError] = useState(null);
   const [loadAttempt, setLoadAttempt] = useState(0);
 
@@ -3109,6 +3815,7 @@ function App() {
         const items = buildDataFromJson(json);
         if (!items.length) throw new Error("Vocab data loaded but contained no entries");
         setAllData(items);
+        setStories((json && json.stories) || null);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -3347,9 +4054,9 @@ function App() {
     return (
       <div style={shellStyle}>
         <div style={{ maxWidth: "420px", textAlign: "center", display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ fontSize: "22px", color: "#2b2620" }}>Couldn't load the vocabulary</div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#A5354A" }}>{dataError}</div>
-          <div style={{ fontSize: "13px", color: "#8a8372" }}>
+          <div style={{ fontSize: "22px", color: "var(--ink)" }}>Couldn't load the vocabulary</div>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--bad)" }}>{dataError}</div>
+          <div style={{ fontSize: "13px", color: "var(--ink-muted)" }}>
             Checked <code>{VOCAB_DATA_URL}</code>
           </div>
           <button onClick={() => setLoadAttempt((n) => n + 1)} style={navBtnStyle}>⟲ retry</button>
@@ -3361,8 +4068,25 @@ function App() {
   if (!allData) {
     return (
       <div style={shellStyle}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.1em", color: "#8a8372" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", letterSpacing: "0.1em", color: "var(--ink-muted)" }}>
           loading vocabulary …
+        </div>
+      </div>
+    );
+  }
+
+  const topBar = (
+    <TopBar storyMode={storyMode} onStoryMode={setStoryMode} theme={theme} onTheme={setTheme} />
+  );
+
+  if (storyMode) {
+    return (
+      <div style={{ minHeight: "100%", padding: "20px 20px 56px", fontFamily: "var(--font-serif)" }}>
+        <div style={{ maxWidth: "620px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "22px" }}>
+          {topBar}
+          <div style={{ animation: "cardIn .35s ease both" }}>
+            <StoriesTab stories={stories} allData={allData} />
+          </div>
         </div>
       </div>
     );
@@ -3372,11 +4096,12 @@ function App() {
     <div
       style={{
         minHeight: "100%",
-        padding: "44px 20px 56px",
+        padding: "20px 20px 56px",
         fontFamily: "var(--font-serif)",
       }}
     >
       <div style={{ maxWidth: "560px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "18px" }}>
+        {topBar}
         <div style={{ textAlign: "center" }}>
           <div
             style={{
@@ -3414,7 +4139,7 @@ function App() {
               letterSpacing: "0.1em",
               textTransform: "uppercase",
               color: "var(--ink-soft)",
-              background: settingsOpen ? "#00000008" : "transparent",
+              background: settingsOpen ? "var(--tint)" : "transparent",
               border: "1px solid var(--line)",
               borderRadius: "999px",
               padding: "8px 16px",
