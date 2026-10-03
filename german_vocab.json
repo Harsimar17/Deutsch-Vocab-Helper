@@ -25535,7 +25535,7 @@
     "level": "B1",
     "generated_at": "2026-10-01",
     "count": 45,
-    "phase_count": 5,
+    "phase_count": 16,
     "phases": [
       {
         "index": 1,
@@ -25566,59 +25566,147 @@
       },
       {
         "index": 3,
-        "name": "Phase 3 – Gesellschaft & Medien",
-        "description": "Society, media, technology",
-        "note": "Mittlere Abstraktion. Themen, die man in Nachrichten und Gesprächen ständig hört.",
+        "name": "Phase 3 – Medien, Technik & Konsum",
+        "description": "Media, digital life, shopping",
+        "note": "Mittlere Abstraktion. Themen, die man in Nachrichten und im Alltag ständig hört.",
         "chapter_ids": [
           8,
           9,
-          32,
+          32
+        ]
+      },
+      {
+        "index": 4,
+        "name": "Phase 4 – Migration & Gesellschaft",
+        "description": "Migration, integration, social values",
+        "note": "Wer gehört dazu, was ist gerecht? Wörter für Gespräche über das Zusammenleben.",
+        "chapter_ids": [
           3,
           18
         ]
       },
       {
-        "index": 4,
-        "name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "description": "Politics, economy, environment (classic B1 exam topics)",
+        "index": 5,
+        "name": "Phase 5 – Wirtschaft & Politik",
+        "description": "Economy, money, elections, democracy",
         "note": "Kernthemen jeder B1-Prüfung. Schwerer Wortschatz — nimm dir Zeit.",
         "chapter_ids": [
           5,
-          4,
+          4
+        ]
+      },
+      {
+        "index": 6,
+        "name": "Phase 6 – Recht, Klima & Energie",
+        "description": "Justice, climate change, the energy transition",
+        "note": "Gericht und Umwelt: zwei klassische Prüfungsthemen mit vielen Fachwörtern.",
+        "chapter_ids": [
           12,
           1,
-          2,
+          2
+        ]
+      },
+      {
+        "index": 7,
+        "name": "Phase 7 – Ideen & Geschichte",
+        "description": "Ideologies, thinkers, war and peace",
+        "note": "Weltanschauungen und historische Prozesse — die Brücke zum abstrakten Wortschatz.",
+        "chapter_ids": [
           30,
           31
         ]
       },
       {
-        "index": 5,
-        "name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "description": "Abstract thinking & argumentation (final polish for B1 exam)",
-        "note": "Hier lernst du die Wörter, die du für Aufsätze und Diskussionen brauchst.",
+        "index": 8,
+        "name": "Phase 8 – Forschung, Konflikt & Wandel",
+        "description": "Science, negotiation, success, change",
+        "note": "Ab hier wird es abstrakter. Kurze Kapitel, viele Wörter zum Argumentieren.",
         "chapter_ids": [
           20,
           21,
           22,
-          25,
+          25
+        ]
+      },
+      {
+        "index": 9,
+        "name": "Phase 9 – Menschen & abstrakte Nomen",
+        "description": "Roles, ideas, principles, responsibility",
+        "note": "Abstrakte Nomen für Aufsätze: Prinzip, Verantwortung, Gestaltung …",
+        "chapter_ids": [
           33,
           34,
           35,
-          36,
-          37,
+          36
+        ]
+      },
+      {
+        "index": 10,
+        "name": "Phase 10 – Adjektive Teil 1",
+        "description": "Describing the world (adjectives, part 1)",
+        "note": "Ein Kapitel, viele Adjektive. Lies es lieber zweimal.",
+        "chapter_ids": [
+          37
+        ]
+      },
+      {
+        "index": 11,
+        "name": "Phase 11 – Adjektive Teil 2 & Bewerten",
+        "description": "Values, states, analysis and judgement",
+        "note": "Adjektive für Werte und Zustände — und die Wörter, mit denen man etwas bewertet.",
+        "chapter_ids": [
           38,
-          24,
+          24
+        ]
+      },
+      {
+        "index": 12,
+        "name": "Phase 12 – Verben Teil 1–2",
+        "description": "Acting, causing, thinking, speaking, feeling",
+        "note": "Die wichtigsten B1-Verben zum Handeln und Denken.",
+        "chapter_ids": [
           39,
-          40,
+          40
+        ]
+      },
+      {
+        "index": 13,
+        "name": "Phase 13 – Verben Teil 3–4",
+        "description": "Reflexive verbs, rules and rights",
+        "note": "Reflexive Verben (sich …) und Verben rund um Regeln und Systeme.",
+        "chapter_ids": [
           41,
-          42,
+          42
+        ]
+      },
+      {
+        "index": 14,
+        "name": "Phase 14 – Verben Teil 5 & Feinschliff",
+        "description": "Benefiting, contributing, current events",
+        "note": "Die letzten Verben — plus ein Tag im Amt und der letzte Feinschliff.",
+        "chapter_ids": [
           43,
           44,
-          45,
+          45
+        ]
+      },
+      {
+        "index": 15,
+        "name": "Phase 15 – Schreiben & Diskutieren",
+        "description": "Formal letters, essays, discussions",
+        "note": "Redemittel für Beschwerdebrief, Aufsatz und Diskussion — direkt prüfungsrelevant.",
+        "chapter_ids": [
           26,
           27,
-          28,
+          28
+        ]
+      },
+      {
+        "index": 16,
+        "name": "Phase 16 – Logische Verknüpfungen",
+        "description": "Connectors that link your arguments",
+        "note": "Ein langes Kapitel voller Konnektoren. Nimm dir mehrere Tage dafür.",
+        "chapter_ids": [
           29
         ]
       }
@@ -27287,8 +27375,8 @@
         "id": 8,
         "chapter": 12,
         "phase": 3,
-        "phase_name": "Phase 3 – Gesellschaft & Medien",
-        "phase_description": "Society, media, technology",
+        "phase_name": "Phase 3 – Medien, Technik & Konsum",
+        "phase_description": "Media, digital life, shopping",
         "title_de": "Medien, Journalismus und Wahrheit",
         "title_en": "Media, journalism and truth",
         "story_de": "Die **Medien (Pl.)** sind mächtig. Sie zeigen uns die Welt.\n\nEin guter **Journalist** braucht Zeit. Er macht **Recherche**. Ohne Recherche ist die **Berichterstattung** nicht gut.\n\nEine seriöse **Meldung** hat mehrere **Quelle**n. Eine Zeitung braucht **Glaubwürdigkeit**. Ohne sie geht sie unter.\n\nAber nicht alles im Netz ist wahr. Es gibt viel **Falschmeldung**. Es gibt auch **Desinformation**. Manche Leute wollen die Menschen kontrollieren. Das ist **Manipulation**.\n\nWenn du eine **Schlagzeile** liest, denke nach. Wer schreibt das? Warum schreibt er das?\n\nIn manchen Ländern gibt es **Zensur**. In Deutschland haben wir **Pressefreiheit**. Das ist ein großer Wert.\n\nEin **Autor** schreibt ein Buch. Ein **Herausgeber** organisiert. Ein **Verleger** verkauft die Bücher. Ein **Verfasser** von Zeitungsartikeln arbeitet schnell.\n\nAlle haben Verantwortung. Auch das **Publikum** ist wichtig. Wer nur eine **Meinung** hören will, findet immer einen **Kommentar** dafür.\n\nKritische Leser vergleichen Quellen. Sie glauben nicht sofort alles. Der **Zeitungsbericht** von heute kann morgen falsch sein.\n\nEin guter **Kritiker** ist nicht böse. Er will helfen. Man braucht Nachrichten aus vielen Ländern. Nur so entsteht Balance.",
@@ -27479,8 +27567,8 @@
         "id": 9,
         "chapter": 13,
         "phase": 3,
-        "phase_name": "Phase 3 – Gesellschaft & Medien",
-        "phase_description": "Society, media, technology",
+        "phase_name": "Phase 3 – Medien, Technik & Konsum",
+        "phase_description": "Media, digital life, shopping",
         "title_de": "Digitalisierung und künstliche Intelligenz",
         "title_en": "Digitalisation and artificial intelligence",
         "story_de": "Die **Digitalisierung** ändert unser Leben. **Software** wird immer klüger. **Hardware** wird immer kleiner.\n\nJeder schaut auf einen **Bildschirm**. Der Handy-**Nutzer** ist immer online.\n\nDie **künstliche Intelligenz** ist neu. Sie kann Bilder erkennen. Sie kann Texte schreiben. Sie kann sogar Musik machen.\n\nAber es gibt Probleme. Der **Datenschutz** ist wichtig. Die **Datensicherheit** ist auch wichtig. Eine **Sicherheitslücke** ist gefährlich. Sie kann viele Menschen verletzen.\n\n**Verschlüsselung** hilft, aber sie ist nicht perfekt. Wer schwache Passwörter hat, ist selbst schuld.\n\nDie **Privatsphäre** wird immer kleiner. **Überwachung** wächst. Auch die **Automatisierung** nimmt zu. Manche Jobs sterben. Neue Jobs kommen.\n\n**Innovation** und Fortschritt bringen neue Ideen. Ein **Geschäftsmodell** nach dem anderen entsteht. Ein Startup entwickelt eine neue **Benutzeroberfläche**. Ein anderes arbeitet an Robotern.\n\nDie **Speicherung** von Daten ist billig geworden. Wir haben so viele Daten wie nie zuvor.\n\nDie **Technik** ist schneller als die **Ethik**. Ein **Patent** schützt eine Idee. Das **Urheberrecht** schützt Kunstwerke.\n\nDas **soziale Netzwerk** verbindet Menschen. Aber es macht auch einsam. Das ist die andere Seite.",
@@ -27671,8 +27759,8 @@
         "id": 32,
         "chapter": 14,
         "phase": 3,
-        "phase_name": "Phase 3 – Gesellschaft & Medien",
-        "phase_description": "Society, media, technology",
+        "phase_name": "Phase 3 – Medien, Technik & Konsum",
+        "phase_description": "Media, digital life, shopping",
         "title_de": "Konsum, Handel und Verbraucher",
         "title_en": "Consumption, trade and consumers",
         "story_de": "Ich kaufe alles online. Ein **Onlineshop** ist bequem. Aber gefährlich für die Geldbörse.\n\nIch bin ein **Verbraucher**. Ich habe Rechte. Der **Verbraucherschutz** hilft mir. Wenn ein Produkt kaputt ist, sende ich es zurück. Der **Versand** dauert zwei Tage.\n\nVor dem Kauf lese ich Rezensionen. Ein guter **Rezensent** ist ehrlich. Ein schlechter Rezensent ist nicht kritisch. Manche Kritiken sind gekauft. Das erkennt man.\n\nEin guter **Zuhörer** merkt schnell, wenn etwas falsch ist.\n\nDer Konsum ist enorm. Jeder Haushalt produziert viel Müll. Es gibt viel **Sondermüll**. Es gibt viel **Kunststoff**.\n\n**Wertstoff**e sind wichtig: Papier, Glas, Metall. Sie müssen getrennt sein.\n\nEin **Schadstoff** in einem Produkt ist gefährlich. Wir müssen aufpassen.\n\nDer **Anbau** von Bio-Essen ist gut. Ein neuer **Stromanbieter** kann grün sein. Das hilft der Erde.\n\nBei einem großen Kauf unterschreibe ich einen **Kaufvertrag**. Ich vergleiche Preise. Ich behalte jede Rechnung.\n\nEin **Anspruchsberechtigte**r kann sein Recht bekommen. Ein **Sachbearbeiter** hilft. Bei schweren Fällen kommt ein **Sachverständige**r.\n\nEin **Veranstalter** organisiert Messen. **Ehrgeiz** treibt viele Firmen. Aber auch der **Klimaschutz** wird wichtiger.\n\nEin **Handwerker** kann viele Dinge reparieren. Das ist besser als neu kaufen. Auch ein **Spender** oder ein **Sponsor** hilft anderen Menschen.",
@@ -27862,9 +27950,9 @@
       {
         "id": 3,
         "chapter": 15,
-        "phase": 3,
-        "phase_name": "Phase 3 – Gesellschaft & Medien",
-        "phase_description": "Society, media, technology",
+        "phase": 4,
+        "phase_name": "Phase 4 – Migration & Gesellschaft",
+        "phase_description": "Migration, integration, social values",
         "title_de": "Migration, Flucht und Integration",
         "title_en": "Migration, refuge and integration",
         "story_de": "Die **Migration** ist ein wichtiges Thema. Viele **Flüchtling**e verlassen ihr Land. Sie kommen wegen Krieg oder Armut.\n\nIhre **Asylsuche** endet oft an der **Grenze**. Das **Asylrecht** in Deutschland regelt vieles. Es sagt, wer als **Immigrant** bleiben darf.\n\nWer keinen Schutz bekommt, muss vielleicht wieder gehen. Das ist die **Abschiebung**. Wer bleiben darf, kann später die **Einbürgerung** machen. Dann bekommt er die **Staatsbürgerschaft**. Die **Staatsangehörigkeit** ist mehr als Papier. Sie ist Teil der **Identität**.\n\nDie **Einwanderung** ändert die Gesellschaft. Aber die **Herkunft** von jemand ist nicht das Wichtigste. Die **Muttersprache** und die **Volkszugehörigkeit** sind auch nicht wichtig für den Wert eines Menschen.\n\nWenn man eine **Fremdsprache** lernt, wird die **Integration** leichter.\n\nManche **Nachfahre**n von Migranten fühlen sich hier zu Hause. Andere denken an das Land ihrer Eltern. Sie leben alte **Tradition**en.\n\nEs gibt auch **Auswanderung**. Deutsche gehen ins Ausland. Und es gibt **Abwanderung** aus dem Dorf in die Stadt. Das ist die **Landflucht**.\n\nIn der Politik hören wir viele Wörter. Zum Beispiel **Duldung**, **Zuwanderung** und **einheimisch**.\n\nRassismus und **Diskriminierung** sind schlecht. Jeder Mensch braucht **Anerkennung**. Jeder Mensch verdient **Toleranz**.\n\nSo entsteht eine **weltoffen**e **Gemeinschaft**. Dann fühlt sich niemand mehr **ausländisch**.",
@@ -28123,9 +28211,9 @@
       {
         "id": 18,
         "chapter": 16,
-        "phase": 3,
-        "phase_name": "Phase 3 – Gesellschaft & Medien",
-        "phase_description": "Society, media, technology",
+        "phase": 4,
+        "phase_name": "Phase 4 – Migration & Gesellschaft",
+        "phase_description": "Migration, integration, social values",
         "title_de": "Gesellschaft, Gerechtigkeit und Werte",
         "title_en": "Society, justice and values",
         "story_de": "Unsere **Gesellschaft** hat viele Fragen. **Gerechtigkeit** ist ein wichtiger Wert. Wo es **Ungerechtigkeit** gibt, kommt Widerstand.\n\nZwischen **Oberschicht** und **Unterschicht** liegt eine tiefe **Kluft**. Sie wächst. Die **Mittelschicht** wird kleiner. Die **Arbeiterklasse** hat viele Sorgen. Die Preise steigen.\n\nWir brauchen **Chancengleichheit**. Nur so gibt es **Gleichberechtigung**. Wer **Diskriminierung** erlebt, weiß, wie tief **Vorurteil**e sind. **Stereotyp**en und ein **Feindbild** vergiften den Alltag.\n\nEin altes **Rollenbild** sagt: Die Frau kocht. Das ist heute nicht mehr richtig. Das **Geschlecht** darf keine Rolle mehr spielen.\n\n**Vielfalt** ist schön. **Toleranz** und **Zusammenhalt** helfen einer **Gemeinschaft**. Wenn wir aufeinander achten, sind wir stärker.\n\nAuch **Wohltätigkeit** und **Engagement** in einem **Ehrenamt** sind wichtig. Sie helfen dem **Gemeinwohl**. Wer sich für das **Allgemeinwohl** einsetzt, wird respektiert.\n\nDie **Ungleichheit** zwischen Arm und Reich ist groß. Die **Armut** wächst. Und das in einer reichen Welt.\n\nDie **Benachteiligung** von Kindern beginnt in der Schule. Ein starkes **Sozialsystem** hilft. Es gibt eine **Sozialleistung** für Arme. Es gibt einen **Mindestlohn**. Es gibt die Altersvorsorge.\n\nAuch vor dem Gesetz muss es Gerechtigkeit geben. Jeder Mensch hat das gleiche **Menschenrecht**.\n\nWerte wie **Moral**, **Ethik** und **Norm** ändern sich mit der Zeit. Aber die Grundwerte bleiben. Die **Menschenrechte (Pl.)** stehen über allem. Alle Menschen sind gleich. Egal welche **Gesellschaftsschicht**.",
@@ -28379,9 +28467,9 @@
       {
         "id": 5,
         "chapter": 17,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 5,
+        "phase_name": "Phase 5 – Wirtschaft & Politik",
+        "phase_description": "Economy, money, elections, democracy",
         "title_de": "Wirtschaft, Markt und Finanzen",
         "title_en": "Economy, market and finance",
         "story_de": "Die **Wirtschaft** ändert sich schnell. Der **Markt** reagiert auf **Angebot und die Nachfrage**.\n\nDie **Konjunktur** ist manchmal gut. Dann gibt es einen **Aufschwung**. Manchmal ist sie schlecht. Dann gibt es einen **Abschwung**. Eine **Rezession** ist gefährlich für Firmen. **Wachstum** und **Aufstieg** schaffen Jobs.\n\nDer **Wettbewerb** ist hart. Die **Konkurrenz** ist groß. Jeder **Konkurrent** kämpft um Kunden.\n\nAn der **Börse** kauft man **Aktie**n. Anleger wollen eine hohe **Rendite**. Sie wollen wenig Risiko. Wer **spekulier**t, kann viel gewinnen. Er kann auch viel verlieren.\n\nEine kluge **Geldanlage** braucht **Analyse**. Nicht Bauchgefühl.\n\nEine **Investition** in ein **Startup** kann Gewinn bringen. Sie kann auch in die **Pleite** führen. Eine **Insolvenz** ist schlimm. Dann bleibt oft nur der **Verlust**.\n\nDie **Inflation** frisst die **Kaufkraft**. Die **Deflation** bremst das Wachstum. Zentralbanken suchen ein Gleichgewicht.\n\nEin **Kredit** wird teurer, wenn die Zinsen steigen. Wer klug ist, bildet eine **Rücklage**. Wer klug ist, spart **Ersparnisse** für die **Altersvorsorge**.\n\nEine Bilanz zeigt Gewinn und Verlust. Die **Buchhaltung** dokumentiert jeden **Beleg**. Sie dokumentiert jede **Rechnung**.\n\nDer **Umsatz** eines **Unternehmen**s hängt von der **Branche** ab.\n\nIn der **Industrie** herrscht **Automatisierung**. In der **Dienstleistung** zählt der Mensch.\n\nEine **Fusion** oder **Übernahme** kann Marktmacht bringen. Aber die **Staatsverschuldung** ist ein Problem. Sie belastet junge Menschen. Die **Globalisierung** ändert alles.",
@@ -28746,9 +28834,9 @@
       {
         "id": 4,
         "chapter": 18,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 5,
+        "phase_name": "Phase 5 – Wirtschaft & Politik",
+        "phase_description": "Economy, money, elections, democracy",
         "title_de": "Politik, Wahlen und Demokratie",
         "title_en": "Politics, elections and democracy",
         "story_de": "Die **Demokratie** lebt von den Bürgern. Ohne Beteiligung gibt es keine Demokratie.\n\nIn einem **Mehrparteiensystem** gibt es viele **Partei**en. Sie treten zur **Wahl** an. Alle vier Jahre kommt die **Abstimmung**. Die **Wahlbeteiligung** zeigt das Interesse.\n\nNach der Wahl bildet die **Mehrheit** eine **Koalition**. Die **Minderheit** ist die **Opposition**.\n\nDas **Parlament** ist die **Legislative**. Die **Regierung** ist die **Exekutive**. Das Gericht ist die **Justiz**. Man nennt das die **Gewaltenteilung**.\n\nDer **Kanzler** leitet die Regierung. Ein **Minister** leitet ein Ministerium. Die **Fraktion**en debattieren. Ein **Ausschuss** prüft Details. Am Ende stimmen die **Abgeordneten** ab.\n\nDie **Verfassung** heißt in Deutschland **Grundgesetz**. Sie schützt die **Grundrecht**e. Sie schützt das **Wahlrecht**. Sie schützt die **Menschenrechte (Pl.)**.\n\nEine gute Gesellschaft braucht eine **Zivilgesellschaft**. Sie braucht **Meinungsfreiheit**. Sie braucht **Pressefreiheit**.\n\n**Bürgerinitiative**n sind wichtig. Auch eine **Petition** und eine **Unterschriftenaktion** helfen. Eine **Demonstration** ist erlaubt. Auch eine friedliche **Kundgebung**. Das ist ein **Protest**.\n\nEin **Streik** kann zu Verhandlungen führen. Oft mit einer **Gewerkschaft**.\n\nPolitiker sollten **repräsentativ** sein. Sie sollten **unparteiisch** sein. Sie müssen **verantwortungsvoll** handeln. Sie dürfen nicht **totalitär** oder **diktatorisch** oder **autoritär** sein.\n\nEs gibt viele Positionen: **konservativ**, **liberal**, **progressiv**, **radikal**. Jede Position ist gut, wenn sie **demokratisch** bleibt.\n\nDas **Wahlsystem** ist wichtig. Auch das Recht auf freie Rede ist zentral.",
@@ -29151,9 +29239,9 @@
       {
         "id": 12,
         "chapter": 19,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 6,
+        "phase_name": "Phase 6 – Recht, Klima & Energie",
+        "phase_description": "Justice, climate change, the energy transition",
         "title_de": "Justiz, Verbrechen und Urteil",
         "title_en": "Justice, crime and judgement",
         "story_de": "Die **Kriminalität** in der Stadt wächst. Es gibt einen **Diebstahl**. Es gibt einen **Betrug**. Manchmal auch einen **Mord** oder einen **Überfall**.\n\nEin **Anschlag** in der Stadt schockiert alle. Nach einem **Zwischenfall** in der U-Bahn sucht die Polizei den **Täter**. Ein **Verdächtige**r wird festgenommen.\n\nVor **Gericht** treffen sich alle Personen. Der **Anwalt** des **Beklagten** verteidigt ihn. Der **Kläger** will eine Strafe. Der **Zeuge** sagt, was er gesehen hat. Der **Richter** hört alles ruhig an.\n\nAm Ende kommt das **Urteil**. Der **Straftäter** bekommt eine hohe **Strafe**. Ein **Häftling** bleibt lange im Gefängnis. Ein **Wärter** achtet auf die Ordnung.\n\nBei einem Streit prüft ein **Gutachter** die Beweise neu.\n\nDas **Verfahren** ist streng. Die **Justiz** muss **objektiv** sein. Das **Gesetz** gilt für alle.\n\n**Terror** und **Terrorismus** bedrohen die Gesellschaft. Der Staat antwortet mit klaren Regeln. Wer **verurteilt** wird, kann in Berufung gehen. Die **Öffentlichkeit** liest große Fälle in der Zeitung.\n\nEin **Opfer** braucht Schutz. Es braucht Hilfe. Auch Jahre nach dem **Vorfall**. Das **Verbrechen** darf nicht gewinnen.\n\nAuch ein kleiner Diebstahl ist schlimm. Er verletzt Vertrauen. Ein **Mord** ist das schlimmste.",
@@ -29413,9 +29501,9 @@
       {
         "id": 1,
         "chapter": 20,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 6,
+        "phase_name": "Phase 6 – Recht, Klima & Energie",
+        "phase_description": "Justice, climate change, the energy transition",
         "title_de": "Der Klimawandel und unsere Umwelt",
         "title_en": "Climate change and our environment",
         "story_de": "Der **Klimawandel** ist ein großes Problem. Wissenschaftler warnen uns.\n\nDie **Erderwärmung** ist gefährlich. Die **Emission** von **Treibhausgasen** ist schlecht. Das **Treibhausgas** CO2 ist besonders schlimm. Eine **Katastrophe** kann kommen.\n\nDie **Auswirkung** sehen wir schon. In Afrika gibt es **Dürre**. In Europa gibt es **Überschwemmung**. In Asien kommt oft ein **Wirbelsturm**.\n\nDie **Luftverschmutzung** in Städten wächst. Der **Ausstoß** von Gasen ist hoch. Die **Umweltverschmutzung** ist überall. Auch der **Plastikmüll** ist ein Problem. Er liegt am Strand.\n\nDas **Massenaussterben** bedroht die **Artenvielfalt**. Das **Artensterben** ist traurig. Das **Aussterben** vieler Tiere ist ein trauriges **Phänomen**.\n\nUnser **Ökosystem** braucht Hilfe. Ein **Biosphärenreservat** ist ein sicherer Ort. Ein **Naturschutzgebiet** hilft, Tiere zu **bewahren**.\n\nDer **Naturschutz** ist wichtig. Die **Nachhaltigkeit** muss eine **Priorität** werden. Das **Emissionsziel** der Regierung ist gut. Aber das **Ausmaß** des Problems ist enorm.\n\nWir können viel tun. **Mülltrennung** ist einfach. **Wiederverwertung** ist gut. **Umweltfreundlich** leben heißt: weniger **verschwenden**.\n\nWir sollten **nachhaltig** einkaufen. Wir sollten **umweltschädlich**e Dinge **vermeiden**. Auch die **Lärmbelästigung** ist ein Problem. Der **Verbrauch** von Wasser ist zu hoch.\n\nDie **Naturkatastrophe** von morgen können wir heute noch **verhindern**. Wenn jeder seinen **Beitrag** leistet.",
@@ -29742,9 +29830,9 @@
       {
         "id": 2,
         "chapter": 21,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 6,
+        "phase_name": "Phase 6 – Recht, Klima & Energie",
+        "phase_description": "Justice, climate change, the energy transition",
         "title_de": "Erneuerbare Energie und die Energiewende",
         "title_en": "Renewable energy and the energy transition",
         "story_de": "**Erneuerbare Energie** ist wichtig. Sie ist die Zukunft.\n\nDie **Energiequelle** von morgen heißt **Solarenergie**. Sie heißt **Windkraft**. Sie heißt Wasserkraft.\n\nEine **Solaranlage** auf dem Dach ist heute normal. Auch **erneuerbar**e Systeme sind **effizient**.\n\nDer **Atomstrom** ist umstritten. Manche sagen: Ein modernes **Kraftwerk** ist **sicher**. Andere sagen: Es ist zu **riskant**.\n\nDeutschland will weg von **Kohle**. Deutschland will weg von **Erdöl**. Diese **Rohstoff**e machen viel **Schaden**.\n\nDie **Ressource** Wasser wird knapp. Auch die **Ressource** Lithium für Batterien ist begrenzt.\n\nDie Regierung gibt **Subvention**en für saubere Technologien. Das soll die **Einsparung** von Energie **fördern**.\n\nDas **Elektroauto** ist ein Symbol. Es reduziert Emissionen. Aber die Produktion braucht viel Energie. Wir müssen alles **berücksichtigen**.\n\nEine **Fahrgemeinschaft** hilft auch. Man kann Sprit **sparen**.\n\nDie Politik streitet über **Subvention**en. Und über **Einsparung** im Alltag. Licht ausschalten ist eine kleine **wirksam**e **Maßnahme**. Wenig heizen ist auch gut.",
@@ -29950,9 +30038,9 @@
       {
         "id": 30,
         "chapter": 22,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 7,
+        "phase_name": "Phase 7 – Ideen & Geschichte",
+        "phase_description": "Ideologies, thinkers, war and peace",
         "title_de": "Weltanschauungen, Ideologien und Denker",
         "title_en": "Worldviews, ideologies and thinkers",
         "story_de": "Die Geschichte kennt viele **Weltanschauung**en.\n\nDer **Kapitalismus** liebt den freien Markt. Der **Sozialismus** liebt die Umverteilung. Der **Kommunismus** liebt gemeinsames **Eigentum**.\n\nDer **Nationalismus** stellt die eigene Nation über alle. Der **Patriotismus** liebt die Heimat. Aber er hasst nicht die anderen. Der **Populismus** macht komplizierte Fragen einfach. Er spaltet die Gesellschaft.\n\n**Extremismus** ist gefährlich. Auch **Rassismus** ist gefährlich. **Antisemitismus**, **Sexismus** und **Fremdenhass** dürfen keinen Platz haben.\n\nDer **Feminismus** kämpft für Gleichberechtigung.\n\nEin **Philosoph** stellt die großen Fragen: Was ist Wahrheit? Was ist Gerechtigkeit? Ein **Denker** wie Kant hat viel geändert. Auch der **Gelehrte** und der **Forscher** suchen die Wahrheit.\n\nEin **Erfinder** schafft Neues. Ein **Pionier** oder **Vorreiter** öffnet Türen.\n\nMenschen sind verschieden. Der **Optimist** sieht das Gute. Der **Pessimist** sieht die Gefahr. Der **Realist** sieht die Fakten. Der **Idealist** sieht das Ideal. Der **Skeptiker** fragt nach.\n\n**Politisch** wird oft laut diskutiert. Die **Elite** wird kritisiert. Die **Politik** wird beobachtet. Ein **Politiker** braucht Vertrauen. Ein **Skandal** kann alles zerstören.\n\nBei einer **Wahlkampagne** kämpfen **Kandidat**en um Stimmen. Ein **Diplomat** oder **Botschafter** vertritt sein Land. Ein **Vorsitzende**r einer Partei hat Verantwortung.\n\nEin **Delegierte**r stimmt in einem Ausschuss ab. Der **Vorstand** einer Firma muss Rechenschaft geben. Der **Aufsichtsrat** kontrolliert.",
@@ -30286,9 +30374,9 @@
       {
         "id": 31,
         "chapter": 23,
-        "phase": 4,
-        "phase_name": "Phase 4 – Politik, Wirtschaft, Umwelt",
-        "phase_description": "Politics, economy, environment (classic B1 exam topics)",
+        "phase": 7,
+        "phase_name": "Phase 7 – Ideen & Geschichte",
+        "phase_description": "Ideologies, thinkers, war and peace",
         "title_de": "Krieg, Frieden und historische Prozesse",
         "title_en": "War, peace and historical processes",
         "story_de": "Der **Krieg** ist die schlimmste Katastrophe. Ein **Bürgerkrieg** zerstört ein Land von innen.\n\nNach dem **Ausbruch** eines Konflikts leiden die Menschen. **Frieden** ist immer das Ziel. Aber der Weg ist lang.\n\nEin **Zeitgenosse** von Krieg vergisst nie.\n\nEs gibt große **Meilenstein**e in der Geschichte. Die Aufklärung. Die Industrielle Revolution. Die Digitalisierung. Auch ein **Wendepunkt** wie der Mauerfall bleibt im Gedächtnis. Nach einem **Tiefpunkt** kommt oft ein Aufstieg. Nach einem **Umbruch** kommt neue Ordnung.\n\nIn vielen Ländern gibt es Bewegungen. Ein **Aktivist**. Ein **Demonstrant**. Ein **Befürworter**. Ein Gegner. Jeder hat eine Rolle.\n\nDie **Nachkomme**n der Opfer erinnern sich. So wiederholt sich Geschichte nicht. Auch ein **Vorfahre** kann inspirieren.\n\nEin **Auswanderer** verlässt sein Land. Ein **Gefangene**r verliert seine Freiheit.\n\nDer **Zusammenschluss** von Nationen soll Kriege stoppen. Die EU ist ein Beispiel. Aber es gibt auch **Rückschritt**e. Diktaturen kommen zurück.\n\nNach einem **Einbruch** der Wirtschaft kommt oft Chaos. Der Aufstieg des **Extremismus** ist überall zu sehen.\n\n**Reichtum** und **Wohlstand** sind ungleich verteilt. Der **Konsum** in reichen Ländern ist hoch. Aber woanders gibt es **Mangel**.\n\nDer **Lebensstandard** und der **Lebensstil** zeigen viel. Der **Werdegang** eines Menschen erzählt viel. Und **Zufall** und **Schicksal** spielen mit.",
@@ -30510,9 +30598,9 @@
       {
         "id": 20,
         "chapter": 24,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 8,
+        "phase_name": "Phase 8 – Forschung, Konflikt & Wandel",
+        "phase_description": "Science, negotiation, success, change",
         "title_de": "Wissenschaft, Forschung und Erkenntnis",
         "title_en": "Science, research and knowledge",
         "story_de": "Die **Wissenschaft** treibt den Fortschritt. **Forschung** braucht Zeit und Geld.\n\nEin **Wissenschaftler** hat eine **Theorie**. Er hat eine These oder eine Hypothese. Dann macht er ein Experiment.\n\nEr muss **messen**. Er muss **untersuchen**. Er muss **auswerten**. Jede **Studie** hat viele Schritte.\n\nAm Ende kommt ein **Ergebnis**. Oft ist es überraschend.\n\nEine einzelne **Studie** reicht nicht. Man braucht viele. Erst dann hat man einen **Beweis**.\n\nDer **Ansatz** kann rein **theoretisch** sein. Er kann auch **praktisch** sein. Eine gute **Analyse** ist objektiv. Sie ist nicht **subjektiv**. Sie baut auf Fakten.\n\nAus Daten machen wir **Statistik**en. Aus Statistiken machen wir **Schlussfolgerung**en.\n\nWissenschaftler müssen **vorurteilsfrei** sein. Sie müssen **unvoreingenommen** sein. **Umstritten**e Ergebnisse muss man neu prüfen.\n\nNeue Techniken helfen. Sie machen die **Entdeckung** von Krankheiten möglich. Sie machen die **Erfindung** von Medikamenten möglich.\n\nEin Phänomen kann Jahre der Forschung brauchen. Die Erkenntnis ändert oft das Weltbild.",
@@ -30685,9 +30773,9 @@
       {
         "id": 21,
         "chapter": 25,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 8,
+        "phase_name": "Phase 8 – Forschung, Konflikt & Wandel",
+        "phase_description": "Science, negotiation, success, change",
         "title_de": "Konflikt, Verhandlung und Kompromiss",
         "title_en": "Conflict, negotiation and compromise",
         "story_de": "Jeder **Konflikt** hat eine Vorgeschichte. Zuerst kommt ein **Widerspruch**. Dann kommt eine **Auseinandersetzung**. Manchmal ein offener Streit.\n\nWir dürfen nicht **eskalieren**. Wir müssen **deeskalieren**. Wer klug **verhandel**t, sucht einen **Kompromiss**. Er will **schlichten**. Er will nicht **beleidigen** oder **beschimpfen**.\n\nErwachsene können **verhandeln**. Sie **argumentieren** ruhig. Sie **begründen** ihre Position. Sie hören zu. Sie treffen eine **Vereinbarung**.\n\nEin Vermittler kann helfen. Er kann den Streit **schlichten**. Er kann ihn **beilegen**.\n\nNach einer harten **Verhandlung** finden beide Seiten einen Mittelweg. Ein guter **Kompromiss** ist selten perfekt. Aber er beendet den Streit.\n\nMan muss auch **Grenzen** setzen. Wer immer nachgibt, verliert Respekt. Wer nie nachgibt, verliert Freunde. Das Gleichgewicht ist die Kunst.\n\nMan muss auch **vergeben** können. Man muss **verzeihen** können. Nicht aus Schwäche. Aus Stärke. Wer alte Verletzungen **verarbeit**et, ist frei.\n\nZwischen Staaten braucht man Diplomatie. Man **abschließt** Verträge. Man **unterschreibt** sie.\n\nWenn ein Land den Vertrag bricht, kommen Sanktionen. Die Welt braucht mehr Vermittlung. Weniger Konfrontation.",
@@ -30847,9 +30935,9 @@
       {
         "id": 22,
         "chapter": 26,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 8,
+        "phase_name": "Phase 8 – Forschung, Konflikt & Wandel",
+        "phase_description": "Science, negotiation, success, change",
         "title_de": "Erfolg, Scheitern und persönliche Ziele",
         "title_en": "Success, failure and personal goals",
         "story_de": "Jeder träumt vom Erfolg. Aber nicht jeder weiß, wie.\n\n**Erfolgreich** ist, wer klare Ziele hat. Er **erreicht** sie. Er **erzielt** Resultate.\n\nWer nicht **wagt**, gewinnt nichts. Wer nicht **riskiert**, bleibt sicher. Aber langweilig.\n\nManche Projekte **scheitern**. Ich bin schon oft **gescheitert an** einer Aufgabe. Aber ich habe gelernt. **Versagen** ist keine Katastrophe. Es ist eine Lektion.\n\nWichtig ist: nicht **aufgeben**. Man muss die Probleme **überwinden**. Auch die **Enttäuschung** über eine **erfolglos**e Bewerbung geht vorbei. Man muss die Situation **bewältigen**. Dann geht es weiter.\n\n**Ausdauer** ist wichtig. Zwei Wörter helfen: **Optimismus** und **Pessimismus**. Beide halten das Gleichgewicht. Ein Optimist unterschätzt die Risiken. Ein Pessimist unterschätzt die Chancen.\n\n**Realitätsnah** ist besser als **realitätsfern**. Auch der **Idealist** träumt zu hoch. Der Pragmatiker plant. Ich versuche, **pragmatisch** zu sein.\n\nEin neuer **Aufbruch** kann heilen. Nach einer schweren Phase habe ich mich neu orientiert. Ich war fast **verzweifelt**. Aber ich habe klare Prioritäten gesetzt.\n\nIch habe meine Ziele **umgesetzt**. Schritt für Schritt. Ich musste mich konzentrieren.\n\nIch blieb motiviert und engagiert. Der **Höhepunkt** meiner Reise ist noch nicht da.",
@@ -31030,9 +31118,9 @@
       {
         "id": 25,
         "chapter": 27,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 8,
+        "phase_name": "Phase 8 – Forschung, Konflikt & Wandel",
+        "phase_description": "Science, negotiation, success, change",
         "title_de": "Wandel, Prozesse und Entwicklung",
         "title_en": "Change, processes and development",
         "story_de": "Die Welt ändert sich immer. Nichts bleibt gleich.\n\nEs gibt einen **Aufschwung**. Dann einen **Rückgang**. Manchmal einen **Umbruch**. Selten einen kompletten **Zusammenbruch**. Ein **Wendepunkt** kann leise kommen. Oder laut. Auch der **Durchbruch** einer neuen Technologie ändert alles.\n\nWas **entsteht**, wächst. Was wächst, ändert sich.\n\nManche Firmen **florieren**. Andere **stagnieren**. Andere **schrumpfen**. Eine Firma kann **expandieren**. Sie kann ihren Markt **ausweiten**. Aber sie kann auch **misslingen**. Sie kann in die Pleite gehen.\n\nEin Produkt kann ein Hit werden. Oder es kann **floppen**. Der Aufstieg eines Startups ist spannend. Der **Niedergang** eines Konzerns ist lehrreich.\n\nAuch persönlich ändern wir uns. Ich habe gelernt, mich anzupassen. Wer sich nicht **anpasst**, bleibt zurück. Wer **wahrnimmt**, kann handeln.\n\nManche fördern den Wandel. Andere bremsen ihn.\n\nEin Land kann sich politisch **verwandeln**. Eine Diktatur wird zur Demokratie. Oder umgekehrt. Ein Konzept wird **umgesetzt**. Ein Ziel wird **erreicht**. Ein Traum wird **realisiert**.\n\nManche Prozesse sind langsam. Manche kommen **auf einmal**.\n\nWichtig ist: offen bleiben. Die **Zunahme** der Digitalisierung ist enorm. Die **Abnahme** klassischer Berufe auch. Beides gehört zusammen.\n\nWer **zunehmend** flexibel ist, überlebt jeden Wandel. Neue Ideen **aufblühen** überall. Man kann sein Angebot **ausdehnen**. Neue Probleme **auftreten**.",
@@ -31244,9 +31332,9 @@
       {
         "id": 33,
         "chapter": 28,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 9,
+        "phase_name": "Phase 9 – Menschen & abstrakte Nomen",
+        "phase_description": "Roles, ideas, principles, responsibility",
         "title_de": "Menschen, Berufe und Rollen",
         "title_en": "People, professions and roles",
         "story_de": "In jedem Prozess gibt es viele Personen. Ein **Staatsanwalt** klagt an. Ein **Schlichter** vermittelt.\n\nFür das Amt braucht man einen **Sprachnachweis**. Ein **Bewohner** eines Hauses hat andere Rechte als ein **Einwohner** einer Stadt.\n\nIn der Firma arbeitet der **Experte** neben dem **Fachmann**. Ein guter **Teilnehmer** an einer Konferenz bringt sich ein. Ein **Gegner** einer Idee ist auch nützlich. Er stellt kritische Fragen.\n\nIch lese oft **Denker** und **Philosophen**. Auch ein **Professor** inspiriert. Manche haben großen **Einfluss**. Andere hinterlassen wenig **Eindruck**.\n\nEin **Einwand** ist wichtig. Wer eine These prüft, macht sie stärker.\n\nDer **Standpunkt** einer Person kommt aus ihren Werten.\n\n**Handlungsspielraum** und **Ermessensspielraum** heißen ähnliche Dinge. Auch **Spielraum**. Alle bedeuten: Freiheit zu entscheiden. Ohne Freiheit kann man nichts gestalten.\n\nEin Gericht braucht Unabhängigkeit. Ein Journalist braucht Freiheit. Ein Wissenschaftler braucht Zeit.\n\nDer **Durchschnitt** sagt nichts über den Einzelfall. Ein **Maßstab** hilft, Dinge zu vergleichen. Der **Umfang** eines Buchs sagt nichts über die Qualität.\n\nEin **Überblick** ist der erste Schritt. Ein **Nachweis** ist der letzte Schritt.\n\nEin **Prozess** kann politisch sein. Er kann juristisch sein. Er kann chemisch sein.\n\nEin **Zusammenhang** wird oft erst am Ende klar. Ein **Zweck** rechtfertigt nie alle Mittel. Der **Gegensatz** zwischen Ideal und Wirklichkeit ist ewig.",
@@ -31468,9 +31556,9 @@
       {
         "id": 34,
         "chapter": 29,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 9,
+        "phase_name": "Phase 9 – Menschen & abstrakte Nomen",
+        "phase_description": "Roles, ideas, principles, responsibility",
         "title_de": "Abstrakte Begriffe: Ideen, Prinzipien, Systeme",
         "title_en": "Abstract concepts: ideas, principles, systems",
         "story_de": "Jedes **System** hat ein **Prinzip**. Unser Rechtssystem hat klare Regeln. Unser Wirtschaftssystem hat ein einfaches **Konzept**: Angebot und Nachfrage.\n\nEin **Idealbild** von einer Gesellschaft ist ein Traum. Aber es zeigt die Richtung. Ein **Klischee** ist zu einfach.\n\nDer Mensch hat ein **Bewusstsein**. Er hat auch ein **Unterbewusstsein**. Sein **Verhalten** kommt von beidem.\n\nEin **Missverständnis** kommt oft. Zwei Menschen haben andere Weltbilder. Auch das **Verständnis** einer Sache braucht Zeit.\n\nDas **Verhältnis** zwischen Menschen kann warm oder kalt sein.\n\nEin **Anliegen** ist mehr als ein Wunsch. Ein **Vorhaben** ist mehr als ein Traum. Ein **Interesse** macht uns aktiv.\n\nHandlung braucht **Kapital**. Geld oder Zeit oder Talent. Jedes **Vorhaben** braucht ein **Budget**. Ohne Ressourcen bleibt ein **Konzept** nur Papier.\n\nEin **Dilemma** hat keine gute Lösung. Ein **Paradox** verwirrt den Kopf. Das **Gegenteil** einer These zeigt sie oft am besten.\n\nEin **Mittel** kann ein Zweck sein. Und umgekehrt.\n\nWir alle brauchen **Nahrungsmittel**. **Misstrauen** zerstört Beziehungen. **Lob** motiviert mehr als Kritik.\n\nDas **Schicksal** kann hart sein. Aber wir haben Handlungsspielraum. **Eigentum** verpflichtet — sagt unser Grundgesetz.",
@@ -31660,9 +31748,9 @@
       {
         "id": 35,
         "chapter": 30,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 9,
+        "phase_name": "Phase 9 – Menschen & abstrakte Nomen",
+        "phase_description": "Roles, ideas, principles, responsibility",
         "title_de": "Abstrakte Nomen zur Politik, Wirtschaft und Gesellschaft",
         "title_en": "Abstract nouns for politics, economy and society",
         "story_de": "Die Politik eines Landes kommt aus seinen Werten. Eine Verfassung ist die höchste Norm. Die **Gesetzgebung** macht sie konkret.\n\nEine **Konvention** ist eine ungeschriebene Regel. Eine **Höflichkeitsform** ist auch eine Vereinbarung.\n\nIn einem guten Staat ist die **Zuständigkeit** jeder Behörde klar.\n\nDie **Bevölkerung** wächst. Oder sie schrumpft. Ihre **Erwartung** an die Politik ist hoch. Die **Nachfrage** nach Wohnraum, Bildung und Sicherheit steigt.\n\nEine **Umfrage** oder **Befragung** zeigt regelmäßig, was die Menschen denken. Die **Auswertung** dieser Statistiken hilft der Regierung.\n\nEine **Krise** kann jede Gesellschaft treffen. Sie hat immer **Folgen (Pl.)**. Die **Verschlechterung** einer Situation kann Jahre dauern. Die **Verbesserung** auch.\n\nNach jeder Krise braucht man eine neue Perspektive.\n\n**Kritik** ist wichtig. Aber sie sollte sachlich sein. Eine gute **Alternative** überzeugt mehr als Ablehnung. Eine **Option** offen zu lassen, zeigt Souveränität.\n\nDie **Notwendigkeit** zu handeln kommt aus der Analyse. Eine **Voraussetzung** für Fortschritt ist Bildung. Eine andere ist Freiheit.\n\nManchmal ist es eine **Gewissensfrage**. Darf man lügen, um Leben zu retten? Eine **Verantwortungsethik** schaut auf die Folgen.\n\nDie **Genehmigung** einer Baustelle ist ein Verwaltungsakt. Die **Führung** eines Landes trägt viel Verantwortung. Die **Initiative** von Bürgern stärkt die Demokratie.\n\nEine **Hilfsorganisation** oder **Nichtregierungsorganisation** hilft, wenn der Staat fehlt.\n\nDie **Kraft** des Einzelnen zählt. Die Kraft der Argumente. Die Kraft der Solidarität.\n\nEine **Frist** setzt Grenzen. Die **Anwendung** eines Gesetzes klärt Zweifel. Die **Bedeutung** eines Ereignisses zeigt sich manchmal erst spät. Eine **Wahrscheinlichkeit** ist nie hundert Prozent.\n\nEin Dokument braucht **Unterlagen (Pl.)**. Ein Bewerber braucht eine Bescheinigung. Die **Anforderung** an Kandidaten ist hoch. Die **Bedingung** ist oft streng.\n\n**Ausnahme**n bestätigen die Regel.",
@@ -31940,9 +32028,9 @@
       {
         "id": 36,
         "chapter": 31,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 9,
+        "phase_name": "Phase 9 – Menschen & abstrakte Nomen",
+        "phase_description": "Roles, ideas, principles, responsibility",
         "title_de": "Nomen zu Wirken, Gestaltung und Verantwortung",
         "title_en": "Nouns of effect, design and responsibility",
         "story_de": "Jede Handlung hat eine **Wirkung**. Eine kleine Geste kann große **Auswirkung** haben. Auch ein schlechtes Wort.\n\nWer die **Verantwortung** trägt, muss die Folgen aushalten. Manchmal hilft nur die **Übertragung** der Verantwortung an einen anderen.\n\nDie **Gestaltung** einer Wohnung, eines Textes oder eines Systems braucht Nachdenken. Eine gute **Zusammenfassung** zeigt das Wichtigste in wenigen Sätzen. Eine **Übersicht** oder eine **Übereinstimmung** wird oft übersehen. Aber sie ist wichtig.\n\nIch hatte eine **Vorstellung** vom Ziel. Aber die Realität war anders. Ein Buch beginnt mit einer **Vorstellung**. Sie wird zur **Erwartung**. Sie endet als **Enttäuschung**.\n\nEine **Überzeugung** darf man nicht ohne Grund aufgeben. Die **Zuversicht**, dass alles klappt, hilft im Alltag.\n\n**Zusammenarbeit** ist der Schlüssel. Ohne Zusammenarbeit entsteht wenig. Auch die **Führung** durch klare **Haltung** ist wichtig. Die **Gelassenheit** eines Chefs kann ein Team beruhigen.\n\nDie **Entwicklung** eines Kindes braucht Zeit. Die **Einstellung** eines Erwachsenen ändert sich langsam. Eine **Schwankung** der Stimmung ist normal. Eine **Tendenz** zu Extremen ist problematisch.\n\nWichtig ist die **Rolle**, die man hat: Freund, Elternteil, Kollege, Chef.\n\n**Rücksicht** und Respekt öffnen Türen. **Unsicherheit** und Misstrauen schließen sie. **Schuld** ist schwer, aber ehrlich.\n\nOhne **Methode** kein Erfolg. Ohne **Logik** kein Argument. Ohne **Lösung** kein Fortschritt. Auch eine **Fälschung** wird meist entdeckt. Eine **Verpackung** sagt oft mehr als der Inhalt.\n\nEin Konzert braucht ein Publikum. Eine Meinung braucht eine **Unterhaltung**. Eine **Spende** kann Leben retten. Eine **Förderung** vom Staat kann Talente stärken.\n\nDie Elite sollte ein Vorbild sein. Wenn sie es nicht ist, kommen Skandale.\n\nAuch die **Begeisterung** für ein Thema hilft. Aber sie darf keine **Belastung** werden.",
@@ -32204,9 +32292,9 @@
       {
         "id": 37,
         "chapter": 32,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 10,
+        "phase_name": "Phase 10 – Adjektive Teil 1",
+        "phase_description": "Describing the world (adjectives, part 1)",
         "title_de": "Ein Essay über Adjektive: Wie wir die Welt beschreiben (Teil 1)",
         "title_en": "An essay on adjectives: How we describe the world (Part 1)",
         "story_de": "Ein Adjektiv ist ein Fenster in die Welt.\n\nIst etwas **politisch**? Oder **privat**? **Sozial** oder **wirtschaftlich**? **Öffentlich** oder **staatlich**? Wir sortieren die Welt mit Wörtern.\n\nEin Ereignis ist **regional**, **international** oder **weltweit**. Eine Idee ist **abstrakt** oder **konkret**. Ein Problem ist **individuell** oder **allgemein**.\n\nEin Gesetz ist **gesetzlich**. Aber es ist nicht immer **gerecht**. Etwas kann **rechtlich** erlaubt sein. Aber trotzdem **unangemessen**. Manche Ideen sind **wesentlich**. Andere sind **nebensächlich**. Manche sind **zentral**. Andere sind **überflüssig**.\n\nIch denke gern **rational**. Aber manchmal handle ich **irrational**. Wer nur objektiv denkt, sieht das Gefühl nicht. Wer nur **subjektiv** urteilt, verliert die Fakten. **Skeptisch** zu sein ist gesund. **Fraglich**, ob **kritisch** immer klug ist. **Fragwürdig** ist manche Praxis.\n\nEin Standpunkt ist **eindeutig** oder **zweideutig**. Klar oder **widersprüchlich**. Manche Themen sind umstritten. Andere sind **unumstritten**. **Kontrovers** heißt nicht falsch.\n\nEtwas ist **offensichtlich** oder verborgen. **Offenkundig** oder subtil. **Auffällig** ist, was heraussticht.\n\nManche Phänomene sind **erheblich**. Andere sind **gering**. Ein Anstieg ist **deutlich** oder **enorm**. Ein Text ist **umfangreich** oder kurz. Er ist **begrenzt** oder groß. Meine Meinungen sind **vielfältig**. Mein Stil ist **einheitlich**.\n\nEtwas Neues ist **speziell**. Das Übliche ist **allgemein**. Ich will **grundsätzlich** freundlich sein. **Selbstverständlich** grüße ich Nachbarn.\n\n**Beeindruckend** ist echte Freundlichkeit. **Erstaunlich** finde ich manche Menschen. **Erfolgreich** ist, wer klar denkt.\n\nManche Themen sind **aktuell**. Andere sind **veraltet**. Etwas Neues wird **zukünftig** wichtig. Ein **ehemaliger** Präsident hat Erinnerungen. Ein **vorläufiges** Ergebnis wird **endgültig**.\n\n**Ständig** neue Informationen. **Gelegentlich** eine Pause. **Zeitweise** viel Stress. So ist mein Alltag.\n\nMeine Lernmethode ist **langfristig**. Kein **kurzfristiger** Trick. Das Resultat ist **dauerhaft**. Kein **vorübergehend**er Erfolg.",
@@ -32647,9 +32735,9 @@
       {
         "id": 38,
         "chapter": 33,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 11,
+        "phase_name": "Phase 11 – Adjektive Teil 2 & Bewerten",
+        "phase_description": "Values, states, analysis and judgement",
         "title_de": "Adjektive Teil 2: Werte, Zustände, Eigenschaften",
         "title_en": "Adjectives Part 2: Values, states, properties",
         "story_de": "Menschen und Systeme beschreiben wir mit Adjektiven.\n\nEtwas ist **fair** oder **unfair**. Ein Argument ist **glaubwürdig**, wenn es überzeugend ist. Eine Aussage ist **zufällig** oder **absichtlich**. Eine Handlung ist **versehentlich** oder mit Vorsatz.\n\nIch versuche, **vernünftig** zu handeln. Mein Chef bleibt oft **neutral**. Nur selten ist er **parteiisch**. Ein **gemäßigter** Ton ist besser als ein **extremer**.\n\n**Innovativ** zu denken hilft. **Konventionell** zu handeln beruhigt.\n\nManche Menschen sind **weltfremd**. Andere sind **rückständig**. Andere sind **fortschrittlich**.\n\nEin guter Freund ist **verletzlich**, aber **widerstandsfähig**. Die Kombination macht Charakter. Auch **verwundbar** zu sein ist keine Schwäche.\n\nEin Land ist **stabil** oder **instabil**. Seine Wirtschaft ist **beständig** oder **schwankend**. Eine Firma ist **krisenfest**, wenn sie Reserven hat. Ein System ist **robust**, wenn es **resistent** gegen Angriffe ist.\n\nEine Aufgabe ist **erforderlich** oder überflüssig. Ein Job ist **beruflich**. Ein Anruf ist **persönlich**.\n\nEin Thema ist **kulturell**, **sprachlich**, **technisch** oder **wissenschaftlich**. Je nach Perspektive.\n\nDie Natur ist **natürlich**. Manche Musik ist **künstlich**. Ein Produkt ist **biologisch** oder chemisch. Ein Text ist **fließend**. Ein Verhalten ist **angemessen** oder unangemessen.\n\n**Verboten** heißt: nicht **erlaubt**. Erlaubt heißt: **zulässig**. **Verpflichtend** heißt: man muss. Freiwillig heißt: man darf. **Zwingend** und **unvermeidlich** — beide beschreiben, was sein muss.\n\nEin **gesellschaftlich** wichtiges Thema wird oft **einstimmig** angenommen. Ein umstrittenes wird eher **mehrheitlich** angenommen.\n\nWer **anfällig** für Kritik ist, ist verletzlich. Wer **bewusst** lebt, entscheidet aktiv. Wer **unbewusst** handelt, folgt Mustern.\n\n**Zufrieden** zu sein ist ein Zustand. Es ist kein Ziel. **Ehrlich** zu sein ist ein Prinzip. Es ist keine Strategie.\n\n**Selbstverständlich** ist wenig im Leben. Auch **gestresst** zu sein ist nicht immer schlimm. **Belastet** oder **angespannt** — beides gehört zum Leben. **Finanziell** unabhängig zu sein, ist ein Ziel.\n\nManche Wahrheiten sind **zeitlos**. Andere gelten nur heute. **Gleichberechtigt** sind wir alle. Wer **unterfordert** ist, verliert Motivation. Neue Erfahrungen sind **vergleichbar** mit alten. **Vertraut** ist, was wir kennen.\n\nManche Ideen sind **zweifelhaft**. Andere sind klar. Wer **voreingenommen** ist, denkt nicht frei. Wer **sinnvoll** handelt, wirkt. Wer **sinnlos** handelt, verliert Zeit.\n\nDas Wetter ist **örtlich / lokal** verschieden.",
@@ -33118,9 +33206,9 @@
       {
         "id": 24,
         "chapter": 34,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 11,
+        "phase_name": "Phase 11 – Adjektive Teil 2 & Bewerten",
+        "phase_description": "Values, states, analysis and judgement",
         "title_de": "Analyse, Bewertung und Argumentation",
         "title_en": "Analysis, evaluation and argumentation",
         "story_de": "Ein gutes **Argument** braucht eine klare **Begründung**. Wer eine **Behauptung** aufstellt, sollte sie **beweisen**. Sonst ist es nur Meinung.\n\nZuerst muss man das Problem **analysieren**. Dann muss man die Fakten **feststellen**. Dann kommt die Bewertung.\n\nIch versuche immer, das Thema **objektiv** zu **betrachten**. Ich trenne meine **Wahrnehmung** von der Realität.\n\nWenn ich einen Text lese, suche ich die **Grundlage**. Ich versuche zu **erkennen**: Was will der Autor **hervorheben**? Was will er **erwähnen**? Worauf will er **hinweisen auf**? Welche **Perspektive** hat er?\n\nIst seine **Behauptung** haltbar? Manchmal ja. Manchmal muss ich **widersprechen**.\n\nEin **Gegenargument** ist wichtig. Es prüft jede These.\n\n**Bewerten** ist nicht dasselbe wie **beurteilen**. Wer beurteilt, ist strenger. Wer **einschätzt**, ist vorsichtiger.\n\nIch versuche, Menschen nicht zu **verurteilen**. Ich versuche zu verstehen. Der **Aspekt** der Menschlichkeit ist immer wichtig.\n\nEin **Missverständnis** kann groß werden. Wenn man nicht rechtzeitig **erläutert**, was man meint.\n\nEin **Fazit** ziehen ist eine Kunst. Man muss **zusammenfassen**. Man muss die wichtigsten Punkte **unterstreichen**. Wer **verdeutlicht**, was er meint, überzeugt schneller.\n\nKunst und Wissenschaft **veranschaulichen** komplexe Ideen. Auch eine **Statistik** kann eine Behauptung stützen.\n\nNicht jede **Annahme** stimmt. Manchmal muss man **vermuten**. Aber man darf nicht **verallgemeinern**. Und nie **übertreiben**. Auch nie **untertreiben**.\n\nWer klar **argumentiert**, gewinnt Respekt. Wer sich widerspricht, verliert Glaubwürdigkeit.\n\nAm Ende bleibt ein guter Text sachlich, **überzeugend** und ehrlich.",
@@ -33405,9 +33493,9 @@
       {
         "id": 39,
         "chapter": 35,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 12,
+        "phase_name": "Phase 12 – Verben Teil 1–2",
+        "phase_description": "Acting, causing, thinking, speaking, feeling",
         "title_de": "Verben Teil 1: Handeln, Wirken, Verursachen",
         "title_en": "Verbs Part 1: Acting, effecting, causing",
         "story_de": "Alles beginnt mit einer Handlung.\n\nEin Ereignis kann viele Menschen **betreffen**. Eine Entscheidung kann andere **beeinflussen**. Sie kann sich stark auf die Zukunft **auswirken (sich) auf**. Wer denkt, seine Handlungen haben keine Folgen, irrt. Jede Tat kann etwas **verursachen** oder zu Konsequenzen **führen zu**.\n\nDer Erfolg einer Firma **beruht auf** vielen Faktoren. Eine gute Idee reicht nicht. Sie muss sich auch **auswirken (sich)**. Vieles **hängt ab von** den Menschen im Team. Ergebnisse **zusammenhängen mit** der Kultur.\n\nBei jeder Entscheidung muss man Dinge **berücksichtigen**. Man muss viele Aspekte **beachten**. Wichtiges muss man **betonen**. Weniger Wichtiges kann man **erwähnen**. Wer klug ist, will alles **hervorheben**. Und er will **hinweisen auf** die Risiken.\n\nMan kann Fakten **feststellen**. Wer sie erklärt, muss sie **beschreiben**. Er muss sie **darstellen**. Er muss sie in einen Zusammenhang setzen.\n\nEin Wissenschaftler will **beweisen**. Ein Journalist will **berichten über**. Ein Anwalt will **bestreiten** oder **bestätigen**.\n\nManchmal muss man etwas **zugeben**. Ein anderer wird **widersprechen**. Ein dritter wird **argumentieren**.\n\nWer eine These hat, muss sie **begründen**. Wer angreift, muss **rechtfertigen**, warum. Wer beurteilt, darf **kritisieren**. Auch **bewerten** und **einschätzen** brauchen Mut.\n\nWer plant, muss **schätzen**. Er muss **voraussetzen**, dass alles bleibt. Wer nichts **annimmt**, kann nicht planen. Wer alles **vermutet**, verliert Realität.\n\nAus Infos kann man **schließen aus** und **folgern**. Und man muss oft **zusammenfassen**.\n\nEtwas zu **ermöglichen** ist gut. Etwas zu **erschweren** ist manchmal nötig. Ein Verbrechen zu **verhindern** ist gut. Auch etwas zu **vermeiden**.\n\nWer Menschen **fördern** will, hilft ihnen. Wer sie **unterstützen** will, steht bei ihnen.\n\nEin Projekt **erfordert** Ressourcen. Der Staat **verlangt** Steuern. Wer etwas will, muss es **beantragen**. Der Staat **genehmigt** oder **lehnt ab**.\n\nWer **verzichtet auf** etwas, verliert es freiwillig. Wer sich etwas **leistet**, gönnt sich etwas. Manche Projekte **lohnen sich**. Andere nicht.\n\nWer sich **beteiligt an** etwas, gestaltet mit. Wer sich **engagiert**, kämpft. Wer sich **einsetzt für** Menschen, gewinnt Vertrauen. Wer sich **durchsetzt**, wird Chef.\n\nEin guter Chef weiß, wie er sich **verhält** und sich **benimmt**.",
@@ -33827,9 +33915,9 @@
       {
         "id": 40,
         "chapter": 36,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 12,
+        "phase_name": "Phase 12 – Verben Teil 1–2",
+        "phase_description": "Acting, causing, thinking, speaking, feeling",
         "title_de": "Verben Teil 2: Denken, Sprechen, Fühlen",
         "title_en": "Verbs Part 2: Thinking, speaking, feeling",
         "story_de": "Ein Mensch verbringt viel Zeit im Kopf.\n\nWir müssen etwas **wahrnehmen**. Dann müssen wir **erkennen**. Dann müssen wir verstehen.\n\nWenn wir denken, müssen wir Dinge **unterscheiden sich**. Was ist gleich? Was ist anders? Wer mit einem anderen **übereinstimmt**, denkt gleich. Manchmal müssen die eigenen Gedanken **abweichen von** der Norm.\n\nSprache ist unser Werkzeug. Wer schreibt, muss **ausdrücken**, was er meint. Ein Redner muss **verdeutlichen**. Wer lehrt, muss **erläutern** und **veranschaulichen** und **darstellen**. Wenn etwas schwer ist, sollte man es **unterstreichen**.\n\nMan kann etwas **loben**, wenn es gut ist. Man kann etwas **kritisieren**, wenn nötig. Man kann **respektieren**, was fremd ist. Man muss nichts **verachten**.\n\nMan kann jemanden **überzeugen**. Oder ihn **überreden**. Wer **beeindrucken** will, muss echt sein. Wer nicht **enttäuschen** will, muss ehrlich sein.\n\nWir müssen andere **tolerieren**. Auch wenn wir sie nicht mögen. Wir müssen manches **dulden**, was wir nicht ändern können. Wer Schweres **erdulden** kann, wird stark. Auch **ertragen** und **aushalten** und **überstehen** sind wichtige Wörter.\n\nMan kann etwas **realisieren**. Oder etwas **umsetzen**. Oder etwas **verwirklichen**. Oder etwas **erreichen**. Diese Verben sind ähnlich.\n\nWenn ich **untersuche**, will ich lernen. Wenn ich **recherchiere**, sammle ich Fakten. Wenn ich **entdecke**, finde ich Neues. Wenn ich **erfinde**, schaffe ich Neues.\n\nWer **erforscht**, geht tief. Wer **prüft** oder **testet**, kontrolliert. Wer **kontrolliert**, misstraut. Wer **überprüft**, will Sicherheit. Wer **auswertet**, sucht Muster.\n\nWir wollen die Umwelt **schützen** und die Natur **bewahren**. Was **beschädigt**, muss neu werden. Wer **zerstört**, verliert Respekt. Wer **belastet**, macht müde. Wer **entlastet**, hilft. Wer **verschwendet**, schadet allen. Wer **spart**, denkt an morgen.\n\nManchmal muss man **wagen** oder **riskieren**. Wer nicht wagt, gewinnt nichts. Wer nur riskiert, verliert oft.\n\nAuch **auftreten** und **auffallen** brauchen Mut. Wer sich **weigert**, hat einen Standpunkt. Wer **zögert**, verliert Zeit.\n\nMan muss lernen, sich **anzupassen**. Und mit Krisen **umzugehen mit**. Auch **einigen (sich)** und **vereinbaren** sind eine Kunst.",
@@ -34214,9 +34302,9 @@
       {
         "id": 41,
         "chapter": 37,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 13,
+        "phase_name": "Phase 13 – Verben Teil 3–4",
+        "phase_description": "Reflexive verbs, rules and rights",
         "title_de": "Verben Teil 3: Reflexive Verben und Selbstbezug",
         "title_en": "Verbs Part 3: Reflexive verbs and self-reference",
         "story_de": "Viele deutsche Verben sind reflexiv.\n\nWenn ich einen Fehler mache, muss ich mich **sichentschuldigen**. Wenn ich Neues lerne, muss ich mich **sichkonzentrieren**. Sonst geht nichts. Wenn ich Verantwortung will, muss ich mich **sichrechtfertigen**.\n\nIch versuche, mir **bewusst machen(sich)**, was ich denke und tue. Ich muss mich zuerst **sich informieren** und **sich vorbereiten**. Dann kann ich handeln. Ich lerne, mich zu **sich orientieren**.\n\nBei jedem Projekt muss ich mich **anstrengen** und **sich bemühen**. Wer sich nicht **anstrengt**, erreicht nichts. Wer sich nicht **bemüht**, verliert die Chance. Manchmal muss ich mich **sich beklagen**. Aber ich bleibe konstruktiv.\n\nWer neu lernt, muss sich mit dem Thema **sich auseinandersetzen (mit)**. Er muss es tief verstehen. Ich beschäftige mich täglich mit Deutsch. Ich **sichbeschäftigen(mit)** Grammatik, Vokabeln, Aussprache.\n\nIch will mich in der neuen Firma **sich etablieren**. Ich will mich in das Team **sich integrieren**. Ich versuche, mich vom Chaos **sich abgrenzen**. Grenzen sind wichtig.\n\nManchmal muss ich mich von schlechten Meinungen **sich distanzieren**. Manchmal muss ich mich für gute Ideen **sich einsetzen**. Oder **sich einsetzen(für)** eine Kollegin. Auch **sich einsetzen für** die Umwelt zählt.\n\nIch muss mich an neue Kollegen **sich gewöhnen an**. Manchmal muss ich mich als Experte **sich behaupten**. Wer sich gut **sich benimmt**, wird respektiert.\n\nIch will mich um meine Familie **sich kümmern(um)**. Ich will mich meiner Freundin **sich widmen**. Ich beziehe mich auf meine Werte. Ich **sich beziehen(auf)**.\n\nWer sich **sich bewerben** will, muss vorbereitet sein. Wer sich **sich informieren über** ein Thema will, muss lesen. Wer sich **sich verbreiten** kann, gewinnt Reichweite.\n\nWer sich gut **absichern (sich)** hat, kann Risiken eingehen. Wer sich **ausgleichen** muss, findet Balance. Wer sich **beschränken(sich)** kann, ist klug.\n\nDie Verben **versöhnen (sich)** und **spalten (sich)** sind wichtig. Eine Gruppe kann sich vereinen. Sie kann sich auch spalten.\n\nIch versuche zu vermitteln. Ich will nicht **beleidigen**.",
@@ -34461,9 +34549,9 @@
       {
         "id": 42,
         "chapter": 38,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 13,
+        "phase_name": "Phase 13 – Verben Teil 3–4",
+        "phase_description": "Reflexive verbs, rules and rights",
         "title_de": "Verben Teil 4: Regeln, Rechte und Systeme",
         "title_en": "Verbs Part 4: Rules, rights and systems",
         "story_de": "Der Staat muss viele Dinge **regeln**.\n\nEin Gesetz kann etwas **erlauben** oder **untersagen**. Eine Behörde muss Fristen **einhalten**. Sie muss Prozesse sauber **durchführen**.\n\nWer die Regeln **missachtet**, riskiert Strafe. Wer Regeln **verletzt(Regeln)** oder gegen sie **verstoßen(gegen)**, muss haften.\n\nUm eine Norm zu setzen, muss man sie **festschreiben** oder **kodifizieren** oder **verankern**. Man muss sie **einführen**. Dann muss sie für alle **gelten**. Die Bürger müssen die Regeln **akzeptieren** und **anerkennen**.\n\nWer eine Firma **gründen** will, muss sie später **leiten** und **verwalten**. Wenn Vertrauen fehlt, kann man keine Mitarbeiter **einstellen**. Oder man muss sie später **entlassen**.\n\nWer Verantwortung nimmt, muss auch **verantworten**, was passiert.\n\nEine gute Versicherung hilft. Zum Beispiel eine **Haftpflichtversicherung**. Wer schuldig ist, muss **entschädigen**. Wer nicht **haftet**, ist trotzdem moralisch verantwortlich. Wer **haften für** Fehler muss, muss zahlen. Wer sich **versichern** will, zahlt jeden Monat.\n\nEine Firma will oft wachsen. Sie will den Markt **vergrößern**. Sie will den Umsatz **steigern**. Sie will das Angebot **erweitern**. Sie will neue Kunden gewinnen. Wer sein Geschäft **ausdehnt**, muss die Kosten **kompensieren**. Wer keine Reserven hat, kann eine Krise nicht **verkraften**.\n\nManchmal muss man Schritte **reduzieren**. Kosten **senken**. Personal **verringern**. Das Programm **beschränken auf** das Wichtigste. Das Budget **einschränken**. Etwas zu **beschränken** heißt: Grenzen setzen.\n\nDer Staat kann viel **bewirken**. Er kann Bildung fördern. Er kann Steuern **erhöhen**. Er kann Investitionen **profitieren** lassen. Er kann Renten **garantieren** und Sicherheit **gewährleisten**. Er darf niemand **zwingen**. Aber er kann Bürger **verpflichten**, Steuern zu zahlen.\n\nEine Reform kann alte Systeme **abschaffen**. Sie kann neue **einführen**. Sie kann alles **festlegen**: Regeln, Termine, Preise.\n\nWenn ein Gesetz **gilt**, müssen alle es **beachten**.\n\nWer nachdenkt, muss oft **differenzieren**. Nicht alles ist gleich. Wer erklärt, muss auf die wichtigen Punkte **hinweisen (auf)** und **hinweisen**.\n\nIch möchte niemanden **verletzen**. Aber ich will klar sein. Wer andere **ignoriert**, macht sie einsam. Wer **übersehen** wird, ist unglücklich. Wer sich **aufregen** kann, ist noch lebendig.\n\nEine Bewegung kann viele **einigen** und **vereinen**. Oder sie kann eine Gesellschaft **spalten** und **zersplittern**. Wichtig ist zu vermitteln. Nicht zu polarisieren. Wer schweigt, kann trotzdem **billigen** — oder ablehnen. Wer klug ist, wird nicht **dramatisieren**.",
@@ -34891,9 +34979,9 @@
       {
         "id": 43,
         "chapter": 39,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 14,
+        "phase_name": "Phase 14 – Verben Teil 5 & Feinschliff",
+        "phase_description": "Benefiting, contributing, current events",
         "title_de": "Verben Teil 5: Nutzen, Beitragen, Gewinnen",
         "title_en": "Verbs Part 5: Using, contributing, winning",
         "story_de": "Ich will meine Zeit gut **nutzen**.\n\nWer Ressourcen klug **verwendet**, spart Geld. Wer alte Dinge **ersetzen** kann, hilft der Umwelt. Alte Muster kann man **ergänzen** oder **erweitern**.\n\nWer klug ist, will zu Projekten **beitragen zu**. Wer sich engagiert, will Verantwortung nehmen. Wer profitieren will, muss zuerst **investieren**. Wer sein Vermögen **verwalten** kann, sichert seine Zukunft.\n\nEin Projekt sollte **ausreichen**. Es muss **genügen**. Oft **beträgt** die Investition mehr als geplant. Ein Team muss aus verschiedenen Talenten **bestehen (aus)**. Vielfalt macht stark.\n\nEine Firma muss Geld verdienen. Sie muss die Kosten decken. Ein Kredit **entspricht** einer Verpflichtung. Wer klug ist, will Risiken **behaupten**. Wer bestreitet, was klar ist, verliert Glaubwürdigkeit.\n\nMan muss Fakten aus vielen Quellen **zurückführen auf** ihren Ursprung. Man muss **herausfinden**, was wirklich passiert ist. Bei Zweifel muss man **nachschlagen**. In Büchern oder online.\n\nWer eine Fremdsprache lernt, muss Wörter **nachschlagen**. Wer eine Prüfung nicht besteht, kann sie **nachholen**. Wer im Beruf **nachgehen** will, muss studieren.\n\nWer neue Wege **vorziehen** möchte, muss alte verlassen. Wer klug **vorgehen** will, plant Schritt für Schritt. Wer Hindernisse **aufhalten** kann, wird schneller. Wer im Examen **durchfallen** könnte, sollte mehr lernen.\n\nWer Menschen **einführen** will, gibt ihnen Vertrauen. Wer Mitarbeiter **einsetzen** will, muss ihre Stärken kennen. Wer alte Probleme **umgehen** kann, findet elegante Lösungen.\n\nWichtig ist auch: andere wertzuschätzen. Wer andere **anerkennen** kann, gewinnt Freunde. Wer sein Wort einhält, wird respektiert. Wer nichts **verzichten (auf)** kann, wird nie zufrieden. Wer klug **verzichten** kann, gewinnt Kraft.\n\nAuch die Verben **zählen zu** und **zählen (zu)** und **gehören zu** und **gehören (zu)** sind wichtig. Sie sagen: was passt zu was?\n\nWer **opfern** kann, ist stark. Wer sich **entwickeln** will, muss lernen. Neue Ideen **vorkommen** in unserem Leben. Zahlen **zunehmen** oder **abnehmen**.\n\nWer klug **urteilen** kann, wird respektiert. Wer sich nicht **erschrecken** lässt, ist mutig. Wer eine Aufgabe **meistern** kann, ist Profi. Wer Probleme **lösen** kann, wird gebraucht.\n\n**Überwiegen** die Vorteile? Dann tue es. Wer **verweisen auf** oder **verweisen (auf)** eine Quelle kann, ist präzise. Wer **polarisieren** will, schadet. Wer **gedeihen** will, braucht gute Bedingungen.\n\nZwei Firmen können **verschmelzen**. Ein Text kann sich über viele Seiten **erstrecken (sich)**. Ein Buch wird **veröffentlichen**. Wer sich **entschuldigen** kann, ist klug. Wer eine Firma **führen** kann, ist Chef. Wer Fehler **nachtragen** will, hat kein Herz. Wer Hilfe **verweigern** will, ist hart.",
@@ -35271,9 +35359,9 @@
       {
         "id": 44,
         "chapter": 40,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 14,
+        "phase_name": "Phase 14 – Verben Teil 5 & Feinschliff",
+        "phase_description": "Benefiting, contributing, current events",
         "title_de": "Ein Tag im Amt: Aktuelle Ereignisse und Trends",
         "title_en": "A day at the office: Current events and trends",
         "story_de": "Heute morgen habe ich einen Artikel gelesen. Er handelt von einem neuen **Trend**. Es geht um Homeoffice im **Staat**.\n\nHomeoffice ist beliebt. Der **Anteil** der Menschen im Homeoffice ist gestiegen. Diese Entwicklung hat viele Gründe. Die Pandemie war der **Anlass**.\n\nDer **Nutzen** ist klar: mehr Flexibilität. Weniger Pendeln. Oft höhere **Produktion**.\n\nAber nicht alles ist gut. Der psychische **Druck** ist gestiegen. Die **Nutzung** von Chatprogrammen bringt viele Anrufe. Wer klug ist, sucht **Abwechslung** und Pausen.\n\nZu viel **Überfluss** an Information macht müde.\n\nDie **Technologie** entwickelt sich schnell. Ein neuer Computer-**Virus** kann viel Schaden machen. Die **Funktion** eines Programms hängt vom Update ab. Ein Cyberangriff — im schlimmsten Fall auch als **Raub** von Daten — bedroht Firmen.\n\nWer sich absichert, muss investieren.\n\nIn der Firma bereite ich **Unterlagen (Pl.)** für ein Meeting vor. Wir sprechen über **Gewinn** und Verluste. Ein wichtiges **Ereignis** war der Launch eines neuen Produkts. Ein **Experiment** mit einer neuen Marketingstrategie hat funktioniert.\n\nNach dem Meeting gehe ich mit einer Kollegin essen. Sie hat eine **entscheidende** Prüfung bestanden. Sie geht bald in den **Ruhestand** — nein, das war ein Witz. Sie ist erst 40.\n\nIch lache. Es ist **ungerecht**, wie schnell die Zeit vergeht.\n\nAm Nachmittag lese ich mehr. In China gibt es einen **vorwiegend** digitalen Handel. Die Chinesen kaufen alles per App. Auch der **Verzicht** auf Bargeld ist normal.\n\nDas bringt neue Fragen: Datenschutz, Transparenz, Macht.",
@@ -35468,9 +35556,9 @@
       {
         "id": 45,
         "chapter": 41,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 14,
+        "phase_name": "Phase 14 – Verben Teil 5 & Feinschliff",
+        "phase_description": "Benefiting, contributing, current events",
         "title_de": "Der letzte Feinschliff: durchstehen, gestatten, begrenzen",
         "title_en": "The final polish: enduring, permitting, limiting",
         "story_de": "Vor der Deutschprüfung möchte ich noch ein paar Wörter üben. Die deutsche Sprache kann mich **einschränken**. Aber ich habe ein klares Ziel. Ich werde es **durchstehen**.\n\nMeine Lehrerin sagt: „Wir müssen die Übungszeit **begrenzen**. Sonst wird man müde.\" Das ist klug. Sie **gestattet** mir, jedes Wochenende einen Test zu machen. Abends muss ich nichts tun. Ich darf mich ausruhen.\n\nWenn Prüfungen näher kommen, kann Stress **drohen**. Aber ich atme tief. „Kommt gern **vorbeikommen**\", sagt meine Lehrerin. „Wenn ihr Fragen habt.\" Diese kleine Einladung hilft mir. Ich bin nicht allein.\n\nWer eine Prüfung **durchstehen** will, muss klug lernen. Wer sich zu sehr **einschränken** lässt, verliert Freude. Wer klug plant, kann alles lernen. Ohne den Alltag zu ruinieren.\n\nWer mir hilft, ist willkommen. „Sie können gern **vorbeikommen**. Wir üben zusammen.\"\n\nNach dem Test werde ich stolz sein. Ich habe es geschafft. Ich habe meine Zeit klug **begrenzt**. Ich habe mir Ruhe **gestattet**. Ich habe die Angst nicht **drohen** lassen. Ich habe sie in Kraft verwandelt.\n\nOhne diese Strategie hätte mich der Stress zu sehr **eingeschränkt**.",
@@ -35526,9 +35614,9 @@
       {
         "id": 26,
         "chapter": 42,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 15,
+        "phase_name": "Phase 15 – Schreiben & Diskutieren",
+        "phase_description": "Formal letters, essays, discussions",
         "title_de": "Beschwerdebrief und formelle Kommunikation",
         "title_en": "Letter of complaint and formal communication",
         "story_de": "**Sehr geehrte Damen und Herren,**\n\n**Ich wende mich an Sie, weil ...** ich das Produkt nicht mag. **Ich möchte mich beschweren über ...** die Qualität. **Ich möchte darauf hinweisen, dass ...** ich das Produkt am 3. Mai bestellt habe. Aber es kam erst gestern. Es war kaputt. Es hatte kein Handbuch.\n\n**Ich bin der Ansicht, dass ...** das nicht Ihr Standard ist. **Ich vertrete die Meinung, dass ...** eine große Firma ihre Versprechen halten muss. **Es ist mir wichtig, dass...** Sie das Problem ernst nehmen.\n\n**Ich würde vorschlagen, dass ...** Sie mir ein neues Produkt schicken. Oder Sie geben mir das Geld zurück. **Es wäre besser, wenn ...** das in zwei Wochen passiert. **An deiner Stelle würde ich ...** sofort eine Prüfung machen.\n\n**Für Rückfragen stehe ich zur Verfügung.** Meine Telefonnummer steht oben.\n\n**Vielen Dank im Voraus.**\n**Ich freue mich auf Ihre Antwort.**\n**Ich würde mich sehr freuen, wenn ...** Sie das schnell klären.\n\n**Mit freundlichen Grüßen**\nHarsimarpreet Singh\n\n---\n\n**Kurz gesagt...** ein guter Brief ist sachlich, klar und höflich. Er nennt Fakten. Er zeigt keine Wut.\n\n**Es liegt auf der Hand, dass...** wütende Briefe nicht helfen. **Man sollte nicht vergessen, dass ...** der Empfänger auch ein Mensch ist. **Dies lässt sich damit begründen, dass...** Höflichkeit mehr bringt als Aggression.",
@@ -35675,9 +35763,9 @@
       {
         "id": 27,
         "chapter": 43,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 15,
+        "phase_name": "Phase 15 – Schreiben & Diskutieren",
+        "phase_description": "Formal letters, essays, discussions",
         "title_de": "Ein argumentativer Aufsatz: Ist Autofahren noch zeitgemäß?",
         "title_en": "An argumentative essay: Is driving still up to date?",
         "story_de": "**Ich bin der Ansicht, dass ...** unsere Städte anders werden müssen. **Es steht fest, dass ...** Autos die Luft schmutzig machen. **Man muss bedenken, dass ...** die Zahl der Autos jedes Jahr wächst.\n\n**Dafür spricht, dass ...** das Auto Freiheit bringt. Man kann jederzeit fahren. **Ein Vorteil / Nachteil besteht darin, dass ...** man ohne Auto auf dem Land kaum leben kann. **Nichts spricht dagegen, dass...** das Auto praktisch ist.\n\n**Dagegen spricht, dass ...** die Emissionen sehr hoch sind. **Es liegt daran, dass ...** die meisten Autos Benzin brauchen. **Das hat zur Folge, dass ...** die Luft in Städten schlechter wird. **Daraus folgt, dass ...** wir andere Verkehrsmittel brauchen. **Das führt dazu, dass ...** wir mehr Bus und Bahn nutzen sollten.\n\n**Einerseits ..., andererseits ...** brauchen wir Mobilität. Andererseits wollen wir saubere Luft. **Es kommt ganz darauf an, ob ...** wir grüne Alternativen bauen.\n\n**Im Großen und Ganzen ...** glaube ich, dass Wandel möglich ist. **Alles in allem ...** kann jeder etwas machen. Fahrrad statt Auto. Bus statt eigenes Auto.\n\n**Zusammenfassend lässt sich sagen, dass ...** die Zukunft klimafreundlich sein muss.\n\n**Es lässt sich nicht leugnen, dass ...** Wandel schwer ist. **Es besteht kein Zweifel daran, dass ...** wir handeln müssen. **Es besteht die Gefahr, dass ...** wir sonst die Klimaziele nicht erreichen.\n\n**Meines Erachtens ...** ist jetzt der richtige Moment. **Aus meiner Sicht ...** braucht es Mut. **Soweit ich weiß, ...** planen einige Städte autofreie Zonen. **Wenn ich mich nicht irre, ...** hat Paris das schon.\n\n**Ich kann gut nachvollziehen, dass ...** viele Menschen zögern. **Das leuchtet mir ein.** Aber **Da haben Sie recht, allerdings ...** brauchen wir Mut. Wer sagt: **Das sehe ich anders**, sollte gute Argumente haben.\n\n**Ich bin damit nicht einverstanden**, wenn jemand sagt: „Alles bleibt gleich.\" **Das halte ich für übertrieben.** **Ich hätte es anders gemacht.** **Hätte ich das gewusst, ...** wäre ich schon vor Jahren aufs Rad gewechselt.",
@@ -35901,9 +35989,9 @@
       {
         "id": 28,
         "chapter": 44,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 15,
+        "phase_name": "Phase 15 – Schreiben & Diskutieren",
+        "phase_description": "Formal letters, essays, discussions",
         "title_de": "Meine Diskussion über soziale Medien (Vertiefung der Argumentation)",
         "title_en": "My discussion about social media (deepening argumentation)",
         "story_de": "**Dabei handelt es sich um...** ein Thema für alle. **Das wirft die Frage auf, ob...** soziale Medien uns wirklich verbinden. **Alles spricht dafür, dass...** sie unser Verhalten ändern.\n\n**Auf der einen Seite... auf der anderen Seite...** helfen sie beim Kontakt. Andererseits machen sie süchtig.\n\n**Das kommt ganz darauf an.** Wer die Netzwerke gut nutzt, profitiert. Wer stundenlang scrollt, verliert Zeit. **Das steht außer Frage.** Auch **Das hängt davon ab, dass...** wie alt die Nutzer sind. Und wie stark ihre Selbstkontrolle ist.\n\n**Nach Angaben von ...** Forschern sind Jugendliche fünf Stunden täglich online. **Laut einer Studie ...** von 2024 sind viele nicht glücklich. **Die Zahlen zeigen, dass ...** psychische Probleme wachsen. **Im Vergleich zum Vorjahr ...** ist die Nutzung wieder gestiegen. **Es fällt auf, dass ...** vor allem Mädchen betroffen sind.\n\n**Man kann davon ausgehen, dass...** ohne Regeln nichts besser wird. **Man sollte bedenken, dass...** Kinder Grenzen brauchen. **Es gilt zu bedenken, dass...** auch Eltern helfen müssen. **Ich bin mir bewusst, dass...** das schwer ist.\n\n**In Anbetracht der Tatsache, dass...** die Plattformen mit Algorithmen arbeiten, ist klar: Sie wollen unsere Zeit.\n\n**Es liegt auf der Hand, dass...** Bildung helfen kann. **Nicht zu vergessen ist, dass...** auch Erwachsene betroffen sind. **Es lässt sich sagen, dass...** bewusste Nutzung möglich ist. **Ich befürchte, dass...** ohne Aufklärung viele scheitern. **Es steht zu befürchten, dass...** die Sucht weiter wächst.\n\n**Vor diesem Hintergrund...** brauchen wir Debatten. **Im Hinblick auf...** die Zukunft sind Regeln nötig. **Ich bin gespannt, wie...** die Politik reagiert. **Es steht außer Zweifel, dass...** wir handeln müssen.\n\n**Das ändert nichts an der Tatsache, dass...** eigene Verantwortung wichtig bleibt. **Unter bestimmten Voraussetzungen** kann jeder gesund mit Social Media umgehen.\n\n**Um es auf den Punkt zu bringen...** Selbstkontrolle plus Regeln vom Staat sind der Weg. **Mit anderen Worten...** wir brauchen beides.\n\n**Es bleibt abzuwarten, ob...** sich etwas ändert. **Zusammenfassend lässt sich sagen...** ein Umdenken ist nötig. **Im Notfall** muss der Staat eingreifen.\n\n**Es ist zu berücksichtigen, dass ...** die Menschen frei entscheiden sollen.",
@@ -36148,9 +36236,9 @@
       {
         "id": 29,
         "chapter": 45,
-        "phase": 5,
-        "phase_name": "Phase 5 – Abstraktes Denken & Argumentation",
-        "phase_description": "Abstract thinking & argumentation (final polish for B1 exam)",
+        "phase": 16,
+        "phase_name": "Phase 16 – Logische Verknüpfungen",
+        "phase_description": "Connectors that link your arguments",
         "title_de": "Logische Verknüpfungen im Alltag",
         "title_en": "Logical connectors in everyday life",
         "story_de": "Ich möchte über meinen Alltag schreiben. Ich arbeite als Entwickler. **Daher** sitze ich viel am Computer.\n\n**Ferner** lerne ich abends Deutsch. **Des Weiteren** gehe ich ins Fitnessstudio. **Darüber hinaus** treffe ich Freunde. **Zudem** helfe ich meiner Mutter. **Ebenfalls** wichtig: ich lese jeden Abend ein Buch.\n\nManche Kollegen finden das anstrengend. **Hingegen** finde ich es normal. **Wohingegen** andere sich langweilen, habe ich immer etwas vor. **Während** meine Frau ruht, bin ich unterwegs.\n\n**Dennoch** bin ich manchmal müde. **Gleichwohl** würde ich nichts ändern. **Nichtsdestotrotz** brauche ich Urlaub. **Dessen ungeachtet** plane ich schon das nächste Projekt. **Desungeachtet** meiner Müdigkeit lerne ich weiter. **Nichtsdestoweniger** komme ich früh ins Büro.\n\n**Angesichts** der vielen Aufgaben plane ich streng. **Hinsichtlich** meines Zeitmanagements habe ich Regeln. **Bezüglich** dieses Themas gibt es viele Bücher.\n\n**In Bezug auf** meine Ziele bin ich klar. **Im Hinblick auf** die Zukunft plane ich lange. **Im Vergleich zu** früher bin ich besser organisiert. **Im Gegensatz zu** früher stehe ich früh auf. **Im Unterschied zu** meiner Schwester schlafe ich wenig. **Im Verhältnis zu** meinen Freunden arbeite ich viel. **Analog dazu** trainiere ich viel.\n\n**Abgesehen von** meinem Job lebe ich sportlich. **Unabhängig von** anderen esse ich Gemüse. **Je nachdem**, wie das Wetter ist, laufe ich draußen oder drinnen.\n\n**Insofern** bin ich flexibel. **Sofern** kein Regen fällt, laufe ich lang. **Falls** doch, gehe ich schwimmen. **Es sei denn**, das Bad ist voll. **Vorausgesetzt, dass** ich Zeit habe, nutze ich sie gut.\n\nIch lerne Deutsch, **indem** ich täglich Wörter schreibe. Ich schreibe Sätze, **sodass** ich mich besser erinnere. Ich fühle mich, **als ob** ich in Deutschland lebe. Es klingt, **wie wenn** ich Muttersprachler wäre. **Auch wenn** das nicht stimmt, ich bleibe dran. **Selbst wenn** ich müde bin, lerne ich weiter. **Kaum dass** ich einschlafe, träume ich auf Deutsch. **Seitdem** ich intensiv übe, mache ich Fortschritte.\n\n**Je** mehr ich lerne, **desto** mehr sehe ich. **Je ... desto / umso** klarer wird alles. **Nicht zuletzt** durch tägliche Wiederholung wächst mein Wortschatz.\n\n**Vor allem** brauche ich Geduld. **Insbesondere** die Grammatik ist schwer. **Beispielsweise** die Präpositionen. **Unter anderem** die Adverbien. **Im Allgemeinen** ist die Sprache logisch. **In der Regel** verstehe ich Texte. **Grundsätzlich** liebe ich Deutsch. **Im Prinzip** ist alles machbar. **Letztendlich** zählt Motivation. **Im Grunde** brauche ich nur Zeit.\n\n**Streng genommen** sollte ich mehr sprechen. **Genauer gesagt** brauche ich Partner. **Mit anderen Worten**: einen Tandempartner. **Das heißt (d. h.)** jemanden, mit dem ich täglich rede.\n\n**Zusammenfassend** ist mein Ziel klar. **Abschließend** möchte ich sagen: ich bin auf dem Weg.\n\n**Offenbar** klappt die Methode. **Scheinbar** ja. **Anscheinend** ja. **Zweifellos** ja. **Keineswegs** falsch. **Durchaus** wirksam.\n\n**Ohnehin** war das geplant. **Sowieso** bleibe ich dabei. **Immerhin** habe ich Fortschritte. **Zumindest** verstehe ich viel. **Allenfalls** fehlt mir Praxis. **Erst recht** brauche ich Ausdauer. **Umso mehr** freue ich mich auf die Prüfung.\n\n**Teilweise** ist der Weg hart. **Überwiegend** genieße ich ihn. **Hauptsächlich** lerne ich morgens. **Größtenteils** allein. **Weitgehend** hilft meine Frau. **Allmählich** wird es leichter. **Nach und nach** wächst mein Wortschatz. **Auf einmal** verstand ich einen ganzen Text. **Gegebenenfalls** brauche ich einen Kurs.\n\n**Anlässlich** meines Geburtstags bekam ich ein Deutsch-Buch. **Anschließend** begann ich. **Ausschließlich** deutsche Filme schaue ich jetzt. **Beiderseits** meines Tisches liegen Bücher. **Demzufolge** habe ich Chaos. **Aus diesem Grund** räume ich sonntags auf.\n\n**Entweder...oder** ich lerne — oder ich schlafe. **Sowohl...als auch** hilft mir beides. **Weder...noch** Kaffee noch Tee wecken mich. **Nichtnur...sondernauch** Grammatik, sondern auch Aussprache übe ich. **Geschweigedenn** perfekt bin ich noch nicht. **Zwar...aber** ich mache Fehler, aber ich lerne.\n\n**Reziprok** helfen wir uns im Kurs. **Gegenseitig** korrigieren wir Sätze. **Wechselseitig** motivieren wir uns. **Gleichermaßen** wichtig ist Freude.\n\n**Im Übrigen** höre ich viel Musik. **Im Umkehrschluss** heißt das: ohne Musik lerne ich schlechter. **Im Vergleich** zu anderen Sprachen ist Deutsch schwer.\n\n**Mithilfe** eines Wörterbuchs lerne ich. **Mittels** Karteikarten wiederhole ich. **Mangels** Zeit fehlt mir Ruhe. **Zwecks** der Prüfung mache ich einen Kurs. **Zugunsten** von Deutsch verzichte ich auf TV. **Zuungunsten** meines Schlafs lerne ich abends. **Vorbehaltlich** guter Ergebnisse plane ich B2. **Unbeschadet** meiner Mühe bleibe ich ruhig. **Ungeachtet** aller Probleme liebe ich Deutsch.\n\n**Andernfalls** hätte ich längst aufgehört. **Ansonsten** wäre alles anders. **Folglich** bleibe ich dran. **Somit** komme ich näher. **Demnach** bin ich zufrieden. **Infolgedessen** empfehle ich Deutsch. **Zusehends** wächst mein Selbstvertrauen. **Obgleich** noch viel zu tun ist.\n\n**Erstens / zweitens / drittens** brauche ich Motivation, Methode und Zeit. **Zum einen ... zum anderen** braucht man Freude und Disziplin. **Einerseits ... andererseits** hilft ein Lehrer. Andererseits die Selbständigkeit. Und das **einerseits...andererseits** ist wichtig. **Im Gegensatz** zum Anfang bin ich sicherer.",
